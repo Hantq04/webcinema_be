@@ -1,12 +1,9 @@
 package vi.wbca.webcinema.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -44,11 +41,16 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "role_id")
-    Role role;
+    @JoinColumn(name = "rank_customer_id")
+    RankCustomer rankCustomer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "user_status_id")
     UserStatus userStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "role_id")
+    Role role;
 }
