@@ -1,6 +1,5 @@
 package vi.wbca.webcinema.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +25,5 @@ public class UserStatus {
     String name;
 
     @OneToMany(mappedBy = "userStatus")
-    @JsonManagedReference
     List<User> users;
 }
