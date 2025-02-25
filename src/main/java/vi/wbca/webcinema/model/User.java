@@ -43,6 +43,9 @@ public class User {
     boolean isActive;
 
     @OneToMany(mappedBy = "user")
+    List<Bill> bills;
+
+    @OneToMany(mappedBy = "user")
     List<ConfirmEmail> confirmEmails;
 
     @OneToMany(mappedBy = "user")
