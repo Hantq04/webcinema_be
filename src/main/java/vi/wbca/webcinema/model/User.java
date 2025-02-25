@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,7 +42,13 @@ public class User {
     @Column(name = "is_active")
     boolean isActive;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    @JsonManagedReference
-    List<Role> roles;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "role_id")
+    Role role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "user_status_id")
+    UserStatus userStatus;
 }

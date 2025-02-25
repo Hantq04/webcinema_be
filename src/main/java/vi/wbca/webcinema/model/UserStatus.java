@@ -10,12 +10,11 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "roles")
-public class Role {
+@Table(name = "user_status")
+public class UserStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -23,10 +22,10 @@ public class Role {
     @Column(name = "code")
     String code;
 
-    @Column(name = "role_name")
-    String roleName;
+    @Column(name = "name")
+    String name;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "userStatus")
     @JsonManagedReference
     List<User> users;
 }
