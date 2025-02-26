@@ -42,4 +42,8 @@ public class Schedule {
 
     @OneToMany(mappedBy = "schedule")
     List<Ticket> tickets;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    Room room;
 }
