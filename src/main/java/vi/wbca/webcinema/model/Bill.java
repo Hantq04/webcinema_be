@@ -48,6 +48,10 @@ public class Bill {
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promotion_id")
+    Promotion promotion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bill_status_id")
     BillStatus billStatus;
 }

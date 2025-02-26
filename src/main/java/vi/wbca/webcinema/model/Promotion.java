@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -44,6 +45,9 @@ public class Promotion {
 
     @Column(name = "is_active")
     boolean isActive;
+
+    @OneToMany(mappedBy = "promotion")
+    List<Bill> bills;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_customer_id")
