@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,6 +39,9 @@ public class Bill {
 
     @Column(name = "is_active")
     boolean isActive;
+
+    @OneToMany(mappedBy = "bill")
+    List<BillFood> billFoods;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
