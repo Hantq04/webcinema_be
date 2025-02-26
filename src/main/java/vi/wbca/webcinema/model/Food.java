@@ -12,27 +12,26 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "rank_customers")
-public class RankCustomer {
+@Table(name = "foods")
+public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "point")
-    Integer point;
+    @Column(name = "price")
+    Double price;
 
     @Column(name = "description")
     String description;
 
-    @Column(name = "name")
-    String name;
+    @Column(name = "image")
+    String image;
 
-    @Column(name = "is_active")
+    @Column(name = "name_of_food")
+    String nameOfFood;
+
     boolean isActive;
 
-    @OneToMany(mappedBy = "rankCustomer")
-    List<User> users;
-
-    @OneToMany(mappedBy = "rankCustomer")
-    List<Promotion> promotions;
+    @OneToMany(mappedBy = "food")
+    List<BillFood> billFoods;
 }
