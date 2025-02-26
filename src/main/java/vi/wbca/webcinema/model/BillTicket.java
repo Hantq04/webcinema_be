@@ -10,8 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "bill_foods")
-public class BillFood {
+@Table(name = "bill_tickets")
+public class BillTicket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -24,6 +24,6 @@ public class BillFood {
     Bill bill;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_id")
-    Food food;
+    @JoinColumn(name = "ticket_id")
+    Ticket ticket;
 }
