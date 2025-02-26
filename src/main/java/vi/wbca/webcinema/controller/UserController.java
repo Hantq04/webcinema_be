@@ -31,10 +31,11 @@ public class UserController {
         return userService.getAllUser();
     }
 
-    public ResponseEntity<ResponseObject> findByUserName(@Valid @RequestBody UserDTO request) {
-        User responseData = userService.insertUser(request);
+    @GetMapping("/find-by-user-name")
+    public ResponseEntity<ResponseObject> findByUserName(@Valid @RequestParam String userName) {
+        User responseData = userService.findByUserName(userName);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "User insert successfully", responseData)
+                new ResponseObject(HttpStatus.OK, "Find user successfully", responseData)
         );
     }
 }
