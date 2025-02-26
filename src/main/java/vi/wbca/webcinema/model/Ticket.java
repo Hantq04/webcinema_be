@@ -29,4 +29,12 @@ public class Ticket {
 
     @OneToMany(mappedBy = "ticket")
     List<BillTicket> billTickets;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    Schedule schedule;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id")
+    Seat seat;
 }
