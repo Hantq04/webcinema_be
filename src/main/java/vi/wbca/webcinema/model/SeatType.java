@@ -21,6 +21,6 @@ public class SeatType {
     @Column(name = "name_type")
     String nameType;
 
-    @OneToMany(mappedBy = "seatStatus")
+    @OneToMany(mappedBy = "seatType")
     List<Seat> seats;
 }
