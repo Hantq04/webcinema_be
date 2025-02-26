@@ -1,11 +1,9 @@
 package vi.wbca.webcinema.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -26,7 +24,8 @@ public class Role {
     @Column(name = "role_name")
     String roleName;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    @JsonManagedReference
-    List<User> users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "user_id")
+    User user;
 }
