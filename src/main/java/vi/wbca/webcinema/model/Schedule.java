@@ -44,6 +44,10 @@ public class Schedule {
     List<Ticket> tickets;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movie_id")
+    Movie movie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     Room room;
 }
