@@ -4,26 +4,29 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "bill_foods")
-public class BillFood {
+@Table(name = "tickets")
+public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "quantity")
-    Integer quantity;
+    @Column(name = "code")
+    String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bill_id")
-    Bill bill;
+    @Column(name = "price_ticket")
+    Double priceTicket;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_id")
-    Food food;
+    @Column(name = "is_active")
+    boolean isActive;
+
+    @OneToMany(mappedBy = "ticket")
+    List<BillTicket> billTickets;
 }
