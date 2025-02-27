@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.util;
+package vi.wbca.webcinema.util.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;

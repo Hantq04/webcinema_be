@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.UserDTO;
 import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.service.userService.UserService;
-import vi.wbca.webcinema.util.ResponseObject;
+import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.List;
 
