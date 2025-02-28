@@ -6,7 +6,10 @@ import vi.wbca.webcinema.model.User;
 import java.util.List;
 
 public interface UserService {
-    User insertUser(UserDTO userDTO);
+    void register(UserDTO userDTO);
+
+    UserDTO login(UserDTO userDTO);
+
     List<User> getAllUser();
 
     User findByUserName(String userName);
