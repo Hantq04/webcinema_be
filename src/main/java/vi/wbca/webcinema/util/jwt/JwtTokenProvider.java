@@ -18,12 +18,12 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
     @Value("${application.jwt.secret}")
-    private static String SECRET_KEY;
+    private String SECRET_KEY;
     @Value("${application.jwt.expiration}")
-    private static long JWT_EXPIRATION;
+    private long JWT_EXPIRATION;
 
     // Generate Token
-    public static String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -32,12 +32,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private static Key getSignInKey() {
+    private Key getSignInKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
     // Validation and claim JWT
-    public static Claims parseClaims(String token) {
+    public Claims parseClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -47,7 +47,7 @@ public class JwtTokenProvider {
     }
 
     public String extractUserName(String token) {
-        return extractClaim(token, Claims::getIssuer);
+        return extractClaim(token, Claims::getSubject);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsTFunction) {
