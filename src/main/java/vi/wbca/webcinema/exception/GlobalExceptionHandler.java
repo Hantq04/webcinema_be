@@ -3,6 +3,8 @@ package vi.wbca.webcinema.exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,10 +41,13 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(e.getStatusCode()).body(
                     new ResponseObject(errorCode.getCode(), errorCode.getMessage(), "")
             );
+        } else if (exception instanceof AccessDeniedException || exception instanceof UsernameNotFoundException) {
+            errorCode = ErrorCode.UNAUTHENTICATED;
+            log.error("Error exception: {}", exception.getMessage());
+        } else {
+            log.error("Unhandled exception: {}", exception.getMessage());
+            errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         }
-
-        log.error("Unhandled exception: {}", exception.getMessage());
-        errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         log.error("Error Location: {}", Arrays.toString(Arrays.copyOfRange(exception.getStackTrace(), 0, 3)));
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 new ResponseObject(errorCode.getCode(), errorCode.getMessage(), "")

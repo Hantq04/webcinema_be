@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     RoleRepo roleRepo;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
+    JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void register(UserDTO request) {
@@ -69,7 +70,7 @@ public class UserServiceImpl implements UserService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String jwt = JwtTokenProvider.generateToken(userDetails);
+        String jwt = jwtTokenProvider.generateToken(userDetails);
         User user = userRepo.findByUserName(userDetails.getUsername())
                 .orElseThrow(() -> new  AppException(ErrorCode.USERNAME_NOT_FOUND));
         UserDTO response = userMapper.toUserDTO(user);
