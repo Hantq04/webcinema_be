@@ -14,9 +14,9 @@ public interface UserMapper {
     @Mapping(target = "roles", ignore = true)
     User toUser(UserDTO userDTO);
 
-    @Mapping(target = "bills", ignore = true)
-    @Mapping(target = "confirmEmails", ignore = true)
-    @Mapping(target = "refreshTokens", ignore = true)
-    @Mapping(source = "roles", target = "roleNames")
+//    @Mapping(target = "bills", ignore = true)
+//    @Mapping(target = "confirmEmails", ignore = true)
+//    @Mapping(target = "refreshTokens", ignore = true)
+//    @Mapping(source = "roles", target = "roleNames")
     UserDTO toUserDTO(User user);
 }
