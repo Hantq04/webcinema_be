@@ -4,8 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.UserDTO;
+import vi.wbca.webcinema.groupValidate.InsertUser;
+import vi.wbca.webcinema.groupValidate.LoginUser;
 import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.service.userService.UserService;
 import vi.wbca.webcinema.util.Informations;
@@ -20,11 +23,11 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
 public class UserController {
-    private final Logger logger = Logger.getLogger(UserController.class.getName());
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseObject> register(@Valid @RequestBody UserDTO request) {
+    public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
 
         logger.info("----------Web Cinema: Insert New User----------");
 
@@ -41,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseObject> login(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseObject> login(@Validated(LoginUser.class) @RequestBody UserDTO userDTO) {
         logger.info("----------Web Cinema: Login Page----------");
         UserDTO responseData = userService.login(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(

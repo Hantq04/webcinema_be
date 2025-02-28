@@ -11,6 +11,7 @@ public enum ErrorCode {
     // Security and other error, code 11**
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1100, "Invalid message key.", HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(1001, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
 
     // Throw Exception, code 12**
     USERNAME_EXISTED(1200, "Username is already existed.", HttpStatus.BAD_REQUEST),
