@@ -34,7 +34,7 @@ public class UserDTO {
     String userName;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})
-    @Size(min = 6, max = 20, message = "INVALID_EMAIL", groups = {InsertUser.class, UpdateUser.class})
+    @Size(min = 6, max = 30, message = "INVALID_EMAIL", groups = {InsertUser.class, UpdateUser.class})
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "INVALID_EMAIL_FORM", groups = {InsertUser.class, UpdateUser.class})
     String email;
 
@@ -48,10 +48,10 @@ public class UserDTO {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
-    @Size(min = 6, max = 20, message = "INVALID_PASSWORD", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
+    @Size(min = 6, max = 20, message = "INVALID_PASSWORD", groups = {InsertUser.class, UpdateUser.class})
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,20}$",
             message = "INVALID_PASSWORD_FORM",
-            groups = {InsertUser.class, LoginUser.class, UpdateUser.class}
+            groups = {InsertUser.class, UpdateUser.class}
     )
     String password;
 
