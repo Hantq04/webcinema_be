@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
@@ -20,13 +19,13 @@ public class ConfirmEmail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "required_time", columnDefinition = "TIME")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    LocalTime requiredTime;
+    @Column(name = "required_time", columnDefinition = "DATETIME")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    Date requiredTime;
 
-    @Column(name = "expired_time", columnDefinition = "TIME")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    LocalTime expiredTime;
+    @Column(name = "expired_time", columnDefinition = "DATETIME")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    Date expiredTime;
 
     @Column(name = "confirm_code")
     String confirmCode;
