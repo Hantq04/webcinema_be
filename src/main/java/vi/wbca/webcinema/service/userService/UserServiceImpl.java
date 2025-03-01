@@ -1,9 +1,11 @@
 package vi.wbca.webcinema.service.userService;
 
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +27,7 @@ import vi.wbca.webcinema.service.registrationService.RegistrationService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Service
@@ -51,7 +54,11 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
         userStatus(user);
         request.getListRoles().forEach(role -> addRole(role, user));
-
+        try {
+            registrationService.sendVerificationEmail(user);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     public void userStatus(User user) {
@@ -79,19 +86,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO login(UserDTO userDTO) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userDTO.getUserName(),
-                        userDTO.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String jwt = jwtTokenProvider.generateToken(userDetails);
-        User user = userRepo.findByUserName(userDetails.getUsername())
+        User user = userRepo.findByUserName(userDTO.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
-        UserDTO response = userMapper.toUserDTO(user);
-        response.setToken(jwt);
-        return response;
+        if (!user.isActive()) {
+            throw new AppException(ErrorCode.USER_NOT_VERIFIED);
+        }
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userDTO.getUserName(), userDTO.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String jwt = jwtTokenProvider.generateToken(userDetails);
+            UserDTO response = userMapper.toUserDTO(user);
+            response.setToken(jwt);
+            return response;
+        } catch (BadCredentialsException ex) {
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
     }
 
     @Override
