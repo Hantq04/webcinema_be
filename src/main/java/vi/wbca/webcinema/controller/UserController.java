@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,10 +11,12 @@ import vi.wbca.webcinema.dto.UserDTO;
 import vi.wbca.webcinema.groupValidate.InsertUser;
 import vi.wbca.webcinema.groupValidate.LoginUser;
 import vi.wbca.webcinema.model.User;
+import vi.wbca.webcinema.service.registrationService.RegistrationService;
 import vi.wbca.webcinema.service.userService.UserService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,7 @@ import java.util.logging.Logger;
 public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
     private final UserService userService;
+    private final RegistrationService registrationService;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
@@ -38,8 +42,9 @@ public class UserController {
         responseData.put(Informations.EMAIL, request.getEmail());
         responseData.put(Informations.LIST_ROLE, request.getListRoles().toString());
 
+        String message = "User registered successfully. Please check your email to get your OTP for verification.";
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "User insert successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 
@@ -51,6 +56,22 @@ public class UserController {
         UserDTO responseData = userService.login(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User login successfully.", responseData)
+        );
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<ResponseObject> verifyEmail(@Valid @RequestParam("token") String token) {
+        String result = registrationService.validateToken(token);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "User verified successfully.", result)
+        );
+    }
+
+    @GetMapping("/resend-verify-email")
+    public ResponseEntity<ResponseObject> resendVerifyEmail(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
+        String result = registrationService.resendVerificationEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Your OTP has been resent.", result)
         );
     }
 

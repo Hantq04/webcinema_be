@@ -22,6 +22,13 @@ public enum ErrorCode {
     PHONE_NUMBER_EXISTED(1202, "Phone number is already existed.", HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND(1203, "Role not found.", HttpStatus.BAD_REQUEST),
     USERNAME_NOT_FOUND(1204, "Username not found.", HttpStatus.BAD_REQUEST),
+    OTP_NOT_FOUND(1205, "OTP not found.", HttpStatus.BAD_REQUEST),
+    USER_ACTIVE(1206, "This account has already been verified. Please, login.", HttpStatus.CONFLICT),
+    EXPIRED_OTP(1207, "Your OTP has already expired.", HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_FOUND(1208, "Email not found.", HttpStatus.BAD_REQUEST),
+    STATUS_NOT_FOUND(1209, "Status not found.", HttpStatus.BAD_REQUEST),
+    USER_NOT_VERIFIED(1210, "Your account has not been verified. Please check your email.", HttpStatus.BAD_REQUEST),
+    INVALID_CREDENTIALS(1211, "Login failed. Invalid username or password.", HttpStatus.UNAUTHORIZED),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

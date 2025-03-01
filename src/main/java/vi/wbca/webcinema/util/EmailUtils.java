@@ -11,7 +11,18 @@ public class EmailUtils {
                         "<h2>%s</h2>" +
                         "<p>Please enter this OTP to activate your account. This OTP is valid for a limited time.</p>" +
                         "<p>Thank you <br> Support Team</p>",
-                user, otp
+                user.getName(), otp
+        );
+    }
+
+    public static String getResendEmailMessage(String otp) {
+        return String.format(
+                        "<p>You have requested to resend your One-Time Password (OTP) for verification.</p>" +
+                        "<p>Your new OTP is:</p>" +
+                        "<h2>%s</h2>" +
+                        "<p>Please enter this OTP to verify your account. This OTP is valid for a limited time.</p>" +
+                        "<p>Thank you <br> Support Team</p>",
+                otp
         );
     }
 }

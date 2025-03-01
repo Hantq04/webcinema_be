@@ -21,7 +21,7 @@ public class EmailService {
         messageHelper.setTo(to);
         messageHelper.setSubject(subject);
         messageHelper.setFrom("no-reply@example.com", "Support Team");
-        messageHelper.setText(content);
+        messageHelper.setText(content, true);
 
         javaMailSender.send(message);
     }
