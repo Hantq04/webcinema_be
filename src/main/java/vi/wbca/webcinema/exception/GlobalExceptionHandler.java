@@ -1,9 +1,12 @@
 package vi.wbca.webcinema.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,7 +21,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception exception) {
+    public ResponseEntity<ResponseObject> handleException(Exception exception) {
         ErrorCode errorCode;
 
         if (exception instanceof AppException appException) {
@@ -41,8 +44,14 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(e.getStatusCode()).body(
                     new ResponseObject(errorCode.getCode(), errorCode.getMessage(), "")
             );
-        } else if (exception instanceof AccessDeniedException || exception instanceof UsernameNotFoundException) {
+        } else if (exception instanceof BadCredentialsException) {
             errorCode = ErrorCode.UNAUTHENTICATED;
+            log.error("Error exception: BadCredentials");
+        } else if (exception instanceof AccessDeniedException || exception instanceof UsernameNotFoundException) {
+            errorCode = ErrorCode.UNAUTHORIZED;
+            log.error("Error exception: {}", exception.getMessage());
+        } else if (exception instanceof SignatureException || exception instanceof ExpiredJwtException) {
+            errorCode = exception instanceof SignatureException ? ErrorCode.INVALID_SIGNATURE : ErrorCode.EXPIRED_TOKEN;
             log.error("Error exception: {}", exception.getMessage());
         } else {
             log.error("Unhandled exception: {}", exception.getMessage());
