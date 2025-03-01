@@ -45,7 +45,9 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@Validated(LoginUser.class) @RequestBody UserDTO userDTO) {
+
         logger.info("----------Web Cinema: Login Page----------");
+
         UserDTO responseData = userService.login(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User login successfully.", responseData)

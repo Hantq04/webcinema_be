@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.config;
+package vi.wbca.webcinema.config.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
