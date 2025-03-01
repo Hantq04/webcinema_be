@@ -21,6 +21,7 @@ import vi.wbca.webcinema.model.UserStatus;
 import vi.wbca.webcinema.repository.RoleRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.repository.UserStatusRepo;
+import vi.wbca.webcinema.service.registrationService.RegistrationService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     AuthenticationManager authenticationManager;
     JwtTokenProvider jwtTokenProvider;
     UserStatusRepo userStatusRepo;
+    RegistrationService registrationService;
 
     @Override
     public void register(UserDTO request) {
@@ -49,6 +51,7 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
         userStatus(user);
         request.getListRoles().forEach(role -> addRole(role, user));
+
     }
 
     public void userStatus(User user) {
@@ -85,7 +88,7 @@ public class UserServiceImpl implements UserService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtTokenProvider.generateToken(userDetails);
         User user = userRepo.findByUserName(userDetails.getUsername())
-                .orElseThrow(() -> new  AppException(ErrorCode.USERNAME_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
         UserDTO response = userMapper.toUserDTO(user);
         response.setToken(jwt);
         return response;
