@@ -24,6 +24,12 @@ public class WebSecurityConfig {
     AuthenticationProvider authenticationProvider;
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+    static String[] listEndpoint = {
+            "api/v1/user/**",
+            "/api/v1/test/**",
+            "/api/v1/user-status/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -31,8 +37,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("api/v1/user/**").permitAll()
-                                .requestMatchers("/api/v1/test/**").permitAll()
+                        request.requestMatchers(listEndpoint).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

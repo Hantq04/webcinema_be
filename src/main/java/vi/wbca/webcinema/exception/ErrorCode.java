@@ -9,9 +9,12 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 public enum ErrorCode {
     // Security and other error, code 11**
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error!", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1100, "Invalid message key.", HttpStatus.BAD_REQUEST),
-    UNAUTHENTICATED(1001, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED(1101, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(1102, "You don't have permission.", HttpStatus.FORBIDDEN),
+    INVALID_SIGNATURE(1103, "Invalid JWT signature.", HttpStatus.FORBIDDEN),
+    EXPIRED_TOKEN(1104, "JWT token is already expired.", HttpStatus.FORBIDDEN),
 
     // Throw Exception, code 12**
     USERNAME_EXISTED(1200, "Username is already existed.", HttpStatus.BAD_REQUEST),
@@ -32,6 +35,7 @@ public enum ErrorCode {
     INVALID_PASSWORD_FORM(1308, "Invalid password format.", HttpStatus.BAD_REQUEST),
     INVALID_ROLE(1309, "Invalid role code.", HttpStatus.BAD_REQUEST),
     NOT_EMPTY(1310, "This field cannot be empty", HttpStatus.BAD_REQUEST),
+    INVALID_USER_STATUS(1311, "Invalid user status.", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
