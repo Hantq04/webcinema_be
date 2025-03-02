@@ -43,8 +43,6 @@ public enum ErrorCode {
     INVALID_ROLE(1309, "Invalid role code.", HttpStatus.BAD_REQUEST),
     NOT_EMPTY(1310, "This field cannot be empty", HttpStatus.BAD_REQUEST),
     INVALID_USER_STATUS(1311, "Invalid user status.", HttpStatus.BAD_REQUEST),
-    POINT_TOO_LOW(1312, "Value must be greater than or equal to 0.", HttpStatus.BAD_REQUEST),
-    POINT_TOO_HIGH(1313, "Value must be less than or equal to 100.", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

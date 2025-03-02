@@ -20,7 +20,7 @@ public class UserStatusController {
     public ResponseEntity<ResponseObject> insertUserStatus(@RequestBody UserStatus userStatus) {
         UserStatus responseData = userStatusService.insertUserStatus(userStatus);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "", responseData)
+                new ResponseObject(HttpStatus.OK, "User status insert successfully.", responseData)
         );
     }
 
