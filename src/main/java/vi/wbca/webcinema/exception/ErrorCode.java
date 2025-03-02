@@ -29,6 +29,7 @@ public enum ErrorCode {
     STATUS_NOT_FOUND(1209, "Status not found.", HttpStatus.BAD_REQUEST),
     USER_NOT_VERIFIED(1210, "Your account has not been verified. Please check your email.", HttpStatus.BAD_REQUEST),
     INVALID_CREDENTIALS(1211, "Login failed. Invalid username or password.", HttpStatus.UNAUTHORIZED),
+    PASSWORD_MISMATCH(1212, "Passwords do not match.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

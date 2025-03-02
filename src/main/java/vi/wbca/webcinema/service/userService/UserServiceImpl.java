@@ -26,7 +26,7 @@ import vi.wbca.webcinema.repository.RankCustomerRepo;
 import vi.wbca.webcinema.repository.RoleRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.repository.UserStatusRepo;
-import vi.wbca.webcinema.service.registrationService.RegistrationService;
+import vi.wbca.webcinema.service.accountService.AccountService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
@@ -44,13 +44,19 @@ public class UserServiceImpl implements UserService {
     AuthenticationManager authenticationManager;
     JwtTokenProvider jwtTokenProvider;
     UserStatusRepo userStatusRepo;
-    RegistrationService registrationService;
+    AccountService accountService;
     RankCustomerRepo rankCustomerRepo;
 
     @Override
     public void register(UserDTO request) {
         if (userRepo.existsByUserName(request.getUserName())) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
+        }
+        if (userRepo.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -59,7 +65,7 @@ public class UserServiceImpl implements UserService {
         userStatusAndRank(user);
         request.getListRoles().forEach(role -> addRole(role, user));
         try {
-            registrationService.sendVerificationEmail(user);
+            accountService.sendVerificationEmail(user);
         } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -112,6 +118,16 @@ public class UserServiceImpl implements UserService {
         } catch (BadCredentialsException ex) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
+    }
+
+    @Override
+    public void updateUser(UserDTO userDTO) {
+
+    }
+
+    @Override
+    public void deleteUser(List<String> listUsers) {
+
     }
 
     @Override
