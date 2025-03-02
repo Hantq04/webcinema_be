@@ -11,7 +11,7 @@ import vi.wbca.webcinema.dto.UserDTO;
 import vi.wbca.webcinema.groupValidate.InsertUser;
 import vi.wbca.webcinema.groupValidate.LoginUser;
 import vi.wbca.webcinema.model.User;
-import vi.wbca.webcinema.service.registrationService.RegistrationService;
+import vi.wbca.webcinema.service.accountService.AccountService;
 import vi.wbca.webcinema.service.userService.UserService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
     private final UserService userService;
-    private final RegistrationService registrationService;
+    private final AccountService accountService;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
@@ -61,7 +61,10 @@ public class UserController {
 
     @GetMapping("/verify-email")
     public ResponseEntity<ResponseObject> verifyEmail(@Valid @RequestParam("token") String token) {
-        String result = registrationService.validateToken(token);
+
+        logger.info("----------Web Cinema: Verify Email----------");
+
+        String result = accountService.validateToken(token);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User verified successfully.", result)
         );
@@ -69,14 +72,40 @@ public class UserController {
 
     @GetMapping("/resend-verify-email")
     public ResponseEntity<ResponseObject> resendVerifyEmail(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
-        String result = registrationService.resendVerificationEmail(email);
+
+        logger.info("----------Web Cinema: Resend Verify Email----------");
+
+        String result = accountService.resendVerificationEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Your OTP has been resent.", result)
         );
     }
 
+    @GetMapping("/forgot-password")
+    public ResponseEntity<ResponseObject> forgotPassword(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
+
+        logger.info("----------Web Cinema: Forgot Password----------");
+
+        String result = accountService.sendChangePassword(email);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Your OTP has been sent.", result)
+        );
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseObject> changePassword(@Valid @RequestParam String token, String newPassword, String confirmPassword) {
+
+        logger.info("----------Web Cinema: Change Password----------");
+
+        String responseData = accountService.changePassword(token, newPassword, confirmPassword);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Change password successfully.", responseData)
+        );
+    }
+
     @GetMapping("/get-all")
     public List<User> getAllUser() {
+        logger.info("----------Web Cinema: List User----------");
         return userService.getAllUser();
     }
 
