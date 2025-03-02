@@ -16,7 +16,7 @@ import vi.wbca.webcinema.repository.ConfirmEmailRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.repository.UserStatusRepo;
 import vi.wbca.webcinema.util.EmailUtils;
-import vi.wbca.webcinema.util.GenerateOTP;
+import vi.wbca.webcinema.util.generate.GenerateOTP;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
