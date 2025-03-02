@@ -121,13 +121,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(UserDTO userDTO) {
+    public void updateUser(UserDTO request) {
+        User currentUser = userRepo.findByUserName(request.getUserName())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if (userRepo.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
+        if (request.getUserName() != null) currentUser.setUserName(request.getUserName());
+        if (request.getPassword() != null) currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        currentUser.setEmail(request.getEmail());
+        currentUser.setPhoneNumber(request.getPhoneNumber());
+        userRepo.save(currentUser);
 
+        List<String> strRole = request.getListRoles();
+        if (!strRole.isEmpty()) {
+            currentUser.getRoles().forEach(roleRepo::delete);
+            request.getListRoles().forEach(role -> addRole(role, currentUser));
+        }
     }
 
     @Override
     public void deleteUser(List<String> listUsers) {
-
+        listUsers.forEach(userName -> {
+            User currentUser = userRepo.findByUserName(userName)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            currentUser.getRoles().forEach(roleRepo::delete);
+            userRepo.delete(currentUser);
+        });
     }
 
     @Override
@@ -136,7 +159,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUserName(String userName) {
-        return userRepo.findByUserName(userName).orElse(null);
+    public UserDTO findById(Long id) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserDTO(user);
     }
 }
