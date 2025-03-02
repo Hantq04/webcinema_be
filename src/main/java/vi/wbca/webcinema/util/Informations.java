@@ -17,5 +17,5 @@ public class Informations {
     public static final String POINT = "point";
     public static final String DESCRIPTION = "description";
     public static final String NAME = "name";
-    public static final String IS_ACTIVE = "isActive";
+    public static final String PHONE_NUMBER = "phoneNumber";
 }

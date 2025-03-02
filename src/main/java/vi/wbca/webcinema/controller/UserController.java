@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.UserDTO;
+import vi.wbca.webcinema.groupValidate.DeleteUser;
 import vi.wbca.webcinema.groupValidate.InsertUser;
 import vi.wbca.webcinema.groupValidate.LoginUser;
+import vi.wbca.webcinema.groupValidate.UpdateUser;
 import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.service.accountService.AccountService;
 import vi.wbca.webcinema.service.userService.UserService;
@@ -33,7 +35,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
 
-        logger.info("----------Web Cinema: Insert New User----------");
+        logger.info("----------Web Cinema: Register New User----------");
 
         userService.register(request);
 
@@ -81,6 +83,34 @@ public class UserController {
         );
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
+
+        logger.info("----------Web Cinema: Update User----------");
+
+        userService.updateUser(request);
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put(Informations.USER_NAME, request.getUserName());
+        responseData.put(Informations.EMAIL, request.getEmail());
+        responseData.put(Informations.PHONE_NUMBER, request.getPhoneNumber());
+        responseData.put(Informations.LIST_ROLE, request.getListRoles().toString());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "User updated successfully.", responseData)
+        );
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseObject> deleteUser(@Validated(DeleteUser.class) @RequestParam List<String> userName) {
+
+        logger.info("----------Web Cinema: Delete User----------");
+
+        userService.deleteUser(userName);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "User deleted successfully.", "")
+        );
+    }
+
     @GetMapping("/forgot-password")
     public ResponseEntity<ResponseObject> forgotPassword(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
 
@@ -109,11 +139,14 @@ public class UserController {
         return userService.getAllUser();
     }
 
-    @GetMapping("/find-by-user-name")
-    public ResponseEntity<ResponseObject> findByUserName(@Valid @RequestParam String userName) {
-        User responseData = userService.findByUserName(userName);
+    @GetMapping("/find-by-id")
+    public ResponseEntity<ResponseObject> findById(@Valid @RequestParam Long id) {
+
+        logger.info("----------Web Cinema: Get User----------");
+
+        UserDTO responseData = userService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Find user successfully", responseData)
+                new ResponseObject(HttpStatus.OK, "Find user successfully.", responseData)
         );
     }
 }
