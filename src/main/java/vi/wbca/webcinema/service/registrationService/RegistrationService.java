@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
+import vi.wbca.webcinema.enums.EUserStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.ConfirmEmail;
 import vi.wbca.webcinema.model.User;
+import vi.wbca.webcinema.model.UserStatus;
 import vi.wbca.webcinema.repository.ConfirmEmailRepo;
 import vi.wbca.webcinema.repository.UserRepo;
+import vi.wbca.webcinema.repository.UserStatusRepo;
 import vi.wbca.webcinema.util.EmailUtils;
 import vi.wbca.webcinema.util.GenerateOTP;
 
@@ -24,6 +27,7 @@ public class RegistrationService {
     private final EmailService emailService;
     private final ConfirmEmailRepo confirmEmailRepo;
     private final UserRepo userRepo;
+    private final UserStatusRepo userStatusRepo;
     private final String generateOTP = GenerateOTP.generateOTP();
     @Value("${application.email.verify-expiration}")
     private long expiredTime;
@@ -60,6 +64,10 @@ public class RegistrationService {
         }
         user.setActive(true);
         code.setConfirm(true);
+
+        UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.ACTIVE.name());
+        user.setUserStatus(userStatus);
+
         userRepo.save(user);
         confirmEmailRepo.save(code);
         return "Now you can login to your account.";

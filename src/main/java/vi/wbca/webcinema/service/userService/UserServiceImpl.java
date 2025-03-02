@@ -63,8 +63,7 @@ public class UserServiceImpl implements UserService {
 
     public void userStatus(User user) {
         if (!user.isActive()) {
-            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.name())
-                    .orElseThrow(() -> new AppException(ErrorCode.INVALID_USER_STATUS));
+            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.name());
             user.setUserStatus(userStatus);
             userRepo.save(user);
         }
