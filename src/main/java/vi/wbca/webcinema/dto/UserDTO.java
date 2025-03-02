@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.groupValidate.InsertUser;
-import vi.wbca.webcinema.groupValidate.LoginUser;
-import vi.wbca.webcinema.groupValidate.UpdateUser;
+import vi.wbca.webcinema.groupValidate.user.InsertUser;
+import vi.wbca.webcinema.groupValidate.user.LoginUser;
+import vi.wbca.webcinema.groupValidate.user.UpdateUser;
 import vi.wbca.webcinema.model.Role;
 
 import java.util.List;

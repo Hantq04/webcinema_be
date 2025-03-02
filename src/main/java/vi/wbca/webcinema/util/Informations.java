@@ -10,7 +10,7 @@ public class Informations {
     public static final String ROLE_ADMIN_NAME = "Administrator";
     public static final String ROLE_USER_NAME = "Regular user";
 
-    // Information
+    // Fields
     public static final String USER_NAME = "userName";
     public static final String EMAIL = "email";
     public static final String LIST_ROLE = "listRole";
@@ -18,4 +18,6 @@ public class Informations {
     public static final String DESCRIPTION = "description";
     public static final String NAME = "name";
     public static final String PHONE_NUMBER = "phoneNumber";
+    public static final String CODE = "code";
+    public static final String ADDRESS = "address";
 }

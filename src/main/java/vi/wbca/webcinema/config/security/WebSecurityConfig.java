@@ -28,7 +28,8 @@ public class WebSecurityConfig {
             "api/v1/user/**",
             "/api/v1/test/**",
             "/api/v1/user-status/**",
-            "/api/v1/rank/**"
+            "/api/v1/rank/**",
+            "/api/v1/cinema/**"
     };
 
     @Bean

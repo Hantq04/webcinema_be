@@ -31,6 +31,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(1211, "Login failed. Invalid username or password.", HttpStatus.UNAUTHORIZED),
     PASSWORD_MISMATCH(1212, "Passwords do not match.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1213, "User not found.", HttpStatus.BAD_REQUEST),
+    NAME_NOT_FOUND(1214, "Name not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -45,6 +46,10 @@ public enum ErrorCode {
     INVALID_ROLE(1309, "Invalid role code.", HttpStatus.BAD_REQUEST),
     NOT_EMPTY(1310, "This field cannot be empty", HttpStatus.BAD_REQUEST),
     INVALID_USER_STATUS(1311, "Invalid user status.", HttpStatus.BAD_REQUEST),
+    INVALID_ADDRESS(1312, "Address must be at least 4 characters.", HttpStatus.BAD_REQUEST),
+    INVALID_DESCRIPTION(1313, "Description must be at least 6 characters.", HttpStatus.BAD_REQUEST),
+    INVALID_NAME(1314, "Name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
+    INVALID_CODE(1315, "Invalid code.", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

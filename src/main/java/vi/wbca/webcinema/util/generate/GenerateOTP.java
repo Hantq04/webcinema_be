@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.util;
+package vi.wbca.webcinema.util.generate;
 
 import java.util.Random;
 
