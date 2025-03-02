@@ -27,7 +27,8 @@ public class WebSecurityConfig {
     static String[] listEndpoint = {
             "api/v1/user/**",
             "/api/v1/test/**",
-            "/api/v1/user-status/**"
+            "/api/v1/user-status/**",
+            "/api/v1/rank/**"
     };
 
     @Bean
