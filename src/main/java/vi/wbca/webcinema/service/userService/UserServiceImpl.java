@@ -130,7 +130,6 @@ public class UserServiceImpl implements UserService {
         if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
-        if (request.getUserName() != null) currentUser.setUserName(request.getUserName());
         if (request.getPassword() != null) currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
         currentUser.setEmail(request.getEmail());
         currentUser.setPhoneNumber(request.getPhoneNumber());
