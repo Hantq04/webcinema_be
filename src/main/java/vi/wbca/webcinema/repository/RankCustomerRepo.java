@@ -6,4 +6,5 @@ import vi.wbca.webcinema.model.RankCustomer;
 
 @Repository
 public interface RankCustomerRepo extends JpaRepository<RankCustomer, Long> {
+    RankCustomer findByName(String name);
 }

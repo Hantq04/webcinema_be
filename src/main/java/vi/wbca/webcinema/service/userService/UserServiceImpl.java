@@ -13,13 +13,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.UserDTO;
+import vi.wbca.webcinema.enums.ERankCustomer;
 import vi.wbca.webcinema.enums.EUserStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.UserMapper;
+import vi.wbca.webcinema.model.RankCustomer;
 import vi.wbca.webcinema.model.Role;
 import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.model.UserStatus;
+import vi.wbca.webcinema.repository.RankCustomerRepo;
 import vi.wbca.webcinema.repository.RoleRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.repository.UserStatusRepo;
@@ -42,6 +45,7 @@ public class UserServiceImpl implements UserService {
     JwtTokenProvider jwtTokenProvider;
     UserStatusRepo userStatusRepo;
     RegistrationService registrationService;
+    RankCustomerRepo rankCustomerRepo;
 
     @Override
     public void register(UserDTO request) {
@@ -52,7 +56,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepo.save(user);
-        userStatus(user);
+        userStatusAndRank(user);
         request.getListRoles().forEach(role -> addRole(role, user));
         try {
             registrationService.sendVerificationEmail(user);
@@ -61,12 +65,15 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void userStatus(User user) {
+    public void userStatusAndRank(User user) {
         if (!user.isActive()) {
             UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.name());
             user.setUserStatus(userStatus);
-            userRepo.save(user);
         }
+        RankCustomer rankCustomer = rankCustomerRepo.findByName(ERankCustomer.STANDARD.name());
+        user.setRankCustomer(rankCustomer);
+        user.setPoint(0);
+        userRepo.save(user);
     }
 
     public void addRole(String role, User user) {
