@@ -14,4 +14,8 @@ public class Informations {
     public static final String USER_NAME = "userName";
     public static final String EMAIL = "email";
     public static final String LIST_ROLE = "listRole";
+    public static final String POINT = "point";
+    public static final String DESCRIPTION = "description";
+    public static final String NAME = "name";
+    public static final String IS_ACTIVE = "isActive";
 }

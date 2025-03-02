@@ -7,9 +7,6 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.groupValidate.InsertUser;
 import vi.wbca.webcinema.groupValidate.LoginUser;
 import vi.wbca.webcinema.groupValidate.UpdateUser;
-import vi.wbca.webcinema.model.Bill;
-import vi.wbca.webcinema.model.ConfirmEmail;
-import vi.wbca.webcinema.model.RefreshToken;
 import vi.wbca.webcinema.model.Role;
 
 import java.util.List;
@@ -23,9 +20,7 @@ public class UserDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL", groups = {InsertUser.class, UpdateUser.class})
-    @Min(value = 0, message = "POINT_TOO_LOW")
-    @Max(value = 100, message = "POINT_TOO_HIGH")
+    @NotNull(message = "NOT_NULL", groups = {UpdateUser.class})
     Integer point;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
@@ -54,12 +49,6 @@ public class UserDTO {
             groups = {InsertUser.class, UpdateUser.class}
     )
     String password;
-
-//    List<Bill> bills;
-//
-//    List<ConfirmEmail> confirmEmails;
-//
-//    List<RefreshToken> refreshTokens;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotEmpty(message = "NOT_EMPTY", groups = {InsertUser.class, UpdateUser.class})
