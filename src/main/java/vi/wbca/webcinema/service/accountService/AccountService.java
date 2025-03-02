@@ -1,8 +1,9 @@
-package vi.wbca.webcinema.service.registrationService;
+package vi.wbca.webcinema.service.accountService;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
 import vi.wbca.webcinema.enums.EUserStatus;
@@ -23,11 +24,12 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class RegistrationService {
+public class AccountService {
     private final EmailService emailService;
     private final ConfirmEmailRepo confirmEmailRepo;
     private final UserRepo userRepo;
     private final UserStatusRepo userStatusRepo;
+    private final PasswordEncoder passwordEncoder;
     private final String generateOTP = GenerateOTP.generateOTP();
     @Value("${application.email.verify-expiration}")
     private long expiredTime;
@@ -81,5 +83,33 @@ public class RegistrationService {
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
         createConfirmEmail(user);
         return "Please verify your account within 5 minutes.";
+    }
+
+    public String changePassword(String otp, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new AppException(ErrorCode.PASSWORD_MISMATCH);
+        }
+        ConfirmEmail code = confirmEmailRepo.findByConfirmCode(otp)
+                .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
+        Calendar calendar = Calendar.getInstance();
+        if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
+            confirmEmailRepo.delete(code);
+            throw new AppException(ErrorCode.EXPIRED_OTP);
+        }
+        User user = userRepo.findByConfirmEmails(code)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+        return "Password change successfully. You can now log in with your new password.";
+    }
+
+    public String sendChangePassword(String email) throws MessagingException, UnsupportedEncodingException {
+        String subject = "Email Verification";
+        String content = EmailUtils.getChangePasswordMessage(generateOTP);
+        emailService.sendMail(email, subject, content);
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+        createConfirmEmail(user);
+        return "Check your email for the password change OTP.";
     }
 }

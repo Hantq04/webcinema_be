@@ -10,6 +10,10 @@ public interface UserService {
 
     UserDTO login(UserDTO userDTO);
 
+    void updateUser(UserDTO userDTO);
+
+    void deleteUser(List<String> listUsers);
+
     List<User> getAllUser();
 
     User findByUserName(String userName);
