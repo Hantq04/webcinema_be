@@ -73,10 +73,10 @@ public class UserServiceImpl implements UserService {
 
     public void userStatusAndRank(User user) {
         if (!user.isActive()) {
-            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.name());
+            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.toString());
             user.setUserStatus(userStatus);
         }
-        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRank.STANDARD.name());
+        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRank.STANDARD.toString());
         user.setRankCustomer(rankCustomer);
         user.setPoint(0);
         userRepo.save(user);

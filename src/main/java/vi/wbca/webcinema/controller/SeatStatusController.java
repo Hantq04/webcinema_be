@@ -1,0 +1,37 @@
+package vi.wbca.webcinema.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import vi.wbca.webcinema.model.SeatStatus;
+import vi.wbca.webcinema.service.seatStatusService.SeatStatusService;
+import vi.wbca.webcinema.util.response.ResponseObject;
+
+import java.util.List;
+import java.util.logging.Logger;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/seat-status")
+public class SeatStatusController {
+    private static final Logger logger = Logger.getLogger(SeatStatusController.class.getName());
+    private final SeatStatusService seatStatusService;
+
+    @PostMapping("/insert")
+    public ResponseEntity<ResponseObject> insertSeatStatus(@Valid @RequestBody SeatStatus seatStatus) {
+
+        logger.info("----------Web Cinema: Insert New Seat Status----------");
+
+        SeatStatus response = seatStatusService.insertSeatStatus(seatStatus);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Insert seat status successfully.", response)
+        );
+    }
+
+    @GetMapping("/get-all-status")
+    public List<SeatStatus> getAllStatus() {
+        return seatStatusService.getAllStatus();
+    }
+}
