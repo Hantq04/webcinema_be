@@ -3,6 +3,7 @@ package vi.wbca.webcinema.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vi.wbca.webcinema.enums.RoomType;
 
 import java.util.List;
 
@@ -21,8 +22,9 @@ public class Room {
     @Column(name = "capatity")
     Integer capacity;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    Integer type;
+    RoomType type;
 
     @Column(name = "description")
     String description;
