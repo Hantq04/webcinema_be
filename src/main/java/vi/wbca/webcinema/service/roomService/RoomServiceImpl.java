@@ -6,7 +6,9 @@ import vi.wbca.webcinema.dto.RoomDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.RoomMapper;
+import vi.wbca.webcinema.model.Cinema;
 import vi.wbca.webcinema.model.Room;
+import vi.wbca.webcinema.repository.CinemaRepo;
 import vi.wbca.webcinema.repository.RoomRepo;
 
 @Service
@@ -14,11 +16,15 @@ import vi.wbca.webcinema.repository.RoomRepo;
 public class RoomServiceImpl implements RoomService{
     private final RoomRepo roomRepo;
     private final RoomMapper roomMapper;
+    private final CinemaRepo cinemaRepo;
 
     @Override
     public RoomDTO insertRoom(RoomDTO request) {
         Room room = roomMapper.toRoom(request);
+        Cinema cinema = cinemaRepo.findByNameOfCinema(request.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         room.setActive(true);
+        room.setCinema(cinema);
         roomRepo.save(room);
         return roomMapper.toRoomDTO(room);
     }
