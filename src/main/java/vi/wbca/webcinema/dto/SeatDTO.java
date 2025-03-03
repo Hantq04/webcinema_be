@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vi.wbca.webcinema.model.Room;
 
 @Getter
 @Setter
@@ -22,4 +23,7 @@ public class SeatDTO {
     @NotBlank(message = "NOT_BLANK")
     @Pattern(regexp = "^[A-Z]$", message = "INVALID_LINE")
     String line;
+
+    @NotBlank(message = "NOT_BLANK")
+    String roomCode;
 }
