@@ -32,6 +32,7 @@ public enum ErrorCode {
     PASSWORD_MISMATCH(1212, "Passwords do not match.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1213, "User not found.", HttpStatus.BAD_REQUEST),
     NAME_NOT_FOUND(1214, "Name not found.", HttpStatus.BAD_REQUEST),
+    CODE_NOT_FOUND(1215, "Code not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -50,6 +51,7 @@ public enum ErrorCode {
     INVALID_DESCRIPTION(1313, "Description must be at least 6 characters.", HttpStatus.BAD_REQUEST),
     INVALID_NAME(1314, "Name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_CODE(1315, "Invalid code.", HttpStatus.BAD_REQUEST),
+    INVALID_CAPACITY(1316, "The capacity must be between 50 and 400 seats.", HttpStatus.BAD_REQUEST)
     ;
 
     private final int code;

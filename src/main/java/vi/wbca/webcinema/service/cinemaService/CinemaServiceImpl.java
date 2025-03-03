@@ -41,7 +41,7 @@ public class CinemaServiceImpl implements CinemaService{
     @Override
     public void deleteCinema(String code) {
         Cinema cinema = cinemaRepo.findByCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
         cinemaRepo.delete(cinema);
     }
 }
