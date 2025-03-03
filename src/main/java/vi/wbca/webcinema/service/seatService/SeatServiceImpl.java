@@ -4,15 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.SeatDTO;
 import vi.wbca.webcinema.enums.ESeatStatus;
+import vi.wbca.webcinema.enums.ESeatType;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.model.Room;
 import vi.wbca.webcinema.model.Seat;
 import vi.wbca.webcinema.model.SeatStatus;
+import vi.wbca.webcinema.model.SeatType;
 import vi.wbca.webcinema.repository.RoomRepo;
 import vi.wbca.webcinema.repository.SeatRepo;
 import vi.wbca.webcinema.repository.SeatStatusRepo;
+import vi.wbca.webcinema.repository.SeatTypeRepo;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class SeatServiceImpl implements SeatService{
     private final SeatMapper seatMapper;
     private final SeatStatusRepo seatStatusRepo;
     private final RoomRepo roomRepo;
+    private final SeatTypeRepo seatTypeRepo;
 
     @Override
     public SeatDTO insertSeat(SeatDTO request) {
@@ -33,7 +37,26 @@ public class SeatServiceImpl implements SeatService{
         seat.setRoom(room);
         seat.setSeatStatus(seatStatus);
         seatRepo.save(seat);
+        setSeatType(seat, request.getLine());
         return seatMapper.toSeatDTO(seat);
+    }
+
+    public Seat setSeatType(Seat seat,String line) {
+        int rowNumber = line.charAt(0) - 'A' + 1;
+        if (rowNumber >= 1 && rowNumber <= 4) {
+            SeatType seatType = seatTypeRepo.findByNameType(ESeatType.STANDARD.toString())
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+            seat.setSeatType(seatType);
+        } else if (rowNumber >= 5 && rowNumber < 22) {
+            SeatType seatType = seatTypeRepo.findByNameType(ESeatType.VIP.toString())
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+            seat.setSeatType(seatType);
+        } else {
+            SeatType seatType = seatTypeRepo.findByNameType(ESeatType.DELUXE.toString())
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+            seat.setSeatType(seatType);
+        }
+        return seatRepo.save(seat);
     }
 
     @Override
