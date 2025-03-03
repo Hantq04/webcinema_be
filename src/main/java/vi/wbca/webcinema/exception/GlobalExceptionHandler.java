@@ -1,10 +1,12 @@
 package vi.wbca.webcinema.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -53,7 +55,11 @@ public class GlobalExceptionHandler {
         } else if (exception instanceof SignatureException || exception instanceof ExpiredJwtException) {
             errorCode = exception instanceof SignatureException ? ErrorCode.INVALID_SIGNATURE : ErrorCode.EXPIRED_TOKEN;
             log.error("Error exception: {}", exception.getMessage());
-        } else {
+        } else if (exception instanceof HttpMessageNotReadableException) {
+            errorCode = ErrorCode.ENUM_NOT_EXIST;
+            log.error("Error exception: JSON parse error");
+        }
+        else {
             log.error("Unhandled exception: {}", exception.getMessage());
             errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         }

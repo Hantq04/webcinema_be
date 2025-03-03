@@ -20,4 +20,6 @@ public class Informations {
     public static final String PHONE_NUMBER = "phoneNumber";
     public static final String CODE = "code";
     public static final String ADDRESS = "address";
+    public static final String CAPACITY = "capacity";
+    public static final String TYPE = "type";
 }

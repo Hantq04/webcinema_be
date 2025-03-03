@@ -18,15 +18,15 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public RoomDTO insertRoom(RoomDTO request) {
         Room room = roomMapper.toRoom(request);
+        room.setActive(true);
         roomRepo.save(room);
         return roomMapper.toRoomDTO(room);
     }
 
     @Override
     public void updateRoom(RoomDTO request) {
-        Room room = roomRepo.findByName(request.getName())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-        room.setCode(request.getCode());
+        Room room = roomRepo.findByNameAndCode(request.getName(), request.getCode())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         room.setCapacity(request.getCapacity());
         room.setDescription(request.getDescription());
         room.setType(request.getType());
