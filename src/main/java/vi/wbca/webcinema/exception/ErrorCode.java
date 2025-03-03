@@ -53,7 +53,9 @@ public enum ErrorCode {
     INVALID_DESCRIPTION(1313, "Description must be at least 6 characters.", HttpStatus.BAD_REQUEST),
     INVALID_NAME(1314, "Name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_CODE(1315, "Invalid code.", HttpStatus.BAD_REQUEST),
-    INVALID_CAPACITY(1316, "The capacity must be between 50 and 400 seats.", HttpStatus.BAD_REQUEST)
+    INVALID_CAPACITY(1316, "The capacity must be between 50 and 400 seats.", HttpStatus.BAD_REQUEST),
+    INVALID_LINE(1317, "Line must be a letter from A to Z.", HttpStatus.BAD_REQUEST),
+    INVALID_NUMBER_SEAT(1318, "Seat number must be between 1 and 20.", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

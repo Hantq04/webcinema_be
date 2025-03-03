@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.controller;
+package vi.wbca.webcinema.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

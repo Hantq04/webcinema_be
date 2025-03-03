@@ -22,4 +22,6 @@ public class Informations {
     public static final String ADDRESS = "address";
     public static final String CAPACITY = "capacity";
     public static final String TYPE = "type";
+    public static final String NUMBER = "number";
+    public static final String LINE = "line";
 }
