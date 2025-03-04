@@ -41,7 +41,7 @@ public class SeatServiceImpl implements SeatService{
         return seatMapper.toSeatDTO(seat);
     }
 
-    public Seat setSeatType(Seat seat,String line) {
+    public void setSeatType(Seat seat, String line) {
         int rowNumber = line.charAt(0) - 'A' + 1;
         if (rowNumber >= 1 && rowNumber <= 4) {
             SeatType seatType = seatTypeRepo.findByNameType(ESeatType.STANDARD.toString())
@@ -56,7 +56,7 @@ public class SeatServiceImpl implements SeatService{
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
             seat.setSeatType(seatType);
         }
-        return seatRepo.save(seat);
+        seatRepo.save(seat);
     }
 
     @Override
