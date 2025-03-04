@@ -18,14 +18,12 @@ import vi.wbca.webcinema.enums.EUserStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.UserMapper;
-import vi.wbca.webcinema.model.RankCustomer;
-import vi.wbca.webcinema.model.Role;
-import vi.wbca.webcinema.model.User;
-import vi.wbca.webcinema.model.UserStatus;
+import vi.wbca.webcinema.model.*;
 import vi.wbca.webcinema.repository.RankCustomerRepo;
 import vi.wbca.webcinema.repository.RoleRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.repository.UserStatusRepo;
+import vi.wbca.webcinema.service.accessTokenService.AccessTokenService;
 import vi.wbca.webcinema.service.accountService.AccountService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
@@ -46,6 +44,7 @@ public class UserServiceImpl implements UserService {
     UserStatusRepo userStatusRepo;
     AccountService accountService;
     RankCustomerRepo rankCustomerRepo;
+    AccessTokenService accessTokenService;
 
     @Override
     public void register(UserDTO request) {
@@ -113,7 +112,9 @@ public class UserServiceImpl implements UserService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String jwt = jwtTokenProvider.generateToken(userDetails);
             UserDTO response = userMapper.toUserDTO(user);
-            response.setToken(jwt);
+            response.setAccessToken(jwt);
+
+            accessTokenService.insertAccessToken(user, jwt);
             return response;
         } catch (BadCredentialsException ex) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
@@ -148,6 +149,7 @@ public class UserServiceImpl implements UserService {
             User currentUser = userRepo.findByUserName(userName)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             currentUser.getRoles().forEach(roleRepo::delete);
+            currentUser.getAccessTokens().forEach(accessTokenService::deleteAccessToken);
             userRepo.delete(currentUser);
         });
     }

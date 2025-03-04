@@ -52,6 +52,9 @@ public class User implements UserDetails {
     List<ConfirmEmail> confirmEmails;
 
     @OneToMany(mappedBy = "user")
+    List<AccessToken> accessTokens;
+
+    @OneToMany(mappedBy = "user")
     List<RefreshToken> refreshTokens;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
