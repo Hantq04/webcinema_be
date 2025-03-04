@@ -4,7 +4,11 @@ import vi.wbca.webcinema.model.AccessToken;
 import vi.wbca.webcinema.model.User;
 
 public interface AccessTokenService {
-    AccessToken insertAccessToken(User user, String token);
+    void insertAccessToken(User user, String token);
+
+    AccessToken save(AccessToken accessToken);
 
     void deleteAccessToken(AccessToken accessToken);
+
+    AccessToken findByAccessToken(String token);
 }
