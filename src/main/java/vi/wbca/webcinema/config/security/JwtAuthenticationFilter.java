@@ -25,6 +25,7 @@ import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.AccessToken;
 import vi.wbca.webcinema.repository.AccessTokenRepo;
 import vi.wbca.webcinema.repository.UserRepo;
+import vi.wbca.webcinema.service.accessTokenService.AccessTokenService;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
 import java.io.IOException;
@@ -35,19 +36,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     HandlerExceptionResolver exceptionResolver;
     JwtTokenProvider jwtTokenProvider;
     UserDetailsService userDetailsService;
-    UserRepo userRepo;
-    AccessTokenRepo accessTokenRepo;
+    AccessTokenService accessTokenService;
 
     public JwtAuthenticationFilter(
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
             JwtTokenProvider jwtTokenProvider,
             UserDetailsService userDetailsService,
-            UserRepo userRepo, AccessTokenRepo accessTokenRepo) {
+            AccessTokenService accessTokenService) {
         this.exceptionResolver = exceptionResolver;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
-        this.userRepo = userRepo;
-        this.accessTokenRepo = accessTokenRepo;
+        this.accessTokenService = accessTokenService;
     }
 
     @Override
@@ -69,8 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 System.out.println("User: " + userName + ", Roles: " + userDetails.getAuthorities());
 
-                AccessToken accessToken = accessTokenRepo.findByAccessToken(jwt)
-                        .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+                AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
 
                 if (jwtTokenProvider.isTokenValid(jwt, userDetails)
                         && accessToken.getTokenStatus().equals(TokenStatus.ACTIVE)) {
@@ -79,13 +77,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else if (userRepo.findByEmail(userDetails.getUsername()).isPresent()) {
-                    throw new ExpiredJwtException(null, null, "JWT token is expired.");
                 }
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException | SignatureException | UsernameNotFoundException exception) {
+            if (exception instanceof ExpiredJwtException) setExpired(authToken);
             exceptionResolver.resolveException(request, response, null, exception);
+        }
+    }
+
+    public void setExpired(String authToken) {
+        if (authToken == null || !authToken.startsWith("Bearer ")) {
+            return;
+        }
+        String jwt = authToken.substring(7);
+        AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
+        if (accessToken != null) {
+            accessToken.setTokenStatus(TokenStatus.EXPIRED);
+            accessTokenService.save(accessToken);
         }
     }
 }

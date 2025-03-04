@@ -15,7 +15,7 @@ import vi.wbca.webcinema.enums.TokenStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.AccessToken;
-import vi.wbca.webcinema.repository.AccessTokenRepo;
+import vi.wbca.webcinema.service.accessTokenService.AccessTokenService;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.logging.Logger;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
     private static final Logger logger = Logger.getLogger(LogoutService.class.getName());
-    private final AccessTokenRepo accessTokenRepo;
+    private final AccessTokenService accessTokenService;
 
 
     @SneakyThrows
@@ -41,11 +41,10 @@ public class LogoutService implements LogoutHandler {
         }
         String jwtToken = authHeader.substring(7);
 
-        AccessToken storedToken = accessTokenRepo.findByAccessToken(jwtToken)
-                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+        AccessToken storedToken = accessTokenService.findByAccessToken(jwtToken);
 
         storedToken.setTokenStatus(TokenStatus.REVOKED);
-        accessTokenRepo.save(storedToken);
+        accessTokenService.save(storedToken);
 
         ResponseEntity<ResponseObject> logoutResponse = ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Logout successfully.", "")
