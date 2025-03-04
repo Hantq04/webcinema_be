@@ -31,6 +31,7 @@ public class AccountService {
     private final UserStatusRepo userStatusRepo;
     private final PasswordEncoder passwordEncoder;
     private final String generateOTP = GenerateOTP.generateOTP();
+
     @Value("${application.email.verify-expiration}")
     private long expiredTime;
 
