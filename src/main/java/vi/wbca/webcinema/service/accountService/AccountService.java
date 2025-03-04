@@ -105,7 +105,7 @@ public class AccountService {
     }
 
     public String sendChangePassword(String email) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Email Verification";
+        String subject = "Email Change Password";
         String content = EmailUtils.getChangePasswordMessage(generateOTP);
         emailService.sendMail(email, subject, content);
         User user = userRepo.findByEmail(email)
