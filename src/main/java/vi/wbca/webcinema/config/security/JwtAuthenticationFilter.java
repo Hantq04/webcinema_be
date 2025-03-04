@@ -19,6 +19,11 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.exception.AppException;
+import vi.wbca.webcinema.exception.ErrorCode;
+import vi.wbca.webcinema.model.AccessToken;
+import vi.wbca.webcinema.repository.AccessTokenRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
@@ -31,16 +36,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtTokenProvider jwtTokenProvider;
     UserDetailsService userDetailsService;
     UserRepo userRepo;
+    AccessTokenRepo accessTokenRepo;
 
     public JwtAuthenticationFilter(
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
             JwtTokenProvider jwtTokenProvider,
             UserDetailsService userDetailsService,
-            UserRepo userRepo) {
+            UserRepo userRepo, AccessTokenRepo accessTokenRepo) {
         this.exceptionResolver = exceptionResolver;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
         this.userRepo = userRepo;
+        this.accessTokenRepo = accessTokenRepo;
     }
 
     @Override
@@ -62,9 +69,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 System.out.println("User: " + userName + ", Roles: " + userDetails.getAuthorities());
 
-                if (jwtTokenProvider.isTokenValid(jwt, userDetails)) {
+                AccessToken accessToken = accessTokenRepo.findByAccessToken(jwt)
+                        .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+
+                if (jwtTokenProvider.isTokenValid(jwt, userDetails)
+                        && accessToken.getTokenStatus().equals(TokenStatus.ACTIVE)) {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else if (userRepo.findByEmail(userDetails.getUsername()).isPresent()) {
