@@ -54,7 +54,7 @@ public class UserDTO {
     @NotEmpty(message = "NOT_EMPTY", groups = {InsertUser.class, UpdateUser.class})
     List<String> listRoles;
 
-    String token;
+    String accessToken;
 
     List<Role> roleNames;
 }
