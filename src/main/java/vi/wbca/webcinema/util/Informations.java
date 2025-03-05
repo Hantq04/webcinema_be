@@ -24,4 +24,5 @@ public class Informations {
     public static final String TYPE = "type";
     public static final String NUMBER = "number";
     public static final String LINE = "line";
+    public static final String TOKEN = "token";
 }
