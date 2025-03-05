@@ -123,6 +123,8 @@ public class UserServiceImpl implements UserService {
 
             accessTokenService.insertAccessToken(user, jwt);
             refreshTokenService.insertRefreshToken(user);
+
+            response.setRefreshToken(refreshTokenService.getRefreshToken(user));
             return response;
         } catch (BadCredentialsException ex) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
