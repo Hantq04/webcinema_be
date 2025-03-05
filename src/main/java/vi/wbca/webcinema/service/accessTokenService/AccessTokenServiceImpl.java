@@ -11,6 +11,7 @@ import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.repository.AccessTokenRepo;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +45,14 @@ public class AccessTokenServiceImpl implements AccessTokenService{
     public AccessToken findByAccessToken(String token) {
         return accessTokenRepo.findByAccessToken(token)
                 .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+    }
+
+    @Override
+    public void revokeAllUserTokens(User user) {
+        List<AccessToken> validTokens = accessTokenRepo.findAllByUserAndTokenStatus(user, TokenStatus.ACTIVE);
+        if (!validTokens.isEmpty()) {
+            validTokens.forEach(token -> token.setTokenStatus(TokenStatus.REVOKED));
+            accessTokenRepo.saveAll(validTokens);
+        }
     }
 }
