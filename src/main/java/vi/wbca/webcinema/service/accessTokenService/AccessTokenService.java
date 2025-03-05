@@ -11,4 +11,6 @@ public interface AccessTokenService {
     void deleteAccessToken(AccessToken accessToken);
 
     AccessToken findByAccessToken(String token);
+
+    void revokeAllUserTokens(User user);
 }
