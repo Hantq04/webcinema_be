@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import vi.wbca.webcinema.dto.TokenDTO;
 import vi.wbca.webcinema.dto.UserDTO;
 import vi.wbca.webcinema.groupValidate.user.DeleteUser;
 import vi.wbca.webcinema.groupValidate.user.InsertUser;
@@ -14,6 +15,7 @@ import vi.wbca.webcinema.groupValidate.user.LoginUser;
 import vi.wbca.webcinema.groupValidate.user.UpdateUser;
 import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.service.accountService.AccountService;
+import vi.wbca.webcinema.service.refreshTokenService.RefreshTokenService;
 import vi.wbca.webcinema.service.userService.UserService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -31,6 +33,7 @@ public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
     private final UserService userService;
     private final AccountService accountService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
@@ -130,6 +133,20 @@ public class UserController {
         String responseData = accountService.changePassword(token, newPassword, confirmPassword);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Change password successfully.", responseData)
+        );
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ResponseObject> refreshToken(@Valid @RequestParam String refreshToken) {
+
+        logger.info("----------Web Cinema: Refresh Token----------");
+
+        TokenDTO responseData = refreshTokenService.refreshToken(refreshToken);
+        String message = responseData.isNewToken()
+                ? "Refresh token successfully." : "Token is still valid.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 
