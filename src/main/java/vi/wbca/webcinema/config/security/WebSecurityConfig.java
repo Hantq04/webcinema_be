@@ -36,7 +36,8 @@ public class WebSecurityConfig {
             "/api/v1/room/**",
             "/api/v1/seat/**",
             "/api/v1/seat-status/**",
-            "/api/v1/seat-type/**"
+            "/api/v1/seat-type/**",
+            "/api/v1/food/**"
     };
 
     @Bean
