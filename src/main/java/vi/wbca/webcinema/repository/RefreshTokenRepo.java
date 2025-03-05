@@ -5,11 +5,12 @@ import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.RefreshToken;
 import vi.wbca.webcinema.model.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface RefreshTokenRepo extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByToken(String token);
+    Optional<RefreshToken> findFirstByToken(String token);
 
     Optional<RefreshToken> findByUser(User user);
 }
