@@ -24,8 +24,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final AccessTokenRepo accessTokenRepo;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${application.jwt.refresh-token.expiration}")
+    @Value("${application.jwt.expiration}")
     private long expiredTime;
+
+    @Value("${application.jwt.refresh-token.expiration}")
+    private long refTokenExpiredTime;
 
     @Override
     public void insertRefreshToken(User user) {
@@ -33,7 +36,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         RefreshToken refreshToken = refreshTokenRepo.findByUser(user)
                 .orElse(new RefreshToken());
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setExpiredTime(new Date(System.currentTimeMillis() + expiredTime));
+        refreshToken.setExpiredTime(new Date(System.currentTimeMillis() + refTokenExpiredTime));
         refreshToken.setUser(user);
         refreshTokenRepo.save(refreshToken);
     }
@@ -46,25 +49,28 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     @Override
     public TokenDTO refreshToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepo.findByToken(token)
+        RefreshToken refreshToken = refreshTokenRepo.findFirstByToken(token)
                 .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
-        AccessToken accessToken = accessTokenRepo.findByUser(refreshToken.getUser())
+        AccessToken accessToken = accessTokenRepo.findLatestByUser(refreshToken.getUser().getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        // Check access token expired time
-        if (accessToken.getExpiredAt().before(new Date()) && accessToken.getTokenStatus().equals(TokenStatus.EXPIRED)) {
-            String newAccessToken = jwtTokenProvider.generateToken(accessToken.getUser());
-            accessToken.setAccessToken(newAccessToken);
-        } else throw new AppException(ErrorCode.TOKEN_STILL_VALID);
-
-        // Check refresh token expired time
         if (refreshToken.getExpiredTime().before(new Date())) {
-            refreshToken.setToken(UUID.randomUUID().toString());
-            refreshToken.setExpiredTime(new Date(System.currentTimeMillis() + expiredTime));
-        } else throw new AppException(ErrorCode.TOKEN_STILL_VALID);
+            throw new AppException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        }
+        TokenDTO response = new TokenDTO();
+        response.setAccessToken(accessToken.getAccessToken());
+        response.setRefreshToken(refreshToken.getToken());
 
-        accessTokenRepo.save(accessToken);
-        refreshTokenRepo.save(refreshToken);
-        return new TokenDTO(accessToken.getAccessToken(), refreshToken.getToken());
+        boolean isExpired = accessToken.getExpiredAt().before(new Date());
+
+        if (isExpired) {
+            String newAccessToken = jwtTokenProvider.generateToken(accessToken.getUser());
+            accessToken.setTokenStatus(TokenStatus.ACTIVE);
+            accessToken.setAccessToken(newAccessToken);
+            accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
+            accessTokenRepo.save(accessToken);
+            response.setAccessToken(newAccessToken);
+        }
+        response.setNewToken(isExpired);
+        return response;
     }
 }
