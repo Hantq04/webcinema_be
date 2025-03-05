@@ -56,5 +56,7 @@ public class UserDTO {
 
     String accessToken;
 
+    String refreshToken;
+
     List<Role> roleNames;
 }

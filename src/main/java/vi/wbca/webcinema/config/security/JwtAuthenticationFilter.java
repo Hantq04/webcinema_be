@@ -20,11 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import vi.wbca.webcinema.enums.TokenStatus;
-import vi.wbca.webcinema.exception.AppException;
-import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.AccessToken;
-import vi.wbca.webcinema.repository.AccessTokenRepo;
-import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.service.accessTokenService.AccessTokenService;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
