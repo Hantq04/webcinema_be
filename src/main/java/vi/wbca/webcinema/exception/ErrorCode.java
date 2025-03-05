@@ -15,6 +15,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1102, "You don't have permission.", HttpStatus.FORBIDDEN),
     INVALID_SIGNATURE(1103, "Invalid JWT signature.", HttpStatus.FORBIDDEN),
     EXPIRED_TOKEN(1104, "JWT token is already expired.", HttpStatus.FORBIDDEN),
+    EXPIRED_REFRESH_TOKEN(1105, "Refresh token is already expired. Please login again.", HttpStatus.FORBIDDEN),
 
     // Throw Exception, code 12**
     USERNAME_EXISTED(1200, "Username is already existed.", HttpStatus.BAD_REQUEST),
@@ -38,7 +39,6 @@ public enum ErrorCode {
     TYPE_NOT_FOUND(1218, "Type not found.", HttpStatus.BAD_REQUEST),
     AUTH_TOKEN_EXCEPTION(1219, "Authorization header is missing or invalid.", HttpStatus.BAD_REQUEST),
     TOKEN_NOT_FOUND(1220, "Token not found.", HttpStatus.BAD_REQUEST),
-    TOKEN_STILL_VALID(1221, "Token is still valid, no need to issue a new one.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

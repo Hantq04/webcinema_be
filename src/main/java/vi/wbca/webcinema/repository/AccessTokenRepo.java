@@ -1,6 +1,8 @@
 package vi.wbca.webcinema.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.enums.TokenStatus;
 import vi.wbca.webcinema.model.AccessToken;
@@ -13,7 +15,14 @@ import java.util.Optional;
 public interface AccessTokenRepo extends JpaRepository<AccessToken, Long> {
     Optional<AccessToken> findByAccessToken(String token);
 
-    List<AccessToken> findAllByUserAndTokenStatus(User user, TokenStatus active);
+    List<AccessToken> findAllByUserAndTokenStatus(User user, TokenStatus tokenStatus);
 
-    Optional<AccessToken> findByUser(User user);
+    @Query(value = """
+            SELECT * FROM access_tokens
+            WHERE user_id = :userId
+            AND token_status IN ('ACTIVE', 'EXPIRED')
+            ORDER BY FIELD(token_status, 'ACTIVE', 'EXPIRED'), expired_at DESC
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<AccessToken> findLatestByUser(@Param("userId") Long userId);
 }
