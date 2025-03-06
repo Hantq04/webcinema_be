@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.controller;
+package vi.wbca.webcinema.controller.seat;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
