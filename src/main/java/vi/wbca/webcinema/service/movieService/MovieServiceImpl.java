@@ -8,8 +8,10 @@ import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.MovieMapper;
 import vi.wbca.webcinema.model.Movie;
 import vi.wbca.webcinema.model.MovieType;
+import vi.wbca.webcinema.model.Rate;
 import vi.wbca.webcinema.repository.MovieRepo;
 import vi.wbca.webcinema.repository.MovieTypeRepo;
+import vi.wbca.webcinema.repository.RateRepo;
 
 import java.util.Calendar;
 
@@ -19,19 +21,19 @@ public class MovieServiceImpl implements MovieService{
     private final MovieRepo movieRepo;
     private final MovieMapper movieMapper;
     private final MovieTypeRepo movieTypeRepo;
+    private final RateRepo rateRepo;
 
     @Override
     public MovieDTO insertMovie(MovieDTO movieDTO) {
         Movie movie = movieMapper.toMovie(movieDTO);
-        MovieType movieType = movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
-                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(movie.getPremiereDate());
         calendar.add(Calendar.DAY_OF_MONTH, 30);
         movie.setEndTime(calendar.getTime());
         movie.setActive(true);
-        movie.setMovieType(movieType);
+        movie.setMovieType(setType(movieDTO));
+        movie.setRate(setRate(movieDTO));
 
         movieRepo.save(movie);
         return movieMapper.toMovieDTO(movie);
@@ -41,8 +43,6 @@ public class MovieServiceImpl implements MovieService{
     public void updateMovie(MovieDTO movieDTO) {
         Movie movie = movieRepo.findByName(movieDTO.getName())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-        MovieType movieType = movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
-                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
         movie.setMovieDuration(movieDTO.getMovieDuration());
         movie.setDescription(movieDTO.getDescription());
@@ -51,9 +51,20 @@ public class MovieServiceImpl implements MovieService{
         movie.setHeroImage(movieDTO.getHeroImage());
         movie.setLanguage(movieDTO.getLanguage());
         movie.setTrailer(movieDTO.getTrailer());
-        movie.setMovieType(movieType);
+        movie.setMovieType(setType(movieDTO));
+        movie.setRate(setRate(movieDTO));
 
         movieRepo.save(movie);
+    }
+
+    public MovieType setType(MovieDTO movieDTO) {
+        return movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
+                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
+    }
+
+    public Rate setRate(MovieDTO movieDTO) {
+        return rateRepo.findByCode(movieDTO.getCode())
+                .orElseThrow(() -> new AppException(ErrorCode.RATE_NOT_FOUND));
     }
 
     @Override
