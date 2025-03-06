@@ -1,10 +1,7 @@
 package vi.wbca.webcinema.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -26,7 +23,10 @@ public class FoodDTO {
     String description;
 
     @NotBlank(message = "NOT_BLANK")
-    @Size(min = 4, max = 30, message = "INVALID_IMAGE")
+    @Pattern(
+            regexp = "^(?:[a-zA-Z]:\\\\|/)?(?:[^\\/:*?\"<>|]+[/\\\\])*[^\\/:*?\"<>|]+\\.(jpg|jpeg|png|gif|bmp)$",
+            message = "INVALID_IMAGE_PATH"
+    )
     String image;
 
     @NotBlank(message = "NOT_BLANK")
