@@ -26,4 +26,9 @@ public class Informations {
     public static final String LINE = "line";
     public static final String PRICE = "price";
     public static final String IMAGE = "image";
+    public static final String HERO_IMAGE = "hero_image";
+    public static final String TRAILER = "trailer";
+    public static final String LANGUAGE = "language";
+    public static final String DURATION = "duration";
+    public static final String DIRECTOR = "director";
 }

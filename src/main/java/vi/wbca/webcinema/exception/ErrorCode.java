@@ -60,8 +60,11 @@ public enum ErrorCode {
     INVALID_CAPACITY(1316, "The capacity must be between 50 and 400 seats.", HttpStatus.BAD_REQUEST),
     INVALID_LINE(1317, "Line must be a letter from A to Z.", HttpStatus.BAD_REQUEST),
     INVALID_NUMBER_SEAT(1318, "Seat number must be between 1 and 20.", HttpStatus.BAD_REQUEST),
-    INVALID_IMAGE(1319, "Image must be at least 4 characters.", HttpStatus.BAD_REQUEST),
-    INVALID_PRICE(1320, "Price must be greater than 1000 VND.", HttpStatus.BAD_REQUEST)
+    INVALID_IMAGE_PATH(1319, "Invalid image path. Please provide a valid local image file (jpg, jpeg, png, gif, bmp).", HttpStatus.BAD_REQUEST),
+    INVALID_PRICE(1320, "Price must be greater than 1000 VND.", HttpStatus.BAD_REQUEST),
+    INVALID_DIRECTOR(1321, "Director name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
+    INVALID_LANGUAGE(1322, "Language must be at least 3 characters.", HttpStatus.BAD_REQUEST),
+    INVALID_TRAILER_FORM(1323, "The trailer link is invalid.", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
