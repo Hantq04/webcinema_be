@@ -1,7 +1,6 @@
-package vi.wbca.webcinema.controller;
+package vi.wbca.webcinema.controller.cinema;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +9,6 @@ import vi.wbca.webcinema.dto.CinemaDTO;
 import vi.wbca.webcinema.groupValidate.cinema.DeleteCinema;
 import vi.wbca.webcinema.groupValidate.cinema.InsertCinema;
 import vi.wbca.webcinema.groupValidate.cinema.UpdateCinema;
-import vi.wbca.webcinema.model.Cinema;
 import vi.wbca.webcinema.service.cinemaService.CinemaService;
 import vi.wbca.webcinema.util.Informations;
 import vi.wbca.webcinema.util.response.ResponseObject;

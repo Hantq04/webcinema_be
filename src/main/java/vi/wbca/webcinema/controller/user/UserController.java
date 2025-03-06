@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.controller;
+package vi.wbca.webcinema.controller.user;
 
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
