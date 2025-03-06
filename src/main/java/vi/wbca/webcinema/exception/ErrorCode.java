@@ -39,6 +39,8 @@ public enum ErrorCode {
     TYPE_NOT_FOUND(1218, "Type not found.", HttpStatus.BAD_REQUEST),
     AUTH_TOKEN_EXCEPTION(1219, "Authorization header is missing or invalid.", HttpStatus.BAD_REQUEST),
     TOKEN_NOT_FOUND(1220, "Token not found.", HttpStatus.BAD_REQUEST),
+    RATE_NOT_FOUND(1221, "Rate not found.", HttpStatus.BAD_REQUEST),
+    SCHEDULE_NOT_FOUND(1222, "Schedule not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

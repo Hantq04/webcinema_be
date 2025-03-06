@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.URL;
-import vi.wbca.webcinema.repository.MovieTypeRepo;
 
 import java.util.Date;
 
@@ -28,6 +27,7 @@ public class MovieDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date endTime;
 
+    @NotNull(message = "NOT_NULL")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date premiereDate;
 
@@ -66,4 +66,6 @@ public class MovieDTO {
     String trailer;
 
     String movieTypeName;
+
+    String code;
 }

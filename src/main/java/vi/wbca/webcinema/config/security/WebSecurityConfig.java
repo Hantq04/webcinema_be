@@ -39,7 +39,8 @@ public class WebSecurityConfig {
             "/api/v1/seat-type/**",
             "/api/v1/food/**",
             "/api/v1/movie/**",
-            "/api/v1/movie-type/**"
+            "/api/v1/movie-type/**",
+            "/api/v1/rate/**"
     };
 
     @Bean
