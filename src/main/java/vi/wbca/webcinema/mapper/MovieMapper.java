@@ -12,5 +12,6 @@ public interface MovieMapper {
     Movie toMovie(MovieDTO movieDTO);
 
     @Mapping(target = "movieTypeName", source = "movie.movieType.movieTypeName")
+    @Mapping(target = "code", source = "movie.rate.code")
     MovieDTO toMovieDTO(Movie movie);
 }
