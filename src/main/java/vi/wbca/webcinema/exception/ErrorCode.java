@@ -43,6 +43,7 @@ public enum ErrorCode {
     SCHEDULE_NOT_FOUND(1222, "Schedule not found.", HttpStatus.BAD_REQUEST),
     ROOM_NOT_FOUND(1223,"Room not found.", HttpStatus.BAD_REQUEST),
     SEAT_NOT_FOUND(1224, "Seat not found.", HttpStatus.BAD_REQUEST),
+    DUPLICATE_SHOWTIME(1225, "The room already has a scheduled showtime at this time.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
