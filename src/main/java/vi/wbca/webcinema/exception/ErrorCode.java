@@ -42,6 +42,7 @@ public enum ErrorCode {
     RATE_NOT_FOUND(1221, "Rate not found.", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_FOUND(1222, "Schedule not found.", HttpStatus.BAD_REQUEST),
     ROOM_NOT_FOUND(1223,"Room not found.", HttpStatus.BAD_REQUEST),
+    SEAT_NOT_FOUND(1224, "Seat not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -68,7 +69,8 @@ public enum ErrorCode {
     INVALID_DIRECTOR(1321, "Director name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_LANGUAGE(1322, "Language must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_TRAILER_FORM(1323, "The trailer link is invalid.", HttpStatus.BAD_REQUEST),
-    INVALID_SHOW_TIME(1324, "Invalid show time.", HttpStatus.BAD_REQUEST);
+    INVALID_SHOW_TIME(1324, "Invalid show time.", HttpStatus.BAD_REQUEST),
+    INVALID_SEAT(1325, "Invalid seat.", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
