@@ -28,6 +28,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleDTO insertSchedule(ScheduleDTO scheduleDTO) {
+        Room room = setRoom(scheduleDTO);
+
+        if (scheduleRepo.existsByRoomAndStartAt(room, scheduleDTO.getStartAt())) {
+            throw new AppException(ErrorCode.DUPLICATE_SHOWTIME);
+        }
+
         Schedule schedule = scheduleMapper.toSchedule(scheduleDTO);
         Movie movie = setMovie(scheduleDTO);
 
@@ -36,12 +42,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         calendar.add(Calendar.MINUTE, movie.getMovieDuration());
 
         setName(schedule);
-        schedule.setPrice(discountedPrice(schedule, scheduleDTO.getSeatTypeId()));
+        schedule.setPrice(calculateFinalPrice(schedule, scheduleDTO.getSeatTypeId()));
         schedule.setEndAt(calendar.getTime());
         schedule.setCode(GenerateCode.generateCode());
         schedule.setActive(true);
         schedule.setMovie(movie);
-        schedule.setRoom(setRoom(scheduleDTO));
+        schedule.setRoom(room);
 
         scheduleRepo.save(schedule);
         return scheduleMapper.toScheduleDTO(schedule);
@@ -60,6 +66,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         calendar.setTime(schedule.getStartAt());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
+        // Automatically set name based on showtime
         if (hour >= 7 && hour < 11) schedule.setName(ShowTime.MORNING.toString());
         else if (hour >= 11 && hour < 14) schedule.setName(ShowTime.NOON.toString());
         else if (hour >= 14 && hour < 17) schedule.setName(ShowTime.AFTERNOON.toString());
@@ -67,10 +74,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         else schedule.setName(ShowTime.LATE_NIGHT.toString());
     }
 
-    public Double discountedPrice(Schedule schedule, int seatTypeId) {
+    public Double calculateFinalPrice(Schedule schedule, int seatTypeId) {
         double basePrice = getSeatPrice(seatTypeId);
         String showTimeName = schedule.getName();
+
         double discount = switch (showTimeName) {
+            // The price is discounted based on the showtime
             case "MORNING" -> 0.20;
             case "NOON" -> 0.15;
             case "AFTERNOON" -> 0.10;
@@ -78,7 +87,16 @@ public class ScheduleServiceImpl implements ScheduleService {
             case "LATE_NIGHT" -> 0.25;
             default -> throw new AppException(ErrorCode.INVALID_SHOW_TIME);
         };
-        return basePrice * (1 - discount);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(schedule.getStartAt());
+        int week = calendar.get(Calendar.DAY_OF_WEEK);
+
+        if (week == Calendar.SATURDAY || week == Calendar.SUNDAY) {
+            // The price increases by 10% on weekends
+            basePrice *= 1.2;
+        }
+        return (int) basePrice * (1 - discount);
     }
 
     public Double getSeatPrice(int seatTypeId) {
