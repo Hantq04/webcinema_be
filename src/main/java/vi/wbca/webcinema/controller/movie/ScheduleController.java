@@ -4,10 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.ScheduleDTO;
+import vi.wbca.webcinema.groupValidate.schedule.InsertSchedule;
+import vi.wbca.webcinema.groupValidate.schedule.UpdateSchedule;
 import vi.wbca.webcinema.service.scheduleService.ScheduleService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -22,7 +25,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/insert")
-    public ResponseEntity<ResponseObject> insertSchedule(@Valid @RequestBody ScheduleDTO request) {
+    public ResponseEntity<ResponseObject> insertSchedule(@Validated(InsertSchedule.class) @RequestBody ScheduleDTO request) {
 
         logger.info("----------Web Cinema: Insert New Schedule----------");
 
@@ -33,29 +36,29 @@ public class ScheduleController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseObject> updateSchedule(@Valid @RequestBody ScheduleDTO request) {
+    public ResponseEntity<ResponseObject> updateSchedule(@Validated(UpdateSchedule.class) @RequestBody ScheduleDTO request) {
 
         logger.info("----------Web Cinema: Update Schedule----------");
 
         scheduleService.updateSchedule(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.PRICE, request.getPrice().toString());
-        responseData.put(Informations.START_TIME, request.getStartAt().toString());
-        responseData.put(Informations.END_TIME, request.getEndAt().toString());
-        responseData.put(Informations.CODE, request.getCode());
-        responseData.put(Informations.NAME, request.getName());
+        responseData.put(Constants.PRICE, request.getPrice().toString());
+        responseData.put(Constants.START_TIME, request.getStartAt().toString());
+        responseData.put(Constants.END_TIME, request.getEndAt().toString());
+        responseData.put(Constants.CODE, request.getCode());
+        responseData.put(Constants.NAME, request.getName());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated schedule successfully.", responseData)
         );
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseObject> deleteSchedule(@Valid @RequestBody String name, Long movieId) {
+    public ResponseEntity<ResponseObject> deleteSchedule(@Valid @RequestParam String code, Long movieId) {
 
         logger.info("----------Web Cinema: Delete Schedule----------");
 
-        scheduleService.deleteSchedule(name, movieId);
+        scheduleService.deleteSchedule(code, movieId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted schedule successfully.", "")
         );
