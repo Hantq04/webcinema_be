@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.RankCustomer;
 import vi.wbca.webcinema.service.rankCustomerService.RankCustomerService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -24,9 +24,9 @@ public class RankCustomerController {
         rankCustomerService.insertRank(rankCustomer);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.POINT, rankCustomer.getPoint().toString());
-        responseData.put(Informations.NAME, rankCustomer.getName());
-        responseData.put(Informations.DESCRIPTION, rankCustomer.getDescription());
+        responseData.put(Constants.POINT, rankCustomer.getPoint().toString());
+        responseData.put(Constants.NAME, rankCustomer.getName());
+        responseData.put(Constants.DESCRIPTION, rankCustomer.getDescription());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Rank insert successfully.", responseData)

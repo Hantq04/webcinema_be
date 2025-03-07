@@ -10,7 +10,7 @@ import vi.wbca.webcinema.groupValidate.cinema.DeleteCinema;
 import vi.wbca.webcinema.groupValidate.cinema.InsertCinema;
 import vi.wbca.webcinema.groupValidate.cinema.UpdateCinema;
 import vi.wbca.webcinema.service.cinemaService.CinemaService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -43,10 +43,10 @@ public class CinemaController {
         cinemaService.updateCinema(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.CODE, request.getCode());
-        responseData.put(Informations.NAME, request.getNameOfCinema());
-        responseData.put(Informations.ADDRESS, request.getAddress());
-        responseData.put(Informations.DESCRIPTION, request.getDescription());
+        responseData.put(Constants.CODE, request.getCode());
+        responseData.put(Constants.NAME, request.getNameOfCinema());
+        responseData.put(Constants.ADDRESS, request.getAddress());
+        responseData.put(Constants.DESCRIPTION, request.getDescription());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated cinema successfully.", responseData)

@@ -26,7 +26,7 @@ import vi.wbca.webcinema.repository.UserStatusRepo;
 import vi.wbca.webcinema.service.accessTokenService.AccessTokenService;
 import vi.wbca.webcinema.service.accountService.AccountService;
 import vi.wbca.webcinema.service.refreshTokenService.RefreshTokenService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
 import java.io.UnsupportedEncodingException;
@@ -85,13 +85,13 @@ public class UserServiceImpl implements UserService {
 
     public void addRole(String role, User user) {
         switch (role) {
-            case Informations.ADMIN -> roleRepo.save(Role.builder()
-                    .roleName(Informations.ROLE_ADMIN_NAME)
-                    .code(Informations.ADMIN)
+            case Constants.ADMIN -> roleRepo.save(Role.builder()
+                    .roleName(Constants.ROLE_ADMIN_NAME)
+                    .code(Constants.ADMIN)
                     .user(user).build());
-            case Informations.USER -> roleRepo.save(Role.builder()
-                    .roleName(Informations.ROLE_USER_NAME)
-                    .code(Informations.USER)
+            case Constants.USER -> roleRepo.save(Role.builder()
+                    .roleName(Constants.ROLE_USER_NAME)
+                    .code(Constants.USER)
                     .user(user).build());
             default -> throw new AppException(ErrorCode.INVALID_ROLE);
         }

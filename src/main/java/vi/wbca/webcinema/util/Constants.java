@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.util;
 
-public class Informations {
+public class Constants {
 
     // Role code
     public static final String ADMIN = "ADMIN";

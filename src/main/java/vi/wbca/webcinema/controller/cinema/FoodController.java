@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.FoodDTO;
 import vi.wbca.webcinema.service.foodService.FoodService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -40,10 +40,10 @@ public class FoodController {
         foodService.updateFood(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.PRICE, request.getPrice().toString());
-        responseData.put(Informations.DESCRIPTION, request.getDescription());
-        responseData.put(Informations.IMAGE, request.getImage());
-        responseData.put(Informations.NAME, request.getNameOfFood());
+        responseData.put(Constants.PRICE, request.getPrice().toString());
+        responseData.put(Constants.DESCRIPTION, request.getDescription());
+        responseData.put(Constants.IMAGE, request.getImage());
+        responseData.put(Constants.NAME, request.getNameOfFood());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated food successfully.", responseData)
         );

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.RoomDTO;
 import vi.wbca.webcinema.service.roomService.RoomService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -40,11 +40,11 @@ public class RoomController {
         roomService.updateRoom(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.CODE, request.getCode());
-        responseData.put(Informations.NAME, request.getName());
-        responseData.put(Informations.DESCRIPTION, request.getDescription());
-        responseData.put(Informations.CAPACITY, request.getCapacity().toString());
-        responseData.put(Informations.TYPE, request.getType().toString());
+        responseData.put(Constants.CODE, request.getCode());
+        responseData.put(Constants.NAME, request.getName());
+        responseData.put(Constants.DESCRIPTION, request.getDescription());
+        responseData.put(Constants.CAPACITY, request.getCapacity().toString());
+        responseData.put(Constants.TYPE, request.getType().toString());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated room successfully.", responseData)

@@ -17,7 +17,7 @@ import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.service.accountService.AccountService;
 import vi.wbca.webcinema.service.refreshTokenService.RefreshTokenService;
 import vi.wbca.webcinema.service.userService.UserService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.io.UnsupportedEncodingException;
@@ -43,9 +43,9 @@ public class UserController {
         userService.register(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.USER_NAME, request.getUserName());
-        responseData.put(Informations.EMAIL, request.getEmail());
-        responseData.put(Informations.LIST_ROLE, request.getListRoles().toString());
+        responseData.put(Constants.USER_NAME, request.getUserName());
+        responseData.put(Constants.EMAIL, request.getEmail());
+        responseData.put(Constants.LIST_ROLE, request.getListRoles().toString());
 
         String message = "User registered successfully. Please check your email to get your OTP for verification.";
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -93,10 +93,10 @@ public class UserController {
 
         userService.updateUser(request);
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.USER_NAME, request.getUserName());
-        responseData.put(Informations.EMAIL, request.getEmail());
-        responseData.put(Informations.PHONE_NUMBER, request.getPhoneNumber());
-        responseData.put(Informations.LIST_ROLE, request.getListRoles().toString());
+        responseData.put(Constants.USER_NAME, request.getUserName());
+        responseData.put(Constants.EMAIL, request.getEmail());
+        responseData.put(Constants.PHONE_NUMBER, request.getPhoneNumber());
+        responseData.put(Constants.LIST_ROLE, request.getListRoles().toString());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User updated successfully.", responseData)

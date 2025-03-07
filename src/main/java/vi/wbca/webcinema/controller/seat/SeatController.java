@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.SeatDTO;
 import vi.wbca.webcinema.service.seatService.SeatService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -40,8 +40,8 @@ public class SeatController {
         seatService.updateSeat(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.LINE, request.getLine());
-        responseData.put(Informations.NUMBER, request.getNumber().toString());
+        responseData.put(Constants.LINE, request.getLine());
+        responseData.put(Constants.NUMBER, request.getNumber().toString());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated seat successfully.", responseData)
         );

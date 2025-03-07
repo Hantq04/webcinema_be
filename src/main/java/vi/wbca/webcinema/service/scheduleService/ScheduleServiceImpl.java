@@ -3,6 +3,7 @@ package vi.wbca.webcinema.service.scheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.ScheduleDTO;
+import vi.wbca.webcinema.enums.ESeatType;
 import vi.wbca.webcinema.enums.ShowTime;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
@@ -19,7 +20,7 @@ import java.util.Calendar;
 
 @Service
 @RequiredArgsConstructor
-public class ScheduleServiceImpl implements ScheduleService{
+public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepo scheduleRepo;
     private final ScheduleMapper scheduleMapper;
     private final MovieRepo movieRepo;
@@ -34,22 +35,23 @@ public class ScheduleServiceImpl implements ScheduleService{
         calendar.setTime(schedule.getStartAt());
         calendar.add(Calendar.MINUTE, movie.getMovieDuration());
 
+        setName(schedule);
+        schedule.setPrice(discountedPrice(schedule));
         schedule.setEndAt(calendar.getTime());
         schedule.setCode(GenerateCode.generateCode());
-        setName(schedule);
         schedule.setActive(true);
         schedule.setMovie(movie);
         schedule.setRoom(setRoom(scheduleDTO));
-        scheduleRepo.save(schedule);
 
+        scheduleRepo.save(schedule);
+        System.out.println(ESeatType.STANDARD.getPrice());
         return scheduleMapper.toScheduleDTO(schedule);
     }
 
     @Override
     public void updateSchedule(ScheduleDTO scheduleDTO) {
-        Schedule schedule = scheduleRepo.findByName(scheduleDTO.getName())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-        schedule.setPrice(scheduleDTO.getPrice());
+        Schedule schedule = scheduleRepo.findByCode(scheduleDTO.getCode())
+                .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
         schedule.setStartAt(scheduleDTO.getStartAt());
         scheduleRepo.save(schedule);
     }
@@ -59,17 +61,24 @@ public class ScheduleServiceImpl implements ScheduleService{
         calendar.setTime(schedule.getStartAt());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
-        if (hour >= 8 && hour < 11) {
-            schedule.setName(ShowTime.MORNING.name());
-        } else if (hour >= 11 && hour < 14) {
-            schedule.setName(ShowTime.NOON.name());
-        } else if (hour >= 14 && hour < 17) {
-            schedule.setName(ShowTime.AFTERNOON.name());
-        } else if (hour >= 17 && hour < 22) {
-            schedule.setName(ShowTime.EVENING.name());
-        } else {
-            schedule.setName(ShowTime.LATE_NIGHT.name());
-        }
+        if (hour >= 7 && hour < 11) schedule.setName(ShowTime.MORNING.toString());
+        else if (hour >= 11 && hour < 14) schedule.setName(ShowTime.NOON.toString());
+        else if (hour >= 14 && hour < 17) schedule.setName(ShowTime.AFTERNOON.toString());
+        else if (hour >= 17 && hour < 22) schedule.setName(ShowTime.EVENING.toString());
+        else schedule.setName(ShowTime.LATE_NIGHT.toString());
+    }
+
+    public Double discountedPrice(Schedule schedule) {
+        String showTimeName = schedule.getName();
+        double discount = switch (showTimeName) {
+            case "MORNING" -> 0.20;
+            case "NOON" -> 0.15;
+            case "AFTERNOON" -> 0.10;
+            case "EVENING" -> 0.0;
+            case "LATE_NIGHT" -> 0.25;
+            default -> throw new AppException(ErrorCode.INVALID_SHOW_TIME);
+        };
+        return schedule.getPrice() * (1 - discount);
     }
 
     public Movie setMovie(ScheduleDTO scheduleDTO) {
@@ -83,8 +92,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public void deleteSchedule(String name, Long movieId) {
-        Schedule schedule = scheduleRepo.findByNameAndMovieId(name, movieId)
+    public void deleteSchedule(String code, Long movieId) {
+        Schedule schedule = scheduleRepo.findByCodeAndMovieId(code, movieId)
                 .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
         scheduleRepo.delete(schedule);
     }

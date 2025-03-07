@@ -4,10 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.MovieDTO;
+import vi.wbca.webcinema.groupValidate.movie.InsertMovie;
+import vi.wbca.webcinema.groupValidate.movie.UpdateMovie;
 import vi.wbca.webcinema.service.movieService.MovieService;
-import vi.wbca.webcinema.util.Informations;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
@@ -22,7 +25,7 @@ public class MovieController {
     private final MovieService movieService;
 
     @PostMapping("/insert")
-    public ResponseEntity<ResponseObject> insertMovie(@Valid @RequestBody MovieDTO request) {
+    public ResponseEntity<ResponseObject> insertMovie(@Validated(InsertMovie.class) @RequestBody MovieDTO request) {
 
         logger.info("----------Web Cinema: Insert New Movie----------");
 
@@ -33,21 +36,21 @@ public class MovieController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseObject> updateMovie(@Valid @RequestBody MovieDTO request) {
+    public ResponseEntity<ResponseObject> updateMovie(@Validated(UpdateMovie.class) @RequestBody MovieDTO request) {
 
         logger.info("----------Web Cinema: Update Movie----------");
 
         movieService.updateMovie(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Informations.DURATION, request.getMovieDuration().toString());
-        responseData.put(Informations.DESCRIPTION, request.getDescription());
-        responseData.put(Informations.DIRECTOR, request.getDirector());
-        responseData.put(Informations.IMAGE, request.getImage());
-        responseData.put(Informations.HERO_IMAGE, request.getHeroImage());
-        responseData.put(Informations.LANGUAGE, request.getLanguage());
-        responseData.put(Informations.NAME, request.getName());
-        responseData.put(Informations.TRAILER, request.getTrailer());
+        responseData.put(Constants.DURATION, request.getMovieDuration().toString());
+        responseData.put(Constants.DESCRIPTION, request.getDescription());
+        responseData.put(Constants.DIRECTOR, request.getDirector());
+        responseData.put(Constants.IMAGE, request.getImage());
+        responseData.put(Constants.HERO_IMAGE, request.getHeroImage());
+        responseData.put(Constants.LANGUAGE, request.getLanguage());
+        responseData.put(Constants.NAME, request.getName());
+        responseData.put(Constants.TRAILER, request.getTrailer());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated movie successfully.", responseData)
         );
