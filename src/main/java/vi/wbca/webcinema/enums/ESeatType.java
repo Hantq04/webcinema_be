@@ -8,9 +8,9 @@ import vi.wbca.webcinema.exception.ErrorCode;
 @Getter
 @AllArgsConstructor
 public enum ESeatType {
-    STANDARD(55000),
-    VIP(60000),
-    DELUXE(70000);
+    STANDARD(60000),
+    VIP(70000),
+    DELUXE(80000);
 
     private final double price;
 
