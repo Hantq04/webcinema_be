@@ -32,7 +32,7 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public void updateRoom(RoomDTO request) {
         Room room = roomRepo.findByNameAndCode(request.getName(), request.getCode())
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         room.setCapacity(request.getCapacity());
         room.setDescription(request.getDescription());
         room.setType(request.getType());
