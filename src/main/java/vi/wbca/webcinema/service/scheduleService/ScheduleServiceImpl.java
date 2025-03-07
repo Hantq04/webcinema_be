@@ -36,7 +36,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         calendar.add(Calendar.MINUTE, movie.getMovieDuration());
 
         setName(schedule);
-        schedule.setPrice(discountedPrice(schedule));
+        schedule.setPrice(discountedPrice(schedule, scheduleDTO.getSeatTypeId()));
         schedule.setEndAt(calendar.getTime());
         schedule.setCode(GenerateCode.generateCode());
         schedule.setActive(true);
@@ -44,7 +44,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setRoom(setRoom(scheduleDTO));
 
         scheduleRepo.save(schedule);
-        System.out.println(ESeatType.STANDARD.getPrice());
         return scheduleMapper.toScheduleDTO(schedule);
     }
 
@@ -68,7 +67,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         else schedule.setName(ShowTime.LATE_NIGHT.toString());
     }
 
-    public Double discountedPrice(Schedule schedule) {
+    public Double discountedPrice(Schedule schedule, int seatTypeId) {
+        double basePrice = getSeatPrice(seatTypeId);
         String showTimeName = schedule.getName();
         double discount = switch (showTimeName) {
             case "MORNING" -> 0.20;
@@ -78,7 +78,17 @@ public class ScheduleServiceImpl implements ScheduleService {
             case "LATE_NIGHT" -> 0.25;
             default -> throw new AppException(ErrorCode.INVALID_SHOW_TIME);
         };
-        return schedule.getPrice() * (1 - discount);
+        return basePrice * (1 - discount);
+    }
+
+    public Double getSeatPrice(int seatTypeId) {
+        String seatTypeName = switch (seatTypeId) {
+            case 1 -> "STANDARD";
+            case 2 -> "VIP";
+            case 3 -> "DELUXE";
+            default -> throw new AppException(ErrorCode.INVALID_SEAT);
+        };
+        return ESeatType.getPriceByType(seatTypeName);
     }
 
     public Movie setMovie(ScheduleDTO scheduleDTO) {

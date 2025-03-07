@@ -3,7 +3,6 @@ package vi.wbca.webcinema.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -18,13 +17,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonIgnoreProperties(value = {"movieName", "roomName", "roomCode"}, allowSetters = true)
+@JsonIgnoreProperties(value = {"movieName", "roomName", "roomCode", "seatTypeId"}, allowSetters = true)
 public class ScheduleDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL", groups = {InsertSchedule.class, UpdateSchedule.class})
-    @Min(value = 1000, message = "INVALID_PRICE")
     Double price;
 
     @NotNull(message = "NOT_NULL", groups = {InsertSchedule.class, UpdateSchedule.class})
@@ -46,4 +43,7 @@ public class ScheduleDTO {
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertSchedule.class})
     String roomCode;
+
+    @NotNull(message = "NOT_NULL", groups = {InsertSchedule.class})
+    int seatTypeId;
 }
