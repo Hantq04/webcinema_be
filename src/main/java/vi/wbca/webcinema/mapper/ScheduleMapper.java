@@ -11,5 +11,6 @@ public interface ScheduleMapper {
     @Mapping(target = "tickets", ignore = true)
     Schedule toSchedule(ScheduleDTO scheduleDTO);
 
+    @Mapping(source = "name", target = "name")
     ScheduleDTO toScheduleDTO(Schedule schedule);
 }

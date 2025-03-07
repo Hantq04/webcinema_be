@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface ScheduleRepo extends JpaRepository<Schedule, Long> {
     Optional<Schedule> findByName(String name);
 
-    Optional<Schedule> findByNameAndMovieId(String name, Long movieId);
+    Optional<Schedule> findByCodeAndMovieId(String code, Long movieId);
+
+    Optional<Schedule> findByCode(String code);
 }
