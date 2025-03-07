@@ -68,7 +68,7 @@ public enum ErrorCode {
     INVALID_DIRECTOR(1321, "Director name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_LANGUAGE(1322, "Language must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_TRAILER_FORM(1323, "The trailer link is invalid.", HttpStatus.BAD_REQUEST),
-    ;
+    INVALID_SHOW_TIME(1324, "Invalid show time.", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
