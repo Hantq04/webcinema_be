@@ -31,4 +31,6 @@ public class Informations {
     public static final String LANGUAGE = "language";
     public static final String DURATION = "duration";
     public static final String DIRECTOR = "director";
+    public static final String START_TIME = "start_time";
+    public static final String END_TIME = "end_time";
 }
