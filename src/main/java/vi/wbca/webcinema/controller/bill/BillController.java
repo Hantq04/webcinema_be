@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.BillDTO;
 import vi.wbca.webcinema.service.billService.BillService;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -29,6 +26,17 @@ public class BillController {
         BillDTO responseData = billService.insertBill(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill successfully.", responseData)
+        );
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String code) {
+
+        logger.info("----------Web Cinema: Delete New Bill----------");
+
+        billService.deleteBill(code);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Deleted bill successfully.", "")
         );
     }
 }
