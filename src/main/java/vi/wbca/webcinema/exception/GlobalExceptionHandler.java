@@ -58,6 +58,9 @@ public class GlobalExceptionHandler {
         } else if (exception instanceof HttpMessageNotReadableException) {
             errorCode = ErrorCode.ENUM_NOT_EXIST;
             log.error("Error exception: JSON parse error");
+        } else if (exception instanceof NullPointerException) {
+            errorCode = ErrorCode.NULL_POINTER;
+            log.error("NullPointerException caught: {}", exception.getMessage());
         }
         else {
             log.error("Unhandled exception: {}", exception.getMessage());

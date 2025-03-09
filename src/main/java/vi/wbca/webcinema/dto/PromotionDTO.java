@@ -28,7 +28,6 @@ public class PromotionDTO {
     @NotNull(message = "NOT_NULL")
     Integer quantity;
 
-    @NotBlank(message = "NOT_BLANK")
     @Enumerated(EnumType.STRING)
     PromotionType promotionType;
 
@@ -45,4 +44,8 @@ public class PromotionDTO {
     @NotBlank(message = "NOT_BLANK")
     @Size(min = 3, max = 20, message = "INVALID_NAME")
     String name;
+
+    @NotBlank(message = "NOT_BLANK")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    String rankCustomer;
 }

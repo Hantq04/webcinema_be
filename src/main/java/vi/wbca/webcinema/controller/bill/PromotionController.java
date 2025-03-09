@@ -32,8 +32,6 @@ public class PromotionController {
         responseData.put(Constants.PERCENT, request.getPercent().toString());
         responseData.put(Constants.QUANTITY, request.getQuantity().toString());
         responseData.put(Constants.TYPE, request.getPromotionType().toString());
-        responseData.put(Constants.START_TIME, request.getStartTime().toString());
-        responseData.put(Constants.END_TIME, request.getEndTime().toString());
         responseData.put(Constants.DESCRIPTION, request.getDescription());
         responseData.put(Constants.NAME, request.getName());
 
@@ -43,7 +41,7 @@ public class PromotionController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestBody String name) {
+    public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestParam String name) {
 
         logger.info("----------Web Cinema: Delete New Promotion----------");
 

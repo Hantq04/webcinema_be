@@ -4,7 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.RankCustomer;
 
+import java.util.Optional;
+
 @Repository
 public interface RankCustomerRepo extends JpaRepository<RankCustomer, Long> {
-    RankCustomer findByName(String name);
+    Optional<RankCustomer> findByName(String name);
 }
