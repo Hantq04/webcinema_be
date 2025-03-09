@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vi.wbca.webcinema.enums.PromotionType;
 
 import java.util.Date;
 import java.util.List;
@@ -26,8 +27,9 @@ public class Promotion {
     @Column(name = "quantity")
     Integer quantity;
 
-    @Column(name = "type")
-    String type;
+    @Column(name = "promotion_type")
+    @Enumerated(EnumType.STRING)
+    PromotionType promotionType;
 
     @Column(name = "start_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
