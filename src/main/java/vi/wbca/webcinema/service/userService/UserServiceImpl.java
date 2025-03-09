@@ -77,8 +77,7 @@ public class UserServiceImpl implements UserService {
             UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.toString());
             user.setUserStatus(userStatus);
         }
-        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRank.STANDARD.toString());
-        user.setRankCustomer(rankCustomer);
+        user.setRankCustomer(setRankCustomer());
         user.setPoint(0);
         userRepo.save(user);
     }
@@ -95,6 +94,11 @@ public class UserServiceImpl implements UserService {
                     .user(user).build());
             default -> throw new AppException(ErrorCode.INVALID_ROLE);
         }
+    }
+
+    public RankCustomer setRankCustomer() {
+        return rankCustomerRepo.findByName(CustomerRank.STANDARD.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 
     @Override
