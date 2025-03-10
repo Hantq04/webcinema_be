@@ -35,4 +35,5 @@ public class Constants {
     public static final String END_TIME = "end_time";
     public static final String PERCENT = "percent";
     public static final String QUANTITY = "quantity";
+    public static final String TITLE = "title";
 }
