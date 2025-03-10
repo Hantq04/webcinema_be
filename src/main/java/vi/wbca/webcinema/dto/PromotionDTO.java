@@ -47,5 +47,5 @@ public class PromotionDTO {
 
     @NotBlank(message = "NOT_BLANK")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    String rankCustomer;
+    String nameRankCustomer;
 }
