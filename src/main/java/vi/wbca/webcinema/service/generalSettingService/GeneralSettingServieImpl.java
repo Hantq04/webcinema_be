@@ -9,7 +9,7 @@ import vi.wbca.webcinema.mapper.GeneralSettingMapper;
 import vi.wbca.webcinema.model.GeneralSetting;
 import vi.wbca.webcinema.repository.GeneralSettingRepo;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +21,15 @@ public class GeneralSettingServieImpl implements GeneralSettingService{
     public GeneralSettingDTO insertSetting(GeneralSettingDTO generalSettingDTO) {
         GeneralSetting generalSetting = generalSettingMapper.toGeneralSetting(generalSettingDTO);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(generalSettingDTO.getOpenTime());
-        calendar.add(Calendar.HOUR_OF_DAY, generalSettingDTO.getBusinessHours());
-        generalSetting.setCloseTime(calendar.getTime());
+        LocalTime breakTime = generalSettingDTO.getBreakTime();
+        generalSetting.setBreakTime(breakTime);
+
+        LocalTime open = generalSettingDTO.getOpenTime();
+        int businessHours = generalSettingDTO.getBusinessHours();
+        LocalTime close = open.plusHours(businessHours);
+
+        generalSetting.setCloseTime(open);
+        generalSetting.setCloseTime(close);
 
         generalSettingRepo.save(generalSetting);
         return generalSettingMapper.toGeneralSettingDTO(generalSetting);
