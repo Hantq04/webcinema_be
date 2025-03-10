@@ -67,7 +67,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
         // Automatically set name based on showtime
-        if (hour >= 7 && hour < 11) schedule.setName(ShowTime.MORNING.toString());
+        if (hour >= 8 && hour < 11) schedule.setName(ShowTime.MORNING.toString());
         else if (hour >= 11 && hour < 14) schedule.setName(ShowTime.NOON.toString());
         else if (hour >= 14 && hour < 17) schedule.setName(ShowTime.AFTERNOON.toString());
         else if (hour >= 17 && hour < 22) schedule.setName(ShowTime.EVENING.toString());
