@@ -6,6 +6,7 @@ import vi.wbca.webcinema.model.Room;
 import vi.wbca.webcinema.model.Schedule;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,6 +16,8 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Long> {
     Optional<Schedule> findByCodeAndMovieId(String code, Long movieId);
 
     Optional<Schedule> findByCode(String code);
+
+    List<Schedule> findAllByEndAtBeforeAndIsActiveTrue(Date now);
 
     boolean existsByRoomAndStartAt(Room room, Date startAt);
 }

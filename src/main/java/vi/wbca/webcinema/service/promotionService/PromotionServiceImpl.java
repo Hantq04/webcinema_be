@@ -41,7 +41,7 @@ public class PromotionServiceImpl implements PromotionService{
     }
 
     public RankCustomer setRankCustomerId(PromotionDTO promotionDTO) {
-        return rankCustomerRepo.findByName(promotionDTO.getRankCustomer())
+        return rankCustomerRepo.findByName(promotionDTO.getNameRankCustomer())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 
