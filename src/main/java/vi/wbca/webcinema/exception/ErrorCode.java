@@ -46,6 +46,7 @@ public enum ErrorCode {
     DUPLICATE_SHOWTIME(1225, "The room already has a scheduled showtime at this time.", HttpStatus.BAD_REQUEST),
     PROMOTION_NOT_FOUND(1226,"Promotion not found.", HttpStatus.BAD_REQUEST),
     NULL_POINTER(1227, "Unexpected null value encountered.", HttpStatus.BAD_REQUEST),
+    TITLE_NOT_FOUND(1228, "Title not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
