@@ -7,8 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.BillDTO;
 import vi.wbca.webcinema.service.billService.BillService;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -19,22 +22,27 @@ public class BillController {
     private final BillService billService;
 
     @PostMapping("/insert")
-    public ResponseEntity<ResponseObject> insertBill(@Valid @RequestBody BillDTO request) {
+    public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
 
         logger.info("----------Web Cinema: Insert New Bill----------");
 
-        BillDTO responseData = billService.insertBill(request);
+        billService.createBill(request);
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put(Constants.USER_NAME, request.getCustomerName());
+        responseData.put(Constants.ORDER, request.getFoods());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill successfully.", responseData)
         );
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String code) {
+    public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String tradingCode) {
 
         logger.info("----------Web Cinema: Delete Bill----------");
 
-        billService.deleteBill(code);
+        billService.deleteBill(tradingCode);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill successfully.", "")
         );

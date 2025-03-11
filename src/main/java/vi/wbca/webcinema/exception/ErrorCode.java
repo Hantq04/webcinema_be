@@ -50,6 +50,7 @@ public enum ErrorCode {
     SETTING_NOT_FOUND(1229, "General setting not found.", HttpStatus.BAD_REQUEST),
     SHOW_TIME_IN_BREAK(1230, "Cannot schedule during break time (e.g., 12:00 to 13:00).", HttpStatus.BAD_REQUEST),
     BILL_NOT_FOUND(1231, "Bill not found.", HttpStatus.BAD_REQUEST),
+    BILL_EXISTED(1232, "Bill is already existed.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
