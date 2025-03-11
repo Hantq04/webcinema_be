@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.BillFoodDTO;
-import vi.wbca.webcinema.model.BillFood;
+import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.service.billFoodService.BillFoodService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -23,14 +23,15 @@ public class BillFoodController {
     private final BillFoodService billFoodService;
 
     @PostMapping("/insert")
-    public ResponseEntity<ResponseObject> insertBillFood(@Valid @RequestBody BillFoodDTO request) {
+    public ResponseEntity<ResponseObject> insertBillFood(@Valid @RequestBody BillFoodDTO request, Bill bill) {
 
         logger.info("----------Web Cinema: Insert New Bill Food----------");
 
-        billFoodService.insertBillFood(request);
+        billFoodService.insertBillFood(request, bill);
 
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.QUANTITY, request.getQuantity().toString());
+        responseData.put(Constants.USER_NAME, request.getCustomerName());
         responseData.put(Constants.NAME, request.getName());
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -39,11 +40,11 @@ public class BillFoodController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseObject> deleteBillFood(@Valid @RequestParam Long id) {
+    public ResponseEntity<ResponseObject> deleteBillFood(@Valid @RequestParam Bill bill) {
 
         logger.info("----------Web Cinema: Delete Bill Food----------");
 
-        billFoodService.deleteBillFood(id);
+        billFoodService.deleteBillFood(bill);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill food successfully.", "")
         );

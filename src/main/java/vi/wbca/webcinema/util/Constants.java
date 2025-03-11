@@ -36,4 +36,5 @@ public class Constants {
     public static final String PERCENT = "percent";
     public static final String QUANTITY = "quantity";
     public static final String TITLE = "title";
+    public static final String ORDER = "list_order";
 }
