@@ -32,7 +32,7 @@ public class BillController {
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String code) {
 
-        logger.info("----------Web Cinema: Delete New Bill----------");
+        logger.info("----------Web Cinema: Delete Bill----------");
 
         billService.deleteBill(code);
         return ResponseEntity.status(HttpStatus.OK).body(
