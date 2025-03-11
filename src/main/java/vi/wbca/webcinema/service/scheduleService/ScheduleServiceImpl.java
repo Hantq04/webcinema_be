@@ -104,12 +104,25 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
 
+        breakTime(schedule, setting);
         // Automatically set name based on showtime
         if (startHour >= 8 && startHour < 11) schedule.setName(ShowTime.MORNING.toString());
         else if (startHour >= 11 && startHour < 14) schedule.setName(ShowTime.NOON.toString());
         else if (startHour >= 14 && startHour < 17) schedule.setName(ShowTime.AFTERNOON.toString());
         else if (startHour >= 17 && startHour < 22) schedule.setName(ShowTime.EVENING.toString());
         else schedule.setName(ShowTime.LATE_NIGHT.toString());
+    }
+
+    public void breakTime(Schedule schedule, GeneralSetting setting) {
+        Date startAt = schedule.getStartAt();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startAt);
+        int startHour = calendar.get(Calendar.HOUR_OF_DAY);
+
+        int breakTime = setting.getBreakTime().getHour();
+        if (startHour == breakTime) {
+            throw new AppException(ErrorCode.SHOW_TIME_IN_BREAK);
+        }
     }
 
     public Double calculateFinalPrice(Schedule schedule, int seatTypeId) {

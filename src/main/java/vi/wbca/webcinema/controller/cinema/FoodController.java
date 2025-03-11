@@ -51,6 +51,9 @@ public class FoodController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseObject> deleteFood(@Valid @RequestParam String name) {
+
+        logger.info("----------Web Cinema: Delete Food----------");
+
         foodService.deleteFood(name);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted food successfully.", "")
