@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/seat-type")
+@RequestMapping("/api/v1/seat/type")
 public class SeatTypeController {
     private static final Logger logger = Logger.getLogger(SeatTypeController.class.getName());
     private final SeatTypeService seatTypeService;
