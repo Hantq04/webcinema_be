@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -13,6 +14,10 @@ import lombok.experimental.FieldDefaults;
 public class BillFoodDTO {
     @NotNull(message = "NOT_NULL")
     Integer quantity;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank(message = "NOT_BLANK")
+    String customerName;
 
     @NotBlank(message = "NOT_BLANK")
     String name;
