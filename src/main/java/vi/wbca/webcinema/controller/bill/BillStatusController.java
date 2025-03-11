@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/bill-status")
+@RequestMapping("/api/v1/bill/status")
 public class BillStatusController {
     private static final Logger logger = Logger.getLogger(BillStatusController.class.getName());
     private final BillStatusService billStatusService;

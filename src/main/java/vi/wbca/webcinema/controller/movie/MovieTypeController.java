@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/movie-type")
+@RequestMapping("/api/v1/movie/type")
 public class MovieTypeController {
     private static final Logger logger = Logger.getLogger(MovieTypeController.class.getName());
     private final MovieTypeService movieTypeService;

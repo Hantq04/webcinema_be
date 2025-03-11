@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,7 @@ public class BillStatus {
     @Column(name = "name")
     String name;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "billStatus")
     List<Bill> bills;
 }

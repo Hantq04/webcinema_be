@@ -43,7 +43,7 @@ public class PromotionController {
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestParam String name) {
 
-        logger.info("----------Web Cinema: Delete New Promotion----------");
+        logger.info("----------Web Cinema: Delete Promotion----------");
 
         promotionService.deletePromotion(name);
         return ResponseEntity.status(HttpStatus.OK).body(

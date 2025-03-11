@@ -32,7 +32,7 @@ public class GeneralSettingController {
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseObject> deleteSetting(@Valid @RequestParam Long id) {
 
-        logger.info("----------Web Cinema: Delete New General Setting----------");
+        logger.info("----------Web Cinema: Delete General Setting----------");
 
         generalSettingService.deleteSetting(id);
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -35,7 +35,7 @@ public class SeatController {
     @PutMapping("/update")
     public ResponseEntity<ResponseObject> updateSeat(@Valid @RequestBody SeatDTO request) {
 
-        logger.info("----------Web Cinema: Insert New Seat----------");
+        logger.info("----------Web Cinema: Update Seat----------");
 
         seatService.updateSeat(request);
 
