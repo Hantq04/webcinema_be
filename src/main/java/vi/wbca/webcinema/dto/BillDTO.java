@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +32,9 @@ public class BillDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date updateTime;
 
+    @NotBlank(message = "NOT_BLANK")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String customerName;
+
+    List<BillFoodDTO> foods;
 }
