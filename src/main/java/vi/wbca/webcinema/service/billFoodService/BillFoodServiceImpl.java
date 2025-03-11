@@ -6,10 +6,13 @@ import vi.wbca.webcinema.dto.BillFoodDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.BillFoodMapper;
+import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.model.BillFood;
 import vi.wbca.webcinema.model.Food;
 import vi.wbca.webcinema.repository.BillFoodRepo;
 import vi.wbca.webcinema.repository.FoodRepo;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +22,11 @@ public class BillFoodServiceImpl implements BillFoodService{
     private final FoodRepo foodRepo;
 
     @Override
-    public void insertBillFood(BillFoodDTO billFoodDTO) {
+    public void insertBillFood(BillFoodDTO billFoodDTO, Bill bill) {
         BillFood billFood = billFoodMapper.toBillFood(billFoodDTO);
         Food food = setFood(billFoodDTO);
 
+        billFood.setBill(bill);
         billFood.setFood(food);
         billFoodRepo.save(billFood);
     }
@@ -33,9 +37,8 @@ public class BillFoodServiceImpl implements BillFoodService{
     }
 
     @Override
-    public void deleteBillFood(Long id) {
-        BillFood billFood = billFoodRepo.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BILL_NOT_FOUND));
-        billFoodRepo.delete(billFood);
+    public void deleteBillFood(Bill bill) {
+        List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+        billFoodRepo.deleteAll(billFoods);
     }
 }
