@@ -9,16 +9,22 @@ import vi.wbca.webcinema.service.userStatusService.UserStatusService;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user/status")
 public class UserStatusController {
+    private static final Logger logger = Logger.getLogger(UserStatusController.class.getName());
     private final UserStatusService userStatusService;
 
     @PostMapping("/insert")
     public ResponseEntity<ResponseObject> insertUserStatus(@RequestBody UserStatus userStatus) {
+
+        logger.info("----------Web Cinema: Insert New User Status----------");
+
         UserStatus responseData = userStatusService.insertUserStatus(userStatus);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User status insert successfully.", responseData)
         );
@@ -26,6 +32,9 @@ public class UserStatusController {
 
     @GetMapping("/get-all-status")
     public List<UserStatus> getAllStatus() {
+
+        logger.info("----------Web Cinema: Get All User Status----------");
+
         return userStatusService.getAllStatus();
     }
 }

@@ -30,6 +30,7 @@ public class MovieController {
         logger.info("----------Web Cinema: Insert New Movie----------");
 
         MovieDTO responseData = movieService.insertMovie(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert movie successfully.", responseData)
         );
@@ -51,6 +52,7 @@ public class MovieController {
         responseData.put(Constants.LANGUAGE, request.getLanguage());
         responseData.put(Constants.NAME, request.getName());
         responseData.put(Constants.TRAILER, request.getTrailer());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated movie successfully.", responseData)
         );
@@ -62,6 +64,7 @@ public class MovieController {
         logger.info("----------Web Cinema: Delete Movie----------");
 
         movieService.deleteMovie(name);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted movie successfully.", "")
         );

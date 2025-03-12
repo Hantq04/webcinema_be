@@ -25,6 +25,7 @@ public class RateController {
         logger.info("----------Web Cinema: Insert New Rate----------");
 
         Rate responseData = rateService.insertRate(rate);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert rate successfully.", responseData)
         );
@@ -32,6 +33,9 @@ public class RateController {
 
     @GetMapping("/get-all-rate")
     public List<Rate> getAllRate() {
+
+        logger.info("----------Web Cinema: Get All Rate----------");
+
         return rateService.getAllRate();
     }
 }

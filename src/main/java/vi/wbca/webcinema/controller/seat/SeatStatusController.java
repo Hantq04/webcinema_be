@@ -25,6 +25,7 @@ public class SeatStatusController {
         logger.info("----------Web Cinema: Insert New Seat Status----------");
 
         SeatStatus response = seatStatusService.insertSeatStatus(seatStatus);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat status successfully.", response)
         );
@@ -32,6 +33,9 @@ public class SeatStatusController {
 
     @GetMapping("/get-all-status")
     public List<SeatStatus> getAllStatus() {
+
+        logger.info("----------Web Cinema: Get All Seat Status----------");
+
         return seatStatusService.getAllStatus();
     }
 }

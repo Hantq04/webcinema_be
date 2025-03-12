@@ -50,17 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserDTO request) {
-        if (userRepo.existsByUserName(request.getUserName())) {
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
-        }
-
-        if (userRepo.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
-
-        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
-        }
+        validateRegister(request);
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -73,6 +63,20 @@ public class UserServiceImpl implements UserService {
             accountService.sendVerificationEmail(user);
         } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void validateRegister(UserDTO request) {
+        if (userRepo.existsByUserName(request.getUserName())) {
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        }
+
+        if (userRepo.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+
+        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
     }
 

@@ -25,6 +25,7 @@ public class BillStatusController {
         logger.info("----------Web Cinema: Insert New Bill Status----------");
 
         BillStatus responseData = billStatusService.insertBillStatus(billStatus);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill status successfully", responseData)
         );
@@ -32,6 +33,9 @@ public class BillStatusController {
 
     @GetMapping("/get-all-status")
     public List<BillStatus> getAllStatus() {
+
+        logger.info("----------Web Cinema: Get All Bill Status----------");
+
         return billStatusService.getAllStatus();
     }
 }

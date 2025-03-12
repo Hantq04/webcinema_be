@@ -38,4 +38,5 @@ public class Constants {
     public static final String TITLE = "title";
     public static final String ORDER = "listOrder";
     public static final String TOTAL_MONEY = "totalMoney";
+    public static final String SEAT = "seat";
 }

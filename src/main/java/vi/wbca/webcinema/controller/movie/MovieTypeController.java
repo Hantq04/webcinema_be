@@ -25,6 +25,7 @@ public class MovieTypeController {
         logger.info("----------Web Cinema: Insert New Movie Type----------");
 
         MovieType responseData = movieTypeService.insertMovieType(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert room successfully.", responseData)
         );
@@ -32,6 +33,9 @@ public class MovieTypeController {
 
     @GetMapping("/get-all-type")
     public List<MovieType> getAllType() {
+
+        logger.info("----------Web Cinema: Get All Movie Type----------");
+
         return movieTypeService.getAllType();
     }
 }

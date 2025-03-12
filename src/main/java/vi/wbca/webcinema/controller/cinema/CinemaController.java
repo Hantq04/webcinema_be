@@ -30,6 +30,7 @@ public class CinemaController {
         logger.info("----------Web Cinema: Insert New Cinema----------");
 
         CinemaDTO responseData = cinemaService.insertCinema(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert cinema successfully.", responseData)
         );
@@ -59,6 +60,7 @@ public class CinemaController {
         logger.info("----------Web Cinema: Delete Cinema----------");
 
         cinemaService.deleteCinema(code);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted cinema successfully.", "")
         );

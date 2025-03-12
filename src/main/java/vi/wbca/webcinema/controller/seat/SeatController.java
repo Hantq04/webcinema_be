@@ -27,6 +27,7 @@ public class SeatController {
         logger.info("----------Web Cinema: Insert New Seat----------");
 
         SeatDTO responseData = seatService.insertSeat(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat successfully.", responseData)
         );
@@ -42,6 +43,7 @@ public class SeatController {
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.LINE, request.getLine());
         responseData.put(Constants.NUMBER, request.getNumber().toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated seat successfully.", responseData)
         );
@@ -53,6 +55,7 @@ public class SeatController {
         logger.info("----------Web Cinema: Delete Seat----------");
 
         seatService.deleteSeat(id);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted seat successfully.", "")
         );

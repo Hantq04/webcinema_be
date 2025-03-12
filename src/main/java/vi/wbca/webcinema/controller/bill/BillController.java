@@ -61,6 +61,7 @@ public class BillController {
         logger.info("----------Web Cinema: Delete Bill----------");
 
         billService.deleteBill(tradingCode);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill successfully.", "")
         );

@@ -48,6 +48,7 @@ public class UserController {
         responseData.put(Constants.LIST_ROLE, request.getListRoles().toString());
 
         String message = "User registered successfully. Please check your email to get your OTP for verification.";
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );
@@ -59,6 +60,7 @@ public class UserController {
         logger.info("----------Web Cinema: Login Page----------");
 
         UserDTO responseData = userService.login(userDTO);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User login successfully.", responseData)
         );
@@ -70,6 +72,7 @@ public class UserController {
         logger.info("----------Web Cinema: Verify Email----------");
 
         String result = accountService.validateToken(token);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User verified successfully.", result)
         );
@@ -81,6 +84,7 @@ public class UserController {
         logger.info("----------Web Cinema: Resend Verify Email----------");
 
         String result = accountService.resendVerificationEmail(email);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Your OTP has been resent.", result)
         );
@@ -92,6 +96,7 @@ public class UserController {
         logger.info("----------Web Cinema: Update User----------");
 
         userService.updateUser(request);
+
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.USER_NAME, request.getUserName());
         responseData.put(Constants.EMAIL, request.getEmail());
@@ -109,6 +114,7 @@ public class UserController {
         logger.info("----------Web Cinema: Delete User----------");
 
         userService.deleteUser(userName);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User deleted successfully.", "")
         );
@@ -120,6 +126,7 @@ public class UserController {
         logger.info("----------Web Cinema: Forgot Password----------");
 
         String result = accountService.sendChangePassword(email);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Your OTP has been sent.", result)
         );
@@ -131,6 +138,7 @@ public class UserController {
         logger.info("----------Web Cinema: Change Password----------");
 
         String responseData = accountService.changePassword(token, newPassword, confirmPassword);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Change password successfully.", responseData)
         );
@@ -152,7 +160,9 @@ public class UserController {
 
     @GetMapping("/get-all")
     public List<User> getAllUser() {
+
         logger.info("----------Web Cinema: List User----------");
+
         return userService.getAllUser();
     }
 
@@ -162,6 +172,7 @@ public class UserController {
         logger.info("----------Web Cinema: Get User----------");
 
         UserDTO responseData = userService.findById(id);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Find user successfully.", responseData)
         );
