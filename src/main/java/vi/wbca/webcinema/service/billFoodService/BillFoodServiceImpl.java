@@ -37,6 +37,22 @@ public class BillFoodServiceImpl implements BillFoodService{
     }
 
     @Override
+    public void updateBillFood(BillFoodDTO billFoodDTO, Bill bill) {
+        List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+        for (BillFood billFood: billFoods) {
+            billFood.setQuantity(billFoodDTO.getQuantity());
+        }
+        billFoodRepo.saveAll(billFoods);
+    }
+
+    @Override
+    public void deleteFood(Long id) {
+        BillFood billFood = billFoodRepo.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
+        billFoodRepo.delete(billFood);
+    }
+
+    @Override
     public void deleteBillFood(Bill bill) {
         List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
         billFoodRepo.deleteAll(billFoods);
