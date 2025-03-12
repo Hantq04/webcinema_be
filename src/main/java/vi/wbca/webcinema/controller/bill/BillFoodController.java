@@ -45,6 +45,7 @@ public class BillFoodController {
         logger.info("----------Web Cinema: Delete Bill Food----------");
 
         billFoodService.deleteFood(id);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill food successfully.", "")
         );

@@ -46,6 +46,7 @@ public class PromotionController {
         logger.info("----------Web Cinema: Delete Promotion----------");
 
         promotionService.deletePromotion(name);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted promotion successfully.", "")
         );
