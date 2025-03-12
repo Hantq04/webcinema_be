@@ -35,6 +35,7 @@ public class GlobalExceptionHandler {
         if (exception instanceof MethodArgumentNotValidException e) {
             FieldError fieldError = e.getFieldError();
             errorCode = ErrorCode.INVALID_KEY;
+
             if (fieldError != null) {
                 String enumKey = fieldError.getDefaultMessage();
                 try {
