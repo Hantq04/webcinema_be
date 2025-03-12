@@ -57,14 +57,17 @@ public class AccountService {
                 .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         User user = userRepo.findByConfirmEmails(code)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
         if (user.isActive()) {
             throw new AppException(ErrorCode.USER_ACTIVE);
         }
+
         Calendar calendar = Calendar.getInstance();
         if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
+
         user.setActive(true);
         code.setConfirm(true);
 
@@ -90,13 +93,16 @@ public class AccountService {
         if (!newPassword.equals(confirmPassword)) {
             throw new AppException(ErrorCode.PASSWORD_MISMATCH);
         }
+
         ConfirmEmail code = confirmEmailRepo.findByConfirmCode(otp)
                 .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
+
         Calendar calendar = Calendar.getInstance();
         if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
+
         User user = userRepo.findByConfirmEmails(code)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
         user.setPassword(passwordEncoder.encode(newPassword));
