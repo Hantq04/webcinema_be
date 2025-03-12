@@ -17,6 +17,8 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Long> {
 
     Optional<Schedule> findByCode(String code);
 
+    Optional<Schedule> findByStartAt(Date date);
+
     List<Schedule> findAllByEndAtBeforeAndIsActiveTrue(Date now);
 
     boolean existsByRoomAndStartAt(Room room, Date startAt);

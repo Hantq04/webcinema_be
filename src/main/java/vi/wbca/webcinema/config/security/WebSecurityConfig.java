@@ -41,7 +41,8 @@ public class WebSecurityConfig {
             "/api/v1/bill/**",
             "/api/v1/promotion/**",
             "/api/v1/banner/**",
-            "/api/v1/setting/**"
+            "/api/v1/setting/**",
+            "/api/v1/ticket/**"
     };
 
     @Bean
