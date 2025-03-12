@@ -59,6 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             String jwt = authToken.substring(7);
             String userName = jwtTokenProvider.extractUserName(jwt);
+
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
 
@@ -88,6 +89,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         String jwt = authToken.substring(7);
         AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
+
         if (accessToken != null) {
             accessToken.setTokenStatus(TokenStatus.EXPIRED);
             accessTokenService.save(accessToken);
