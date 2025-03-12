@@ -35,6 +35,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         // Check if the token exists; if it does, update it; otherwise, insert a new one
         RefreshToken refreshToken = refreshTokenRepo.findByUser(user)
                 .orElse(new RefreshToken());
+
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshToken.setExpiredTime(new Date(System.currentTimeMillis() + refTokenExpiredTime));
         refreshToken.setUser(user);
@@ -53,6 +54,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
                 .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
         AccessToken accessToken = accessTokenRepo.findLatestByUser(refreshToken.getUser().getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         if (refreshToken.getExpiredTime().before(new Date())) {
             throw new AppException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }

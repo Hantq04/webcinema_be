@@ -39,6 +39,7 @@ public class AccountService {
             throws MessagingException, UnsupportedEncodingException {
         String subject = "Email Verification";
         String content = EmailUtils.getEmailMessage(user, generateOTP);
+
         emailService.sendMail(user.getEmail(), subject, content);
         createConfirmEmail(user);
     }
@@ -82,9 +83,11 @@ public class AccountService {
     public String resendVerificationEmail(String email) throws MessagingException, UnsupportedEncodingException {
         String subject = "Email Verification";
         String content = EmailUtils.getResendEmailMessage(generateOTP);
+
         emailService.sendMail(email, subject, content);
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
         createConfirmEmail(user);
         return "Please verify your account within 5 minutes.";
     }
@@ -113,9 +116,11 @@ public class AccountService {
     public String sendChangePassword(String email) throws MessagingException, UnsupportedEncodingException {
         String subject = "Email Change Password";
         String content = EmailUtils.getChangePasswordMessage(generateOTP);
+
         emailService.sendMail(email, subject, content);
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
         createConfirmEmail(user);
         return "Check your email for the password change OTP.";
     }

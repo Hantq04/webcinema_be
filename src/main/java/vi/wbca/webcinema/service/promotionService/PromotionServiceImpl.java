@@ -47,7 +47,6 @@ public class PromotionServiceImpl implements PromotionService{
 
     @Override
     public void deletePromotion(String name) {
-        System.out.println(name);
         Promotion promotion = promotionRepo.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         promotionRepo.delete(promotion);
