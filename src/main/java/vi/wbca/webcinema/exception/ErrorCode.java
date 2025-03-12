@@ -56,6 +56,8 @@ public enum ErrorCode {
     START_TIME_NOT_FOUND(1235, "Start time not found.", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_BELONG_TO_ROOM(1236, "Schedule does not belong to the selected room.", HttpStatus.BAD_REQUEST),
     SEAT_NOT_BELONG_TO_ROOM(1237, "Seat does not belong to the selected room.", HttpStatus.BAD_REQUEST),
+    SEAT_OCCUPIED(1238, "Selected seat is already occupied.", HttpStatus.BAD_REQUEST),
+    ROOM_FULL(1239, "No seats available in this room.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

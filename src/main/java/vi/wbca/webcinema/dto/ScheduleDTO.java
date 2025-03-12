@@ -22,7 +22,7 @@ public class ScheduleDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    Double price;
+//    Double price;
 
     @NotNull(message = "NOT_NULL", groups = {InsertSchedule.class, UpdateSchedule.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
@@ -43,7 +43,4 @@ public class ScheduleDTO {
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertSchedule.class})
     String roomCode;
-
-    @NotNull(message = "NOT_NULL", groups = {InsertSchedule.class})
-    int seatTypeId;
 }
