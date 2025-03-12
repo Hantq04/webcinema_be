@@ -21,6 +21,9 @@ public class RankCustomerController {
 
     @PostMapping("/insert")
     public ResponseEntity<ResponseObject> insertRank(@RequestBody RankCustomer rankCustomer) {
+
+
+
         rankCustomerService.insertRank(rankCustomer);
 
         Map<String, String> responseData = new HashMap<>();

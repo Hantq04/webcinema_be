@@ -25,6 +25,7 @@ public class SeatTypeController {
         logger.info("----------Web Cinema: Insert New Seat Type----------");
 
         SeatType response = seatTypeService.insertSeatType(seatType);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat type successfully.", response)
         );
@@ -32,6 +33,9 @@ public class SeatTypeController {
 
     @GetMapping("/get-all-type")
     public List<SeatType> getAllType() {
+
+        logger.info("----------Web Cinema: Get All Seat Type----------");
+
         return seatTypeService.getAllType();
     }
 }
