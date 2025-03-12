@@ -48,6 +48,7 @@ public class BillServiceImpl implements BillService {
         insertBillFood(billDTO, bill);
         calculateTotal(bill, user);
 
+        billDTO.setTotalMoney(bill.getTotalMoney());
         billRepo.save(bill);
         billMapper.toBillDTO(bill);
     }
@@ -104,7 +105,14 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepo.findByUser(user)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        for (BillFoodDTO billFoodDTO: billDTO.getFoods()) {
+            billFoodService.updateBillFood(billFoodDTO, bill);
+        }
+
+        calculateTotal(bill, user);
         bill.setUpdateTime(new Date());
+
+        billDTO.setTotalMoney(bill.getTotalMoney());
         billRepo.save(bill);
     }
 
