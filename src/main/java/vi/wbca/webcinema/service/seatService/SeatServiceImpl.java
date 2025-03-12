@@ -33,10 +33,12 @@ public class SeatServiceImpl implements SeatService{
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
         Room room = roomRepo.findByCode(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+
         seat.setActive(true);
         seat.setRoom(room);
         seat.setSeatStatus(seatStatus);
         seatRepo.save(seat);
+
         setSeatType(seat, request.getLine());
         return seatMapper.toSeatDTO(seat);
     }
@@ -62,8 +64,10 @@ public class SeatServiceImpl implements SeatService{
     @Override
     public void updateSeat(SeatDTO request) {
         Seat seat = findById(request.getId());
+
         seat.setLine(request.getLine());
         seat.setNumber(request.getNumber());
+
         seatRepo.save(seat);
     }
 

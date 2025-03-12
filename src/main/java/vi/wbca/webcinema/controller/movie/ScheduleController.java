@@ -44,7 +44,6 @@ public class ScheduleController {
         scheduleService.updateSchedule(request);
 
         Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.PRICE, request.getPrice().toString());
         responseData.put(Constants.START_TIME, request.getStartAt().toString());
         responseData.put(Constants.END_TIME, request.getEndAt().toString());
         responseData.put(Constants.CODE, request.getCode());
