@@ -53,6 +53,7 @@ public enum ErrorCode {
     BILL_EXISTED(1232, "This customer bill is already existed.", HttpStatus.BAD_REQUEST),
     BILL_FOOD_NOT_FOUND(1233, "Bill food not found.", HttpStatus.BAD_REQUEST),
     ID_NOT_FOUND(1234, "Id not found.", HttpStatus.BAD_REQUEST),
+    START_TIME_NOT_FOUND(1235, "Start time not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
