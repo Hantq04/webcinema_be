@@ -26,15 +26,16 @@ public class Constants {
     public static final String LINE = "line";
     public static final String PRICE = "price";
     public static final String IMAGE = "image";
-    public static final String HERO_IMAGE = "hero_image";
+    public static final String HERO_IMAGE = "heroImage";
     public static final String TRAILER = "trailer";
     public static final String LANGUAGE = "language";
     public static final String DURATION = "duration";
     public static final String DIRECTOR = "director";
-    public static final String START_TIME = "start_time";
-    public static final String END_TIME = "end_time";
+    public static final String START_TIME = "startTime";
+    public static final String END_TIME = "endTime";
     public static final String PERCENT = "percent";
     public static final String QUANTITY = "quantity";
     public static final String TITLE = "title";
-    public static final String ORDER = "list_order";
+    public static final String ORDER = "listOrder";
+    public static final String TOTAL_MONEY = "totalMoney";
 }
