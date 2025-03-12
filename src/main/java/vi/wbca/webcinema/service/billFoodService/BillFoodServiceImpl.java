@@ -25,14 +25,14 @@ public class BillFoodServiceImpl implements BillFoodService{
     @Override
     public void insertBillFood(BillFoodDTO billFoodDTO, Bill bill) {
         BillFood billFood = billFoodMapper.toBillFood(billFoodDTO);
-        Food food = setFood(billFoodDTO);
+        Food food = getFood(billFoodDTO);
 
         billFood.setBill(bill);
         billFood.setFood(food);
         billFoodRepo.save(billFood);
     }
 
-    public Food setFood(BillFoodDTO billFoodDTO) {
+    public Food getFood(BillFoodDTO billFoodDTO) {
         return foodRepo.findByNameOfFood(billFoodDTO.getName())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
@@ -46,7 +46,7 @@ public class BillFoodServiceImpl implements BillFoodService{
         List<Food> processedFoods = new ArrayList<>();
 
         for (BillFoodDTO billFoodDTO: billFoodDTOs) {
-            Food food = setFood(billFoodDTO);
+            Food food = getFood(billFoodDTO);
             processedFoods.add(food);
 
             // Check if the BillFood already exists in the database
