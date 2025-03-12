@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.model.BillFood;
+import vi.wbca.webcinema.model.Food;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface BillFoodRepo extends JpaRepository<BillFood, Long> {
     List<BillFood> findAllByBillId(Long billId);
 
     List<BillFood> findAllByBill(Bill bill);
+
+    Optional<BillFood> findByBillAndFood(Bill bill, Food food);
 }

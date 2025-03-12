@@ -53,18 +53,22 @@ public class UserServiceImpl implements UserService {
         if (userRepo.existsByUserName(request.getUserName())) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
+
         if (userRepo.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
+
         if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
+
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepo.save(user);
         userStatusAndRank(user);
         request.getListRoles().forEach(role -> addRole(role, user));
+
         try {
             accountService.sendVerificationEmail(user);
         } catch (MessagingException | UnsupportedEncodingException e) {
@@ -139,12 +143,15 @@ public class UserServiceImpl implements UserService {
     public void updateUser(UserDTO request) {
         User currentUser = userRepo.findByUserName(request.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         if (userRepo.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
+
         if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
+
         if (request.getPassword() != null) currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
         currentUser.setEmail(request.getEmail());
         currentUser.setPhoneNumber(request.getPhoneNumber());

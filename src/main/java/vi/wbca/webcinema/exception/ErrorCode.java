@@ -51,7 +51,8 @@ public enum ErrorCode {
     SHOW_TIME_IN_BREAK(1230, "Cannot schedule during break time (e.g., 12:00 to 13:00).", HttpStatus.BAD_REQUEST),
     BILL_NOT_FOUND(1231, "Bill not found.", HttpStatus.BAD_REQUEST),
     BILL_EXISTED(1232, "This customer bill is already existed.", HttpStatus.BAD_REQUEST),
-    ID_NOT_FOUND(1233, "Id not found.", HttpStatus.BAD_REQUEST),
+    BILL_FOOD_NOT_FOUND(1233, "Bill food not found.", HttpStatus.BAD_REQUEST),
+    ID_NOT_FOUND(1234, "Id not found.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

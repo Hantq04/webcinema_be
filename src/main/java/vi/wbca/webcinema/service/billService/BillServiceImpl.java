@@ -54,7 +54,7 @@ public class BillServiceImpl implements BillService {
     }
 
     public void insertBillFood(BillDTO billDTO, Bill bill) {
-        for (BillFoodDTO billFoodDTO: billDTO.getFoods()) {
+        for (BillFoodDTO billFoodDTO : billDTO.getFoods()) {
             billFoodDTO.setCustomerName(billDTO.getCustomerName());
             billFoodService.insertBillFood(billFoodDTO, bill);
         }
@@ -76,7 +76,7 @@ public class BillServiceImpl implements BillService {
     public void calculateSubTotal(Bill bill) {
         List<BillFood> listBillFood = billFoodRepo.findAllByBillId(bill.getId());
         double total = 0;
-        for (BillFood billFood: listBillFood) {
+        for (BillFood billFood : listBillFood) {
             if (billFood.getFood() != null && billFood.getFood().getPrice() != null) {
                 total += billFood.getQuantity() * billFood.getFood().getPrice();
             }
@@ -105,9 +105,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepo.findByUser(user)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        for (BillFoodDTO billFoodDTO: billDTO.getFoods()) {
-            billFoodService.updateBillFood(billFoodDTO, bill);
-        }
+        billFoodService.updateBillFood(billDTO.getFoods(), bill);
 
         calculateTotal(bill, user);
         bill.setUpdateTime(new Date());
