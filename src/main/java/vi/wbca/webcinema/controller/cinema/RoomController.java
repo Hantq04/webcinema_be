@@ -27,6 +27,7 @@ public class RoomController {
         logger.info("----------Web Cinema: Insert New Room----------");
 
         RoomDTO responseData = roomService.insertRoom(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert room successfully.", responseData)
         );
@@ -57,6 +58,7 @@ public class RoomController {
         logger.info("----------Web Cinema: Delete Room----------");
 
         roomService.deleteRoom(code);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted room successfully.", "")
         );
