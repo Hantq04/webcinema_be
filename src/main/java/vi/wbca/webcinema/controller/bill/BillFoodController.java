@@ -40,11 +40,11 @@ public class BillFoodController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseObject> deleteBillFood(@Valid @RequestParam Bill bill) {
+    public ResponseEntity<ResponseObject> deleteBillFood(@Valid @RequestParam Long id) {
 
         logger.info("----------Web Cinema: Delete Bill Food----------");
 
-        billFoodService.deleteBillFood(bill);
+        billFoodService.deleteFood(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill food successfully.", "")
         );
