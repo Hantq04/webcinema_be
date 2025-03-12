@@ -12,6 +12,7 @@ import vi.wbca.webcinema.model.Food;
 import vi.wbca.webcinema.repository.BillFoodRepo;
 import vi.wbca.webcinema.repository.FoodRepo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,12 +38,36 @@ public class BillFoodServiceImpl implements BillFoodService{
     }
 
     @Override
-    public void updateBillFood(BillFoodDTO billFoodDTO, Bill bill) {
-        List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
-        for (BillFood billFood: billFoods) {
-            billFood.setQuantity(billFoodDTO.getQuantity());
+    public void updateBillFood(List<BillFoodDTO> billFoodDTOs, Bill bill) {
+        // Retrieve existing BillFood records from the database
+        List<BillFood> existingBillFoods = billFoodRepo.findAllByBill(bill);
+
+        // Create a list to store processed foods to keep track of updated/added items
+        List<Food> processedFoods = new ArrayList<>();
+
+        for (BillFoodDTO billFoodDTO: billFoodDTOs) {
+            Food food = setFood(billFoodDTO);
+            processedFoods.add(food);
+
+            // Check if the BillFood already exists in the database
+            BillFood billFood = billFoodRepo.findByBillAndFood(bill, food).orElse(null);
+
+            if (billFood != null) {
+                billFood.setQuantity(billFoodDTO.getQuantity());
+            } else {
+                billFood = billFoodMapper.toBillFood(billFoodDTO);
+                billFood.setFood(food);
+                billFood.setBill(bill);
+            }
+
+            billFoodRepo.save(billFood);
         }
-        billFoodRepo.saveAll(billFoods);
+        // Delete BillFood records from DB that are not included in the new DTO list
+        for (BillFood oldBillFood: existingBillFoods) {
+            if (!processedFoods.contains(oldBillFood.getFood())) {
+                billFoodRepo.delete(oldBillFood);
+            }
+        }
     }
 
     @Override
