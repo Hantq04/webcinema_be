@@ -27,6 +27,7 @@ public class FoodController {
         logger.info("----------Web Cinema: Insert New Food----------");
 
         FoodDTO responseData = foodService.insertFood(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert food successfully.", responseData)
         );
@@ -44,6 +45,7 @@ public class FoodController {
         responseData.put(Constants.DESCRIPTION, request.getDescription());
         responseData.put(Constants.IMAGE, request.getImage());
         responseData.put(Constants.NAME, request.getNameOfFood());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated food successfully.", responseData)
         );
@@ -55,6 +57,7 @@ public class FoodController {
         logger.info("----------Web Cinema: Delete Food----------");
 
         foodService.deleteFood(name);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted food successfully.", "")
         );
