@@ -31,9 +31,27 @@ public class BillController {
         Map<String, Object> responseData = new HashMap<>();
         responseData.put(Constants.USER_NAME, request.getCustomerName());
         responseData.put(Constants.ORDER, request.getFoods());
+        responseData.put(Constants.TOTAL_MONEY, request.getTotalMoney());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill successfully.", responseData)
+        );
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
+
+        logger.info("----------Web Cinema: Update Bill----------");
+
+        billService.updateBill(request);
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put(Constants.USER_NAME, request.getCustomerName());
+        responseData.put(Constants.ORDER, request.getFoods());
+        responseData.put(Constants.TOTAL_MONEY, request.getTotalMoney());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Updated bill successfully.", responseData)
         );
     }
 
