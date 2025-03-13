@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.BillDTO;
 import vi.wbca.webcinema.dto.BillFoodDTO;
+import vi.wbca.webcinema.dto.BillTicketDTO;
 import vi.wbca.webcinema.enums.EBillStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
@@ -11,6 +12,7 @@ import vi.wbca.webcinema.mapper.BillMapper;
 import vi.wbca.webcinema.model.*;
 import vi.wbca.webcinema.repository.*;
 import vi.wbca.webcinema.service.billFoodService.BillFoodService;
+import vi.wbca.webcinema.service.billTicketService.BillTicketService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.util.Date;
@@ -26,6 +28,8 @@ public class BillServiceImpl implements BillService {
     private final PromotionRepo promotionRepo;
     private final BillFoodRepo billFoodRepo;
     private final BillFoodService billFoodService;
+    private final BillTicketRepo billTicketRepo;
+    private final BillTicketService billTicketService;
 
     @Override
     public void createBill(BillDTO billDTO) {
@@ -46,6 +50,7 @@ public class BillServiceImpl implements BillService {
         billRepo.save(bill);
 
         insertBillFood(billDTO, bill);
+        insertBillTicket(billDTO, bill);
         calculateTotal(bill, user);
 
         billDTO.setTotalMoney(bill.getTotalMoney());
@@ -60,20 +65,37 @@ public class BillServiceImpl implements BillService {
         }
     }
 
+    public void insertBillTicket(BillDTO billDTO, Bill bill) {
+        for (BillTicketDTO billTicketDTO : billDTO.getTickets()) {
+            billTicketDTO.setCustomerName(billDTO.getCustomerName());
+            billTicketService.insertBillTicket(billTicketDTO, bill);
+        }
+    }
+
     public void calculateTotal(Bill bill, User user) {
-        calculateSubTotal(bill);
+        double totalFood = calculateBillFood(bill);
+        double totalTicket = calculateBillTicket(bill);
+
+        double totalMoney = totalFood + totalTicket;
+
         Promotion promotion = getPromotion(user);
         if (promotion != null) {
-            int discounted = (int) (bill.getTotalMoney() * promotion.getPercent() / 100);
-            bill.setTotalMoney(bill.getTotalMoney() - discounted);
+            double discounted = totalMoney * promotion.getPercent() / 100;
+            double finalTotal = totalMoney - discounted;
+
+            int totalForPayment = (int) (Math.round(finalTotal / 1000.0) * 1000);
+            bill.setTotalMoney((double) totalForPayment);
             bill.setPromotion(promotion);
 
             promotion.setQuantity(promotion.getQuantity() - 1);
             promotionRepo.save(promotion);
+        } else {
+            int totalForPayment = (int) (Math.round(totalMoney / 1000.0) * 1000);
+            bill.setTotalMoney((double) totalForPayment);
         }
     }
 
-    public void calculateSubTotal(Bill bill) {
+    public double calculateBillFood(Bill bill) {
         List<BillFood> listBillFood = billFoodRepo.findAllByBillId(bill.getId());
         double total = 0;
         for (BillFood billFood : listBillFood) {
@@ -81,7 +103,18 @@ public class BillServiceImpl implements BillService {
                 total += billFood.getQuantity() * billFood.getFood().getPrice();
             }
         }
-        bill.setTotalMoney(total);
+        return total;
+    }
+
+    public double calculateBillTicket(Bill bill) {
+        List<BillTicket> listBillTicket = billTicketRepo.findAllByBillId(bill.getId());
+        double total = 0;
+        for (BillTicket billTicket : listBillTicket) {
+            if (billTicket.getTicket() != null && billTicket.getTicket().getPriceTicket() != null) {
+                total += billTicket.getQuantity() * billTicket.getTicket().getPriceTicket();
+            }
+        }
+        return total;
     }
 
     public Promotion getPromotion(User user) {
