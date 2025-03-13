@@ -37,4 +37,6 @@ public class BillDTO {
     String customerName;
 
     List<BillFoodDTO> foods;
+
+    List<BillTicketDTO> tickets;
 }
