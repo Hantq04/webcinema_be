@@ -42,7 +42,7 @@ public class TicketServiceImpl implements TicketService{
 
         ticket.setCode(GenerateCode.generateCode());
         ticket.setPriceTicket(finalPrice);
-        ticket.setActive(true);
+        ticket.setActive(false);
         ticket.setSchedule(schedule);
         ticket.setSeat(seat);
 
