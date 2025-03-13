@@ -45,7 +45,7 @@ public class BillFoodServiceImpl implements BillFoodService{
         // Create a list to store processed foods to keep track of updated/added items
         List<Food> processedFoods = new ArrayList<>();
 
-        for (BillFoodDTO billFoodDTO: billFoodDTOs) {
+        for (BillFoodDTO billFoodDTO : billFoodDTOs) {
             Food food = getFood(billFoodDTO);
             processedFoods.add(food);
 
@@ -63,7 +63,7 @@ public class BillFoodServiceImpl implements BillFoodService{
             billFoodRepo.save(billFood);
         }
         // Delete BillFood records from DB that are not included in the new DTO list
-        for (BillFood oldBillFood: existingBillFoods) {
+        for (BillFood oldBillFood : existingBillFoods) {
             if (!processedFoods.contains(oldBillFood.getFood())) {
                 billFoodRepo.delete(oldBillFood);
             }

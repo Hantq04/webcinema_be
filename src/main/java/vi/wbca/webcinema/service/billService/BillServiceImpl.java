@@ -83,6 +83,7 @@ public class BillServiceImpl implements BillService {
             double discounted = totalMoney * promotion.getPercent() / 100;
             double finalTotal = totalMoney - discounted;
 
+            // Round the total payment
             int totalForPayment = (int) (Math.round(finalTotal / 1000.0) * 1000);
             bill.setTotalMoney((double) totalForPayment);
             bill.setPromotion(promotion);
@@ -139,6 +140,7 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         billFoodService.updateBillFood(billDTO.getFoods(), bill);
+        billTicketService.updateBillTicket(billDTO.getTickets(), bill);
 
         calculateTotal(bill, user);
         bill.setUpdateTime(new Date());
@@ -151,7 +153,10 @@ public class BillServiceImpl implements BillService {
     public void deleteBill(String code) {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+
         billFoodService.deleteBillFood(bill);
+        billTicketService.deleteBillTicket(bill);
+
         billRepo.delete(bill);
     }
 }

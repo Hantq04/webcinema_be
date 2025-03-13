@@ -2,7 +2,6 @@ package vi.wbca.webcinema.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +11,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BillTicketDTO {
-    @NotNull(message = "NOT_NULL")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    Long id;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Integer quantity;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -36,7 +36,8 @@ public class Constants {
     public static final String PERCENT = "percent";
     public static final String QUANTITY = "quantity";
     public static final String TITLE = "title";
-    public static final String ORDER = "listOrder";
+    public static final String LIST_ORDER = "listOrder";
     public static final String TOTAL_MONEY = "totalMoney";
     public static final String TICKET = "ticketCode";
+    public static final String LIST_TICKET = "listTicket";
 }

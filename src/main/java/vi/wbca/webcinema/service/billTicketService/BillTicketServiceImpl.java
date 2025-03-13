@@ -12,6 +12,9 @@ import vi.wbca.webcinema.model.Ticket;
 import vi.wbca.webcinema.repository.BillTicketRepo;
 import vi.wbca.webcinema.repository.TicketRepo;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class BillTicketServiceImpl implements BillTicketService{
@@ -24,8 +27,9 @@ public class BillTicketServiceImpl implements BillTicketService{
         BillTicket billTicket = billTicketMapper.toBillTicket(billTicketDTO);
         Ticket ticket = getTicket(billTicketDTO);
 
-        ticket.setActive(true);
+        ticket.setActive(false);
         ticketRepo.save(ticket);
+        billTicket.setQuantity(1);
         billTicket.setBill(bill);
         billTicket.setTicket(ticket);
 
@@ -38,7 +42,52 @@ public class BillTicketServiceImpl implements BillTicketService{
     }
 
     @Override
-    public void deleteBillTicket(Long id) {
+    public void updateBillTicket(List<BillTicketDTO> billTicketDTOs, Bill bill) {
+        // Retrieve existing BillTicket records from the database
+        List<BillTicket> existingBillTickets = billTicketRepo.findAllByBill(bill);
+
+        // Create a list to store processed foods to keep track of updated/added tickets
+        List<Long> processedId = billTicketDTOs.stream()
+                .map(BillTicketDTO::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        for (BillTicketDTO billTicketDTO : billTicketDTOs) {
+            Ticket ticket = getTicket(billTicketDTO);
+            BillTicket billTicket;
+
+            if (billTicketDTO.getId() != null) {
+                billTicket = billTicketRepo.findById(billTicketDTO.getId())
+                        .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
+
+                billTicket.setTicket(ticket);
+            } else {
+                 billTicket = billTicketMapper.toBillTicket(billTicketDTO);
+
+                 billTicket.setQuantity(1);
+                 billTicket.setTicket(ticket);
+                 billTicket.setBill(bill);
+            }
+
+            billTicketRepo.save(billTicket);
+        }
+
+        // Delete BillTicket records from DB that are not included in the new DTO list
+        for (BillTicket oldBillTicket : existingBillTickets) {
+            if (!processedId.contains(oldBillTicket.getId())) {
+                billTicketRepo.delete(oldBillTicket);
+            }
+        }
+    }
+
+    @Override
+    public void deleteBillTicket(Bill bill) {
+        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+        billTicketRepo.deleteAll(billTickets);
+    }
+
+    @Override
+    public void deleteTicket(Long id) {
         BillTicket billTicket = billTicketRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         billTicketRepo.delete(billTicket);
