@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.BillTicketDTO;
+import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.service.billTicketService.BillTicketService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -22,11 +23,11 @@ public class BillTicketController {
     private final BillTicketService billTicketService;
 
     @PostMapping("/insert")
-    public ResponseEntity<ResponseObject> insertBillTicket(@Valid @RequestBody BillTicketDTO request) {
+    public ResponseEntity<ResponseObject> insertBillTicket(@Valid @RequestBody BillTicketDTO request, Bill bill) {
 
         logger.info("----------Web Cinema: Insert New Bill Ticket----------");
 
-        billTicketService.insertBillTicket(request);
+        billTicketService.insertBillTicket(request, bill);
 
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.QUANTITY, request.getQuantity().toString());
