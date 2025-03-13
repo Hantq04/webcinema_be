@@ -44,7 +44,7 @@ public class BillTicketController {
 
         logger.info("----------Web Cinema: Delete Bill Ticket----------");
 
-        billTicketService.deleteBillTicket(id);
+        billTicketService.deleteTicket(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill ticket successfully.", "")
