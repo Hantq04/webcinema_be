@@ -58,6 +58,8 @@ public enum ErrorCode {
     SEAT_NOT_BELONG_TO_ROOM(1237, "Seat does not belong to the selected room.", HttpStatus.BAD_REQUEST),
     SEAT_OCCUPIED(1238, "Selected seat is already occupied.", HttpStatus.BAD_REQUEST),
     ROOM_FULL(1239, "No seats available in this room.", HttpStatus.BAD_REQUEST),
+    PAYMENT_SUCCESS(1240, "Payment has already been completed successfully.", HttpStatus.BAD_REQUEST),
+    PAYMENT_EXCEPTION(1241, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),

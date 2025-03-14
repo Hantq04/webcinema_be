@@ -2,6 +2,7 @@ package vi.wbca.webcinema.controller.bill;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.config.vnpay.VNPayService;
@@ -16,8 +17,8 @@ public class PaymentController {
     private static final Logger logger = Logger.getLogger(PaymentController.class.getName());
     private final VNPayService vnPayService;
 
-    @PostMapping("/submit-payment/{code}")
-    public String submitPayment(@PathVariable("code") String code, HttpServletRequest request) {
+    @PostMapping("/submit-payment")
+    public String submitPayment(@Valid @RequestParam String code, HttpServletRequest request) {
 
         logger.info("----------Web Cinema: Submit Payment----------");
 
@@ -26,11 +27,11 @@ public class PaymentController {
     }
 
     @GetMapping("/vnPay-payment")
-    public String confirmPayment(HttpServletRequest request) throws
+    public String confirmPayment(@Valid HttpServletRequest request) throws
             MessagingException, UnsupportedEncodingException {
 
         logger.info("----------Web Cinema: Confirm Payment----------");
 
-        return vnPayService.paymentReturn(request) == 1 ? "orderSuccess" : "orderFail";
+        return vnPayService.paymentReturn(request) == 1 ? "Payment Successful" : "Payment Cancelled";
     }
 }

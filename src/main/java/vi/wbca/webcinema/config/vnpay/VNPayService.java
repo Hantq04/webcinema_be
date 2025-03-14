@@ -5,10 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
+import vi.wbca.webcinema.enums.EBillStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.Bill;
+import vi.wbca.webcinema.model.BillStatus;
 import vi.wbca.webcinema.repository.BillRepo;
+import vi.wbca.webcinema.repository.BillStatusRepo;
+import vi.wbca.webcinema.util.EmailUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -23,6 +27,7 @@ import java.util.*;
 public class VNPayService {
     private final BillRepo billRepo;
     private final EmailService emailService;
+    private final BillStatusRepo billStatusRepo;
 
     public String createPayment(String code, String returnUrl) {
         Bill bill = getBill(code);
@@ -35,63 +40,73 @@ public class VNPayService {
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
 
-        Map<String, String> vnp_Params = new HashMap<>();
-        vnp_Params.put("vnp_Version", vnp_Version);
-        vnp_Params.put("vnp_Command", vnp_Command);
-        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf((long) (bill.getTotalMoney() * 100)));
-        vnp_Params.put("vnp_CurrCode", "VND");
+        if (bill.getBillStatus().equals(getStatus(EBillStatus.PENDING.toString()))) {
+            Map<String, String> vnp_Params = new HashMap<>();
 
-        vnp_Params.put("vnp_BankCode", bankCode); // Remove to choose another payment method
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+            vnp_Params.put("vnp_Version", vnp_Version);
+            vnp_Params.put("vnp_Command", vnp_Command);
+            vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+            vnp_Params.put("vnp_Amount", String.valueOf((long) (bill.getTotalMoney() * 100)));
+            vnp_Params.put("vnp_CurrCode", "VND");
+
+            vnp_Params.put("vnp_BankCode", bankCode); // Remove to choose another payment method
+            vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
 //        vnp_Params.put("vnp_OrderInfo", "Code orders:" + vnp_TxnRef); // Maybe another name
-        vnp_Params.put("vnp_OrderInfo", bill.getName() + " with trading code " + bill.getTradingCode());
-        vnp_Params.put("vnp_OrderType", orderType);
+            vnp_Params.put("vnp_OrderInfo", bill.getName() + " with trading code " + bill.getTradingCode());
+            vnp_Params.put("vnp_OrderType", orderType);
 
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", returnUrl + VNPayConfig.vnp_ReturnUrl);
-        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+            vnp_Params.put("vnp_Locale", "vn");
+            vnp_Params.put("vnp_ReturnUrl", returnUrl + VNPayConfig.vnp_ReturnUrl);
+            vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        var cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        var vnp_CreateDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+            var cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+            var vnp_CreateDate = formatter.format(cld.getTime());
+            vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+            cld.add(Calendar.MINUTE, 15);
+            String vnp_ExpireDate = formatter.format(cld.getTime());
+            vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        var itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            var fieldName = itr.next();
-            var fieldValue = vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
-                hashData.append(fieldName);
-                hashData.append('=');
-                try {
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                    //Build query
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                    query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
+            List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+            Collections.sort(fieldNames);
+            StringBuilder hashData = new StringBuilder();
+            StringBuilder query = new StringBuilder();
+            var itr = fieldNames.iterator();
+
+            while (itr.hasNext()) {
+                var fieldName = itr.next();
+                var fieldValue = vnp_Params.get(fieldName);
+                if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                    //Build hash data
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    try {
+                        hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                        //Build query
+                        query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                        query.append('=');
+                        query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    if (itr.hasNext()) {
+                        query.append('&');
+                        hashData.append('&');
+                    }
                 }
             }
+
+            var queryUrl = query.toString();
+            var vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
+            queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+            return VNPayConfig.vnp_PayUrl + "?" + queryUrl;
+        } else {
+            if (bill.getBillStatus().equals(getStatus(EBillStatus.SUCCESS.toString()))) {
+                throw new AppException(ErrorCode.PAYMENT_SUCCESS);
+            }
+            else throw new AppException(ErrorCode.PAYMENT_EXCEPTION);
         }
-        var queryUrl = query.toString();
-        var vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
-        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        return VNPayConfig.vnp_PayUrl + "?" + queryUrl;
     }
 
     public int paymentReturn(HttpServletRequest request) throws MessagingException,
@@ -117,10 +132,13 @@ public class VNPayService {
         fields.remove("vnp_SecureHash");
         var signValue = VNPayConfig.hashAllFields(fields);
 
+        var orderInfo = request.getParameter("vnp_OrderInfo");
+        String tradingCode = extractTradingCode(orderInfo);
+        Bill bill = getBill(tradingCode);
+
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
 
-                var orderInfo = request.getParameter("vnp_OrderInfo");
                 var paymentTime = request.getParameter("vnp_PayDate");
                 var transactionId = request.getParameter("vnp_TransactionNo");
                 var totalPrice = request.getParameter("vnp_Amount");
@@ -159,15 +177,19 @@ public class VNPayService {
 
                 message.append("Total Price: ").append(formattedTotalPrice).append(".");
 
-                String tradingCode = extractTradingCode(orderInfo);
-                Bill bill = getBill(tradingCode);
                 String userEmail = bill.getUser().getEmail();
 
                 // Send the response via email
                 sendResponse(message, userEmail);
 
+                bill.setBillStatus(getStatus(EBillStatus.SUCCESS.toString()));
+                billRepo.save(bill);
+
                 return 1;
             } else {
+                bill.setBillStatus(getStatus(EBillStatus.CANCELLED.toString()));
+                billRepo.save(bill);
+
                 return 0;
             }
         } else {
@@ -185,9 +207,23 @@ public class VNPayService {
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
     }
 
+    public BillStatus getStatus(String eBillStatus) {
+        return billStatusRepo.findByName(eBillStatus)
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+    }
+
+    private String formatDetailAsList(String detailText) {
+        String[] parts = detailText.split(",");
+        StringBuilder listHtml = new StringBuilder();
+        for (String part : parts) {
+            listHtml.append("<li>").append(part.trim()).append("</li>");
+        }
+        return listHtml.toString();
+    }
+
     private void sendResponse(StringBuilder detail, String userEmail) throws MessagingException, UnsupportedEncodingException {
-        String subject = "VNPay payment Response";
-        String body = "Data response: " + detail;
+        String subject = "VNPay Payment Response";
+        String body = EmailUtils.getConfirmPaymentMessage(formatDetailAsList(detail.toString()));
         // Sending the email
         emailService.sendMail(userEmail, subject, body);
     }
