@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vi.wbca.webcinema.util.Constants;
 
 import java.util.logging.Logger;
 
@@ -21,14 +22,14 @@ public class TestController {
     }
 
     @GetMapping("/user")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public String userAccess() {
         logger.info("----------User Role----------");
         return "User Content";
     }
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public String adminAccess() {
         logger.info("----------Admin Role----------");
         return "Admin Board";
