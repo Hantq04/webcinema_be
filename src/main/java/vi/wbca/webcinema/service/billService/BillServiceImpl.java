@@ -42,7 +42,7 @@ public class BillServiceImpl implements BillService {
 
         bill.setCreateTime(new Date());
         bill.setTradingCode(GenerateCode.generateTradingCode());
-        bill.setName("Bill - " + user.getName());
+        bill.setName("Bill - " + user.getUsername());
         bill.setUpdateTime(new Date());
         bill.setActive(true);
         bill.setBillStatus(getStatus(EBillStatus.PENDING.toString()));

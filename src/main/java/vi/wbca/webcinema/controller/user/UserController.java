@@ -159,7 +159,7 @@ public class UserController {
     }
 
     @GetMapping("/get-all")
-    public List<User> getAllUser() {
+    public List<UserDTO> getAllUser() {
 
         logger.info("----------Web Cinema: List User----------");
 

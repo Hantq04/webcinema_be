@@ -10,8 +10,10 @@ import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.model.BillStatus;
+import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.repository.BillRepo;
 import vi.wbca.webcinema.repository.BillStatusRepo;
+import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.util.EmailUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -28,6 +30,7 @@ public class VNPayService {
     private final BillRepo billRepo;
     private final EmailService emailService;
     private final BillStatusRepo billStatusRepo;
+    private final UserRepo userRepo;
 
     public String createPayment(String code, String returnUrl) {
         Bill bill = getBill(code);
@@ -64,7 +67,7 @@ public class VNPayService {
             var vnp_CreateDate = formatter.format(cld.getTime());
             vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-            cld.add(Calendar.MINUTE, 15);
+            cld.add(Calendar.MINUTE, 10);
             String vnp_ExpireDate = formatter.format(cld.getTime());
             vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -135,6 +138,7 @@ public class VNPayService {
         var orderInfo = request.getParameter("vnp_OrderInfo");
         String tradingCode = extractTradingCode(orderInfo);
         Bill bill = getBill(tradingCode);
+        User user = getUser(bill);
 
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
@@ -173,9 +177,9 @@ public class VNPayService {
 
                 // Formatting totalPriceDivided to add separators for thousands and drop trailing zeroes
                 DecimalFormat decimalFormat = new DecimalFormat("#,##0");
-                String formattedTotalPrice = decimalFormat.format(totalPriceDivided);
+                String formattedTotalPrice = decimalFormat.format(totalPriceDivided).replace(",", "");
 
-                message.append("Total Price: ").append(formattedTotalPrice).append(".");
+                message.append("Total Price: ").append(formattedTotalPrice).append(" VND");
 
                 String userEmail = bill.getUser().getEmail();
 
@@ -183,6 +187,8 @@ public class VNPayService {
                 sendResponse(message, userEmail);
 
                 bill.setBillStatus(getStatus(EBillStatus.SUCCESS.toString()));
+                user.setPoint(calculatePoint(bill, user));
+                userRepo.save(user);
                 billRepo.save(bill);
 
                 return 1;
@@ -210,6 +216,17 @@ public class VNPayService {
     public BillStatus getStatus(String eBillStatus) {
         return billStatusRepo.findByName(eBillStatus)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+    }
+
+    public User getUser(Bill bill) {
+        return userRepo.findByUserName(bill.getUser().getUsername())
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+    }
+
+    public int calculatePoint(Bill bill, User user) {
+        int newPoint = bill.getTotalMoney().intValue();
+        int currentPoint = user.getPoint();
+        return currentPoint + newPoint;
     }
 
     private String formatDetailAsList(String detailText) {
