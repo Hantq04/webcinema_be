@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.Rate;
 import vi.wbca.webcinema.service.rateService.RateService;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class RateController {
     private final RateService rateService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertRate(@Valid @RequestBody Rate rate) {
 
         logger.info("----------Web Cinema: Insert New Rate----------");
@@ -32,6 +35,7 @@ public class RateController {
     }
 
     @GetMapping("/get-all-rate")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<Rate> getAllRate() {
 
         logger.info("----------Web Cinema: Get All Rate----------");
