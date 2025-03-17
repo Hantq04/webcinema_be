@@ -3,6 +3,7 @@ package vi.wbca.webcinema.controller.cinema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.CinemaDTO;
@@ -25,6 +26,7 @@ public class CinemaController {
     private final CinemaService cinemaService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertCinema(@Validated(InsertCinema.class) @RequestBody CinemaDTO request) {
 
         logger.info("----------Web Cinema: Insert New Cinema----------");
@@ -37,6 +39,7 @@ public class CinemaController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateCinema(@Validated(UpdateCinema.class) @RequestBody CinemaDTO request) {
 
         logger.info("----------Web Cinema: Update Cinema----------");
@@ -55,6 +58,7 @@ public class CinemaController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteCinema(@Validated(DeleteCinema.class) @RequestParam String code) {
 
         logger.info("----------Web Cinema: Delete Cinema----------");
