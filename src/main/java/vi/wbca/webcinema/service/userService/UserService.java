@@ -14,7 +14,7 @@ public interface UserService {
 
     void deleteUser(List<String> listUsers);
 
-    List<User> getAllUser();
+    List<UserDTO> getAllUser();
 
     UserDTO findById(Long id);
 }
