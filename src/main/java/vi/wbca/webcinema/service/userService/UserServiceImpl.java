@@ -180,8 +180,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUser() {
-        return userRepo.findAll();
+    public List<UserDTO> getAllUser() {
+        return userRepo.findAll()
+                .stream().map(userMapper::toUserDTO)
+                .toList();
     }
 
     @Override
