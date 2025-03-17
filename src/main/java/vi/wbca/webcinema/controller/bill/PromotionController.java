@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.PromotionDTO;
 import vi.wbca.webcinema.service.promotionService.PromotionService;
@@ -22,6 +23,7 @@ public class PromotionController {
     private final PromotionService promotionService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertPromotion(@Valid @RequestBody PromotionDTO request) {
 
         logger.info("----------Web Cinema: Insert New Promotion----------");
@@ -41,6 +43,7 @@ public class PromotionController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestParam String name) {
 
         logger.info("----------Web Cinema: Delete Promotion----------");

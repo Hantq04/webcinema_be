@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.ScheduleDTO;
@@ -25,6 +26,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSchedule(@Validated(InsertSchedule.class) @RequestBody ScheduleDTO request) {
 
         logger.info("----------Web Cinema: Insert New Schedule----------");
@@ -37,6 +39,7 @@ public class ScheduleController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateSchedule(@Validated(UpdateSchedule.class) @RequestBody ScheduleDTO request) {
 
         logger.info("----------Web Cinema: Update Schedule----------");
@@ -55,6 +58,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteSchedule(@Valid @RequestParam String code, Long movieId) {
 
         logger.info("----------Web Cinema: Delete Schedule----------");
