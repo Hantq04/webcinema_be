@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.Banner;
 import vi.wbca.webcinema.service.bannerService.BannerService;
@@ -22,6 +23,7 @@ public class BannerController {
     private final BannerService bannerService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertBanner(@Valid @RequestBody Banner banner) {
 
         logger.info("----------Web Cinema: Insert New Banner----------");
@@ -38,6 +40,7 @@ public class BannerController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteBanner(@Valid @RequestParam Long id) {
 
         logger.info("----------Web Cinema: Delete Banner----------");
