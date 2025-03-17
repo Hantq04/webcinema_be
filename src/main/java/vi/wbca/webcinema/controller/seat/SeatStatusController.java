@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.SeatStatus;
 import vi.wbca.webcinema.service.seatStatusService.SeatStatusService;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class SeatStatusController {
     private final SeatStatusService seatStatusService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSeatStatus(@Valid @RequestBody SeatStatus seatStatus) {
 
         logger.info("----------Web Cinema: Insert New Seat Status----------");
@@ -32,6 +35,7 @@ public class SeatStatusController {
     }
 
     @GetMapping("/get-all-status")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<SeatStatus> getAllStatus() {
 
         logger.info("----------Web Cinema: Get All Seat Status----------");
