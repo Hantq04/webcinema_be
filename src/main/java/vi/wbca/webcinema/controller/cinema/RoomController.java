@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.RoomDTO;
 import vi.wbca.webcinema.service.roomService.RoomService;
@@ -22,6 +23,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertRoom(@Valid @RequestBody RoomDTO request) {
 
         logger.info("----------Web Cinema: Insert New Room----------");
@@ -34,6 +36,7 @@ public class RoomController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateRoom(@Valid @RequestBody RoomDTO request) {
 
         logger.info("----------Web Cinema: Update Room----------");
@@ -53,6 +56,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteRoom(@Valid @RequestParam String code) {
 
         logger.info("----------Web Cinema: Delete Room----------");

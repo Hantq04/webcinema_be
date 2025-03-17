@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.MovieDTO;
@@ -25,6 +26,7 @@ public class MovieController {
     private final MovieService movieService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertMovie(@Validated(InsertMovie.class) @RequestBody MovieDTO request) {
 
         logger.info("----------Web Cinema: Insert New Movie----------");
@@ -37,6 +39,7 @@ public class MovieController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateMovie(@Validated(UpdateMovie.class) @RequestBody MovieDTO request) {
 
         logger.info("----------Web Cinema: Update Movie----------");
@@ -59,6 +62,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteMovie(@Valid @RequestParam String name) {
 
         logger.info("----------Web Cinema: Delete Movie----------");

@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.TicketDTO;
 import vi.wbca.webcinema.service.ticketService.TicketService;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.logging.Logger;
@@ -19,6 +21,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertTicket(@Valid @RequestBody TicketDTO request) {
 
         logger.info("----------Web Cinema: Insert New Ticket----------");
@@ -31,6 +34,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteTicket(@Valid @RequestParam String code) {
 
         logger.info("----------Web Cinema: Delete Ticket----------");

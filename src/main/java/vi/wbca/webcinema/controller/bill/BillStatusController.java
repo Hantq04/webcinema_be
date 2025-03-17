@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.BillStatus;
 import vi.wbca.webcinema.service.billStatusService.BillStatusService;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class BillStatusController {
     private final BillStatusService billStatusService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertBillStatus(@Valid @RequestBody BillStatus billStatus) {
 
         logger.info("----------Web Cinema: Insert New Bill Status----------");
@@ -32,6 +35,7 @@ public class BillStatusController {
     }
 
     @GetMapping("/get-all-status")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<BillStatus> getAllStatus() {
 
         logger.info("----------Web Cinema: Get All Bill Status----------");

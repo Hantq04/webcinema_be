@@ -4,8 +4,10 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.config.vnpay.VNPayService;
+import vi.wbca.webcinema.util.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -18,6 +20,7 @@ public class PaymentController {
     private final VNPayService vnPayService;
 
     @PostMapping("/submit-payment")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public String submitPayment(@Valid @RequestParam String code, HttpServletRequest request) {
 
         logger.info("----------Web Cinema: Submit Payment----------");

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.FoodDTO;
 import vi.wbca.webcinema.service.foodService.FoodService;
@@ -22,6 +23,7 @@ public class FoodController {
     private final FoodService foodService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertFood(@Valid @RequestBody FoodDTO request) {
 
         logger.info("----------Web Cinema: Insert New Food----------");
@@ -34,6 +36,7 @@ public class FoodController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateFood(@Valid @RequestBody FoodDTO request) {
 
         logger.info("----------Web Cinema: Update Food----------");
@@ -52,6 +55,7 @@ public class FoodController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteFood(@Valid @RequestParam String name) {
 
         logger.info("----------Web Cinema: Delete Food----------");

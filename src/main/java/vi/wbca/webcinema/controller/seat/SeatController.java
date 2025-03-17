@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.SeatDTO;
 import vi.wbca.webcinema.service.seatService.SeatService;
@@ -22,6 +23,7 @@ public class SeatController {
     private final SeatService seatService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSeat(@Valid @RequestBody SeatDTO request) {
 
         logger.info("----------Web Cinema: Insert New Seat----------");
@@ -34,6 +36,7 @@ public class SeatController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateSeat(@Valid @RequestBody SeatDTO request) {
 
         logger.info("----------Web Cinema: Update Seat----------");
@@ -50,6 +53,7 @@ public class SeatController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteSeat(@Valid @RequestParam Long id) {
 
         logger.info("----------Web Cinema: Delete Seat----------");

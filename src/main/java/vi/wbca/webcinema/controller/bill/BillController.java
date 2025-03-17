@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.BillDTO;
 import vi.wbca.webcinema.dto.BillTicketDTO;
@@ -24,6 +25,7 @@ public class BillController {
     private final BillService billService;
 
     @PostMapping("/insert")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
 
         logger.info("----------Web Cinema: Insert New Bill----------");
@@ -50,6 +52,7 @@ public class BillController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
 
         logger.info("----------Web Cinema: Update Bill----------");
@@ -68,6 +71,7 @@ public class BillController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String tradingCode) {
 
         logger.info("----------Web Cinema: Delete Bill----------");

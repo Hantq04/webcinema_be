@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.TokenDTO;
@@ -91,6 +92,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
 
         logger.info("----------Web Cinema: Update User----------");
@@ -109,6 +111,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteUser(@Validated(DeleteUser.class) @RequestParam List<String> userName) {
 
         logger.info("----------Web Cinema: Delete User----------");
@@ -159,6 +162,7 @@ public class UserController {
     }
 
     @GetMapping("/get-all")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<UserDTO> getAllUser() {
 
         logger.info("----------Web Cinema: List User----------");
@@ -167,6 +171,7 @@ public class UserController {
     }
 
     @GetMapping("/find-by-id")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> findById(@Valid @RequestParam Long id) {
 
         logger.info("----------Web Cinema: Get User----------");
