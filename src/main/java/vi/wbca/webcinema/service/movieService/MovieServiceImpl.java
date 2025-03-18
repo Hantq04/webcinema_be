@@ -1,6 +1,8 @@
 package vi.wbca.webcinema.service.movieService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.MovieDTO;
 import vi.wbca.webcinema.exception.AppException;
@@ -17,7 +19,7 @@ import java.util.Calendar;
 
 @Service
 @RequiredArgsConstructor
-public class MovieServiceImpl implements MovieService{
+public class MovieServiceImpl implements MovieService {
     private final MovieRepo movieRepo;
     private final MovieMapper movieMapper;
     private final MovieTypeRepo movieTypeRepo;
@@ -71,5 +73,11 @@ public class MovieServiceImpl implements MovieService{
         Movie movie = movieRepo.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         movieRepo.delete(movie);
+    }
+
+    @Override
+    public Page<MovieDTO> getMoviePage(Pageable pageable) {
+        Page<Movie> movies = movieRepo.findAll(pageable);
+        return movies.map(movieMapper::toMovieDTO);
     }
 }
