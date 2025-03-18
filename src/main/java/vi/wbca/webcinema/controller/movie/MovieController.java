@@ -2,6 +2,9 @@ package vi.wbca.webcinema.controller.movie;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -71,6 +74,19 @@ public class MovieController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted movie successfully.", "")
+        );
+    }
+
+    @GetMapping("/get-movie-page")
+    public ResponseEntity<ResponseObject> getMoviePage(@RequestParam int page, @RequestParam int size) {
+
+        logger.info("----------Web Cinema: Movie Page----------");
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MovieDTO> pageData = movieService.getMoviePage(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get movie page successfully.", pageData)
         );
     }
 }
