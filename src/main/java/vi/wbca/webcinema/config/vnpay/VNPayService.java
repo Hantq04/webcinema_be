@@ -5,14 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
+import vi.wbca.webcinema.enums.CustomerRank;
 import vi.wbca.webcinema.enums.EBillStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.model.BillStatus;
+import vi.wbca.webcinema.model.RankCustomer;
 import vi.wbca.webcinema.model.User;
 import vi.wbca.webcinema.repository.BillRepo;
 import vi.wbca.webcinema.repository.BillStatusRepo;
+import vi.wbca.webcinema.repository.RankCustomerRepo;
 import vi.wbca.webcinema.repository.UserRepo;
 import vi.wbca.webcinema.util.EmailUtils;
 
@@ -31,6 +34,7 @@ public class VNPayService {
     private final EmailService emailService;
     private final BillStatusRepo billStatusRepo;
     private final UserRepo userRepo;
+    private final RankCustomerRepo rankCustomerRepo;
 
     public String createPayment(String code, String returnUrl) {
         Bill bill = getBill(code);
@@ -139,6 +143,10 @@ public class VNPayService {
         String tradingCode = extractTradingCode(orderInfo);
         Bill bill = getBill(tradingCode);
         User user = getUser(bill);
+        RankCustomer rankCustomer = getRankCustomer();
+
+        System.out.println(rankCustomer.getPoint());
+        System.out.println(user.getPoint());
 
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
@@ -188,6 +196,10 @@ public class VNPayService {
 
                 bill.setBillStatus(getStatus(EBillStatus.SUCCESS.toString()));
                 user.setPoint(calculatePoint(bill, user));
+
+                if (user.getPoint() >= rankCustomer.getPoint()) {
+                    user.setRankCustomer(rankCustomer);
+                }
                 userRepo.save(user);
                 billRepo.save(bill);
 
@@ -221,6 +233,11 @@ public class VNPayService {
     public User getUser(Bill bill) {
         return userRepo.findByUserName(bill.getUser().getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+    }
+
+    public RankCustomer getRankCustomer() {
+        return rankCustomerRepo.findByName(CustomerRank.VIP.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 
     public int calculatePoint(Bill bill, User user) {
