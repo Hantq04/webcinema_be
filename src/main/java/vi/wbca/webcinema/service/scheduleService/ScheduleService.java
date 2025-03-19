@@ -8,4 +8,6 @@ public interface ScheduleService {
     void updateSchedule(ScheduleDTO scheduleDTO);
 
     void deleteSchedule(String name, Long movieId);
+
+    void deactivateExpiredSchedule();
 }

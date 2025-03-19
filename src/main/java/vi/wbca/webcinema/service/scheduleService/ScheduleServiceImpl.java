@@ -138,6 +138,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
     }
 
+    @Override
     public void deactivateExpiredSchedule() {
         List<Schedule> expiredSchedule = scheduleRepo.findAllByEndAtBeforeAndIsActiveTrue(new Date());
         for (Schedule schedule: expiredSchedule) {
