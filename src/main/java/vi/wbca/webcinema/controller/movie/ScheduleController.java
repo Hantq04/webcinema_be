@@ -69,4 +69,17 @@ public class ScheduleController {
                 new ResponseObject(HttpStatus.OK, "Deleted schedule successfully.", "")
         );
     }
+
+    @PutMapping("/deactivate-expired")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> deactivateExpiredSchedule() {
+
+        logger.info("----------Web Cinema: Deactivate Expired Schedule----------");
+
+        scheduleService.deactivateExpiredSchedule();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Deactivate expired schedule successfully.", "")
+        );
+    }
 }
