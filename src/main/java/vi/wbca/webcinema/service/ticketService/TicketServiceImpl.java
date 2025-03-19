@@ -13,6 +13,7 @@ import vi.wbca.webcinema.repository.*;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.util.Calendar;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,10 @@ public class TicketServiceImpl implements TicketService{
 
         Room room = getRoom(ticketDTO);
         Schedule schedule = getSchedule(ticketDTO, room);
+
+        if (schedule.getEndAt().before(new Date())) {
+            throw new AppException(ErrorCode.SCHEDULE_EXPIRED);
+        }
 
         // Check seat availability in the room
         checkSeatAvailable(room, schedule);

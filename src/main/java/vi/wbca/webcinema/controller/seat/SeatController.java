@@ -64,4 +64,17 @@ public class SeatController {
                 new ResponseObject(HttpStatus.OK, "Deleted seat successfully.", "")
         );
     }
+
+    @PutMapping("/refresh")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String code) {
+
+        logger.info("----------Web Cinema: Update Seat Status----------");
+
+        seatService.refreshSeat(code);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Updated seat status successfully.", "")
+        );
+    }
 }
