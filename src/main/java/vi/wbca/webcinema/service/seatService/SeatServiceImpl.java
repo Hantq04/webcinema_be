@@ -2,20 +2,17 @@ package vi.wbca.webcinema.service.seatService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.dto.SeatDTO;
 import vi.wbca.webcinema.enums.ESeatStatus;
 import vi.wbca.webcinema.enums.ESeatType;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.SeatMapper;
-import vi.wbca.webcinema.model.Room;
-import vi.wbca.webcinema.model.Seat;
-import vi.wbca.webcinema.model.SeatStatus;
-import vi.wbca.webcinema.model.SeatType;
-import vi.wbca.webcinema.repository.RoomRepo;
-import vi.wbca.webcinema.repository.SeatRepo;
-import vi.wbca.webcinema.repository.SeatStatusRepo;
-import vi.wbca.webcinema.repository.SeatTypeRepo;
+import vi.wbca.webcinema.model.*;
+import vi.wbca.webcinema.repository.*;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,18 +22,18 @@ public class SeatServiceImpl implements SeatService{
     private final SeatStatusRepo seatStatusRepo;
     private final RoomRepo roomRepo;
     private final SeatTypeRepo seatTypeRepo;
+    private final BillRepo billRepo;
+    private final BillTicketRepo billTicketRepo;
 
     @Override
     public SeatDTO insertSeat(SeatDTO request) {
         Seat seat = seatMapper.toSeat(request);
-        SeatStatus seatStatus = seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
-                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
         Room room = roomRepo.findByCode(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
         seat.setActive(true);
         seat.setRoom(room);
-        seat.setSeatStatus(seatStatus);
+        seat.setSeatStatus(getSeatStatus());
         seatRepo.save(seat);
 
         setSeatType(seat, request.getLine());
@@ -77,9 +74,37 @@ public class SeatServiceImpl implements SeatService{
         seatRepo.delete(seat);
     }
 
+    public SeatStatus getSeatStatus() {
+        return seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
+    }
+
     @Override
     public Seat findById(Long id) {
         return seatRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+    }
+
+    public Bill getBill(String code) {
+        return billRepo.findByTradingCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+    }
+
+    public void validatedBillTicket(Bill bill) {
+        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+        if (billTickets.isEmpty()) throw new AppException(ErrorCode.CODE_NOT_FOUND);
+    }
+
+    @Override
+    @Transactional
+    public void refreshSeat(String code) {
+        Bill bill = getBill(code);
+        Long statusCode = bill.getBillStatus().getId();
+        if (statusCode == 2) return;
+
+        SeatStatus seatStatus = getSeatStatus();
+        validatedBillTicket(bill);
+
+        seatRepo.updateSeatStatusByBill(bill, seatStatus);
     }
 }

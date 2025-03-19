@@ -60,6 +60,7 @@ public enum ErrorCode {
     ROOM_FULL(1239, "No seats available in this room.", HttpStatus.BAD_REQUEST),
     PAYMENT_SUCCESS(1240, "Payment has already been completed successfully.", HttpStatus.BAD_REQUEST),
     PAYMENT_EXCEPTION(1241, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST),
+    SCHEDULE_EXPIRED(1242, "Cannot book ticket. The schedule has already ended.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
