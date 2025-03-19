@@ -14,14 +14,18 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import vi.wbca.webcinema.util.logging.LoggingUtils;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class.getName());
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseObject> handleException(Exception exception) {
         ErrorCode errorCode;
@@ -68,6 +72,7 @@ public class GlobalExceptionHandler {
             errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         }
         log.error("Error Location: {}", Arrays.toString(Arrays.copyOfRange(exception.getStackTrace(), 0, 3)));
+        logger.addHandler(LoggingUtils.createLoggingFolder());
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 new ResponseObject(errorCode.getCode(), errorCode.getMessage(), "")
         );
