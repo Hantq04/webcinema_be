@@ -12,4 +12,6 @@ public interface MovieService {
     void deleteMovie(String name);
 
     Page<MovieDTO> getMoviePage(Pageable pageable);
+
+    Page<MovieDTO> sortMovieByTicketOrder(Pageable pageable);
 }

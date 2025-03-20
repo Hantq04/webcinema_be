@@ -34,26 +34,27 @@ public class BillServiceImpl implements BillService {
     @Override
     public void createBill(BillDTO billDTO) {
         User user = getCustomer(billDTO);
-        Bill bill = billMapper.toBill(billDTO);
+        BillStatus pendingStatus = getStatus(EBillStatus.PENDING.toString());
 
-        if (billRepo.existsByUser(user)) {
+        if (billRepo.existsByUserAndBillStatus(user, pendingStatus)) {
             throw new AppException(ErrorCode.BILL_EXISTED);
         }
 
+        Bill bill = billMapper.toBill(billDTO);
         bill.setCreateTime(new Date());
         bill.setTradingCode(GenerateCode.generateTradingCode());
         bill.setName("Bill - " + user.getUsername());
         bill.setUpdateTime(new Date());
         bill.setActive(true);
-        bill.setBillStatus(getStatus(EBillStatus.PENDING.toString()));
+        bill.setBillStatus(pendingStatus);
         bill.setUser(user);
         billRepo.save(bill);
 
         insertBillFood(billDTO, bill);
         insertBillTicket(billDTO, bill);
         calculateTotal(bill, user);
-
         billDTO.setTotalMoney(bill.getTotalMoney());
+
         billRepo.save(bill);
         billMapper.toBillDTO(bill);
     }
@@ -79,7 +80,13 @@ public class BillServiceImpl implements BillService {
         double totalMoney = totalFood + totalTicket;
 
         Promotion promotion = getPromotion(user);
-        if (promotion != null) {
+
+        if (promotion.getQuantity() == 0 || promotion.getEndTime().before(new Date())) {
+            promotion.setActive(false);
+            promotionRepo.save(promotion);
+        }
+
+        if (promotion.isActive()) {
             double discounted = totalMoney * promotion.getPercent() / 100;
             double finalTotal = totalMoney - discounted;
 
@@ -130,7 +137,7 @@ public class BillServiceImpl implements BillService {
 
     public BillStatus getStatus(String eBillStatus) {
         return billStatusRepo.findByName(eBillStatus)
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
     }
 
     @Override

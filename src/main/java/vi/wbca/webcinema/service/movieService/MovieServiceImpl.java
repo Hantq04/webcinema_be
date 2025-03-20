@@ -80,4 +80,9 @@ public class MovieServiceImpl implements MovieService {
         Page<Movie> movies = movieRepo.findAll(pageable);
         return movies.map(movieMapper::toMovieDTO);
     }
+
+    @Override
+    public Page<MovieDTO> sortMovieByTicketOrder(Pageable pageable) {
+        return null;
+    }
 }

@@ -145,9 +145,6 @@ public class VNPayService {
         User user = getUser(bill);
         RankCustomer rankCustomer = getRankCustomer();
 
-        System.out.println(rankCustomer.getPoint());
-        System.out.println(user.getPoint());
-
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
 
