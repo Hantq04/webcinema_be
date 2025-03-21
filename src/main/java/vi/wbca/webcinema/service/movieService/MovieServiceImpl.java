@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.MovieMapper;
@@ -82,7 +83,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Page<MovieDTO> sortMovieByTicketOrder(Pageable pageable) {
-        return null;
+    public Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable) {
+        return movieRepo.getTicketStatistics(pageable);
     }
 }

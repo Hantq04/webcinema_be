@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.dto;
+package vi.wbca.webcinema.dto.schedule;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.GeneralSettingDTO;
+import vi.wbca.webcinema.dto.setting.GeneralSettingDTO;
 import vi.wbca.webcinema.service.generalSettingService.GeneralSettingService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;

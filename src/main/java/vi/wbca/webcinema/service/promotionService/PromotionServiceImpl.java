@@ -2,7 +2,7 @@ package vi.wbca.webcinema.service.promotionService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.PromotionDTO;
+import vi.wbca.webcinema.dto.ticket.PromotionDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.PromotionMapper;

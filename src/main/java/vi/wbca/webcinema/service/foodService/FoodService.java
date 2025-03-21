@@ -1,7 +1,6 @@
 package vi.wbca.webcinema.service.foodService;
 
-import vi.wbca.webcinema.dto.FoodDTO;
-import vi.wbca.webcinema.dto.UserDTO;
+import vi.wbca.webcinema.dto.cinema.FoodDTO;
 
 public interface FoodService {
     FoodDTO insertFood(FoodDTO foodDTO);

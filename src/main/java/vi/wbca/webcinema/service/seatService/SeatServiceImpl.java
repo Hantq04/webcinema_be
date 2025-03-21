@@ -3,7 +3,7 @@ package vi.wbca.webcinema.service.seatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vi.wbca.webcinema.dto.SeatDTO;
+import vi.wbca.webcinema.dto.room.SeatDTO;
 import vi.wbca.webcinema.enums.ESeatStatus;
 import vi.wbca.webcinema.enums.ESeatType;
 import vi.wbca.webcinema.exception.AppException;

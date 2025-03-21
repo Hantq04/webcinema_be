@@ -2,7 +2,7 @@ package vi.wbca.webcinema.service.ticketService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.TicketDTO;
+import vi.wbca.webcinema.dto.ticket.TicketDTO;
 import vi.wbca.webcinema.enums.ESeatStatus;
 import vi.wbca.webcinema.enums.ESeatType;
 import vi.wbca.webcinema.exception.AppException;

@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.dto;
+package vi.wbca.webcinema.dto.token;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

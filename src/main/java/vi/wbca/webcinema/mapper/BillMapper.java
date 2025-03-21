@@ -2,7 +2,7 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.BillDTO;
+import vi.wbca.webcinema.dto.bill.BillDTO;
 import vi.wbca.webcinema.model.Bill;
 
 @Mapper(componentModel = "spring")

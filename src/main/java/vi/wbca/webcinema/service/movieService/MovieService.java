@@ -2,7 +2,8 @@ package vi.wbca.webcinema.service.movieService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import vi.wbca.webcinema.dto.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
 
 public interface MovieService {
     MovieDTO insertMovie(MovieDTO movieDTO);
@@ -13,5 +14,5 @@ public interface MovieService {
 
     Page<MovieDTO> getMoviePage(Pageable pageable);
 
-    Page<MovieDTO> sortMovieByTicketOrder(Pageable pageable);
+    Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable);
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.BillFoodDTO;
+import vi.wbca.webcinema.dto.bill.BillFoodDTO;
 import vi.wbca.webcinema.model.Bill;
 import vi.wbca.webcinema.service.billFoodService.BillFoodService;
 import vi.wbca.webcinema.util.Constants;
