@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.CinemaDTO;
+import vi.wbca.webcinema.dto.cinema.CinemaDTO;
 import vi.wbca.webcinema.groupValidate.cinema.DeleteCinema;
 import vi.wbca.webcinema.groupValidate.cinema.InsertCinema;
 import vi.wbca.webcinema.groupValidate.cinema.UpdateCinema;

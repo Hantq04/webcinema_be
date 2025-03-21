@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.TicketDTO;
+import vi.wbca.webcinema.dto.ticket.TicketDTO;
 import vi.wbca.webcinema.service.ticketService.TicketService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;

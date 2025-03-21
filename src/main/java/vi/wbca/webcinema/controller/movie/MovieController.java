@@ -10,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.groupValidate.movie.UpdateMovie;
 import vi.wbca.webcinema.service.movieService.MovieService;
@@ -87,6 +88,19 @@ public class MovieController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Get movie page successfully.", pageData)
+        );
+    }
+
+    @GetMapping("/sort-movie")
+    public ResponseEntity<ResponseObject> sortMovieByTicketOrder(@RequestParam int page, @RequestParam int size) {
+
+        logger.info("----------Web Cinema: Sort Movie Page----------");
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MovieStatisticDTO> pageData = movieService.sortMovieByTicketOrder(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get sort movie page successfully.", pageData)
         );
     }
 }

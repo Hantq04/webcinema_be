@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.RoomDTO;
+import vi.wbca.webcinema.dto.room.RoomDTO;
 import vi.wbca.webcinema.service.roomService.RoomService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;

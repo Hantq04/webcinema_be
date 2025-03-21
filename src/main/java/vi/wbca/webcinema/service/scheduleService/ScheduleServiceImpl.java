@@ -2,8 +2,7 @@ package vi.wbca.webcinema.service.scheduleService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.ScheduleDTO;
-import vi.wbca.webcinema.enums.ESeatType;
+import vi.wbca.webcinema.dto.schedule.ScheduleDTO;
 import vi.wbca.webcinema.enums.ShowTime;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;

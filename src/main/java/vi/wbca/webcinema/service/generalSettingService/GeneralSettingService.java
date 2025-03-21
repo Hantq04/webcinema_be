@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.generalSettingService;
 
-import vi.wbca.webcinema.dto.GeneralSettingDTO;
+import vi.wbca.webcinema.dto.setting.GeneralSettingDTO;
 
 public interface GeneralSettingService {
     GeneralSettingDTO insertSetting(GeneralSettingDTO generalSettingDTO);

@@ -2,7 +2,7 @@ package vi.wbca.webcinema.service.cinemaService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.CinemaDTO;
+import vi.wbca.webcinema.dto.cinema.CinemaDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.CinemaMapper;
