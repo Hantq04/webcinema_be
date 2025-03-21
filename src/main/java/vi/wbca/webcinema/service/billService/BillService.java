@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.billService;
 
-import vi.wbca.webcinema.dto.BillDTO;
+import vi.wbca.webcinema.dto.bill.BillDTO;
 
 public interface BillService {
     void createBill(BillDTO billDTO);

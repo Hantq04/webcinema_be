@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.ScheduleDTO;
+import vi.wbca.webcinema.dto.schedule.ScheduleDTO;
 import vi.wbca.webcinema.groupValidate.schedule.InsertSchedule;
 import vi.wbca.webcinema.groupValidate.schedule.UpdateSchedule;
 import vi.wbca.webcinema.service.scheduleService.ScheduleService;
