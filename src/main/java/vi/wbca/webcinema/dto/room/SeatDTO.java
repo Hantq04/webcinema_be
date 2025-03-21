@@ -24,5 +24,8 @@ public class SeatDTO {
     String line;
 
     @NotBlank(message = "NOT_BLANK")
+    String roomName;
+
+    @NotBlank(message = "NOT_BLANK")
     String roomCode;
 }
