@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
             errorCode = exception instanceof SignatureException ? ErrorCode.INVALID_SIGNATURE : ErrorCode.EXPIRED_TOKEN;
             log.error("Error exception: {}", exception.getMessage());
         } else if (exception instanceof HttpMessageNotReadableException) {
-            errorCode = ErrorCode.ENUM_NOT_EXIST;
+            errorCode = ErrorCode.ENUM_NOT_EXISTED;
             log.error("Error exception: JSON parse error");
         } else if (exception instanceof NullPointerException) {
             errorCode = ErrorCode.NULL_POINTER;

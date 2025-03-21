@@ -23,4 +23,6 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
             "SELECT t.seat.id FROM Ticket t WHERE t.id IN (" +
             "SELECT bt.ticket.id FROM BillTicket bt WHERE bt.bill = :bill))")
     void updateSeatStatusByBill(@Param("bill") Bill bill, @Param("status") SeatStatus status);
+
+    boolean existsByRoomAndLineAndNumber(Room room, String line, Integer number);
 }

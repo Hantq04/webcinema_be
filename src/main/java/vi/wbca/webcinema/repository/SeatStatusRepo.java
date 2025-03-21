@@ -2,6 +2,7 @@ package vi.wbca.webcinema.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import vi.wbca.webcinema.enums.ESeatStatus;
 import vi.wbca.webcinema.model.SeatStatus;
 
 import java.util.Optional;
