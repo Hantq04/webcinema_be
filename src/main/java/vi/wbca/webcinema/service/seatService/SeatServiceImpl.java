@@ -28,12 +28,18 @@ public class SeatServiceImpl implements SeatService{
     @Override
     public SeatDTO insertSeat(SeatDTO request) {
         Seat seat = seatMapper.toSeat(request);
-        Room room = roomRepo.findByCode(request.getRoomCode())
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+        Room room = roomRepo.findByNameAndCode(request.getRoomName(), request.getRoomCode())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
+        if (seatRepo.existsByRoomAndLineAndNumber(room, request.getLine(), request.getNumber()) ) {
+            throw new AppException(ErrorCode.SEAT_EXISTED);
+        }
         seat.setActive(true);
         seat.setRoom(room);
         seat.setSeatStatus(getSeatStatus());
+
+        request.setRoomName(room.getName());
+        request.setRoomCode(room.getCode());
         seatRepo.save(seat);
 
         setSeatType(seat, request.getLine());
