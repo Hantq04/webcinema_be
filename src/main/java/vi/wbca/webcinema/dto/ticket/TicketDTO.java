@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.dto;
+package vi.wbca.webcinema.dto.ticket;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;

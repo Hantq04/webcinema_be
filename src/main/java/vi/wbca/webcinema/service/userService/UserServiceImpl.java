@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.UserDTO;
+import vi.wbca.webcinema.dto.user.UserDTO;
 import vi.wbca.webcinema.enums.CustomerRank;
 import vi.wbca.webcinema.enums.EUserStatus;
 import vi.wbca.webcinema.exception.AppException;
