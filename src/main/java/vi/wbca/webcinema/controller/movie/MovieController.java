@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.movie.MovieDTO;
+import vi.wbca.webcinema.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.groupValidate.movie.UpdateMovie;
@@ -101,6 +102,45 @@ public class MovieController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Get sort movie page successfully.", pageData)
+        );
+    }
+
+    @GetMapping("/get-movie-with-cinema")
+    public ResponseEntity<ResponseObject> getMovieWithCinema(@RequestParam String code, @RequestParam int page, @RequestParam int size) {
+
+        logger.info("----------Web Cinema: Movie With Cinema Page----------");
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MovieResponseDTO> pageData = movieService.getMovieWithCinemaId(code, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get movie page with cinema successfully.", pageData)
+        );
+    }
+
+    @GetMapping("/get-movie-with-room")
+    public ResponseEntity<ResponseObject> getMovieWithRoom(@RequestParam String cinemaCode,@RequestParam String roomCode, @RequestParam int page, @RequestParam int size) {
+
+        logger.info("----------Web Cinema: Movie With Room Page----------");
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MovieResponseDTO> pageData = movieService.getMovieWithRoomId(cinemaCode, roomCode, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get movie page with room successfully.", pageData)
+        );
+    }
+
+    @GetMapping("/get-movie-with-seat-status")
+    public ResponseEntity<ResponseObject> getMovieWithSeaStatus(@RequestParam String seatStatus, @RequestParam int page, @RequestParam int size) {
+
+        logger.info("----------Web Cinema: Movie With Seat Status Page----------");
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MovieResponseDTO> pageData = movieService.getMovieWithSeatStatusId(seatStatus, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get movie page with seat status successfully.", pageData)
         );
     }
 }
