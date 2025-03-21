@@ -34,7 +34,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(1213, "User not found.", HttpStatus.BAD_REQUEST),
     NAME_NOT_FOUND(1214, "Name not found.", HttpStatus.BAD_REQUEST),
     CODE_NOT_FOUND(1215, "Code not found.", HttpStatus.BAD_REQUEST),
-    ENUM_NOT_EXIST(1216, "JSON parse error.", HttpStatus.BAD_REQUEST),
+    ENUM_NOT_EXISTED(1216, "JSON parse error.", HttpStatus.BAD_REQUEST),
     NOT_FOUND(1217, "Data not found.", HttpStatus.BAD_REQUEST),
     TYPE_NOT_FOUND(1218, "Type not found.", HttpStatus.BAD_REQUEST),
     AUTH_TOKEN_EXCEPTION(1219, "Authorization header is missing or invalid.", HttpStatus.BAD_REQUEST),
@@ -61,7 +61,8 @@ public enum ErrorCode {
     PAYMENT_SUCCESS(1240, "Payment has already been completed successfully.", HttpStatus.BAD_REQUEST),
     PAYMENT_EXCEPTION(1241, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST),
     SCHEDULE_EXPIRED(1242, "Cannot book ticket. The schedule has already ended.", HttpStatus.BAD_REQUEST),
-    PROMOTION_NOT_EXIST(1243, "Promotion is already existed.", HttpStatus.BAD_REQUEST),
+    PROMOTION_NOT_EXISTED(1243, "Promotion is already existed.", HttpStatus.BAD_REQUEST),
+    SEAT_EXISTED(1244, "Seat is already existed in this room.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
