@@ -3,7 +3,7 @@ package vi.wbca.webcinema.service.refreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.TokenDTO;
+import vi.wbca.webcinema.dto.token.TokenDTO;
 import vi.wbca.webcinema.enums.TokenStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;

@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.dto;
+package vi.wbca.webcinema.dto.setting;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
