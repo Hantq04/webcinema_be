@@ -13,7 +13,6 @@ import vi.wbca.webcinema.util.logging.LoggingUtils;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {

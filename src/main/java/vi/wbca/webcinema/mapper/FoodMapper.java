@@ -9,6 +9,7 @@ import vi.wbca.webcinema.model.Food;
 public interface FoodMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "billFoods", ignore = true)
+    @Mapping(target = "active", ignore = true)
     Food toFood(FoodDTO foodDTO);
 
     FoodDTO toFoodDTO(Food food);
