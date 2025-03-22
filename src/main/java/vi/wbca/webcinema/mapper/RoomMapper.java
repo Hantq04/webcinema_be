@@ -7,9 +7,12 @@ import vi.wbca.webcinema.model.Room;
 
 @Mapper(componentModel = "spring")
 public interface RoomMapper {
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "schedules", ignore = true)
+    @Mapping(target = "active", ignore = true)
     @Mapping(target = "seats", ignore = true)
+    @Mapping(target = "cinema", ignore = true)
     Room toRoom(RoomDTO roomDTO);
 
     RoomDTO toRoomDTO(Room room);
