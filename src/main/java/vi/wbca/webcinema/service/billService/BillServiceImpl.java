@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.bill.BillDTO;
 import vi.wbca.webcinema.dto.bill.BillFoodDTO;
 import vi.wbca.webcinema.dto.bill.BillTicketDTO;
+import vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO;
 import vi.wbca.webcinema.enums.EBillStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
@@ -15,6 +16,8 @@ import vi.wbca.webcinema.service.billFoodService.BillFoodService;
 import vi.wbca.webcinema.service.billTicketService.BillTicketService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -165,5 +168,13 @@ public class BillServiceImpl implements BillService {
         billTicketService.deleteBillTicket(bill);
 
         billRepo.delete(bill);
+    }
+
+    @Override
+    public List<CinemaRevenueDTO> getRevenueByCinema(LocalDateTime from, LocalDateTime to) {
+        if (from.isAfter(to)) {
+            throw new AppException(ErrorCode.DATE_TIME_EXCEPTION);
+        }
+        return billRepo.getRevenueWithTime(from, to);
     }
 }

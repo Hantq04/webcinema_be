@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import vi.wbca.webcinema.util.logging.LoggingUtils;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
@@ -72,6 +73,9 @@ public class GlobalExceptionHandler {
         } else if (exception instanceof NullPointerException) {
             errorCode = ErrorCode.NULL_POINTER;
             log.info("Error :: NullPointer");
+        } else if (exception instanceof MethodArgumentTypeMismatchException) {
+            errorCode = ErrorCode.DATE_FORMAT;
+            log.info("Error :: MethodArgumentTypeMismatch");
         }
         else {
             errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;

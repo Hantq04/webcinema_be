@@ -1,5 +1,7 @@
 package vi.wbca.webcinema.util.logging;
 
+import vi.wbca.webcinema.util.logging.logForm.ErrorLog;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +17,7 @@ public class LoggingUtils {
     private static final Logger logger = Logger.getLogger("ErrorLogger");
     private static final Path DIRECTORY = Paths.get(System.getProperty("user.dir")).resolve(Paths.get("logging"));
     private static final int MAX_FILE_SIZE = 1024 * 1024;
-    private static final int FILE_COUNT = 5;
+    private static final int FILE_COUNT = 10;
 
     private static FileHandler createLoggingFolder() {
         try {

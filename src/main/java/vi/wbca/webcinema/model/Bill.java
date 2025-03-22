@@ -43,6 +43,9 @@ public class Bill {
     @OneToMany(mappedBy = "bill")
     List<BillFood> billFoods;
 
+    @OneToMany(mappedBy = "bill")
+    List<BillTicket> billTickets;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     User user;

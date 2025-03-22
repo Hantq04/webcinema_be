@@ -91,7 +91,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
 
         logger.info("----------Web Cinema: Update User----------");
@@ -161,7 +161,7 @@ public class UserController {
     }
 
     @GetMapping("/get-all")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public List<UserDTO> getAllUser() {
 
         logger.info("----------Web Cinema: List User----------");
