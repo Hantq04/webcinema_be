@@ -1,0 +1,17 @@
+Mar 22, 2025 10:23:45 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: JWT expired at 2025-03-19T14:39:32Z. Current time: 2025-03-22T03:23:45Z, a difference of 218653216 milliseconds.  Allowed clock skew: 0 milliseconds., 
+JWT expired at 2025-03-19T14:39:32Z. Current time: 2025-03-22T03:23:45Z, a difference of 218653216 milliseconds.  Allowed clock skew: 0 milliseconds.
+Mar 22, 2025 10:25:21 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: JWT expired at 2025-03-19T14:39:32Z. Current time: 2025-03-22T03:25:21Z, a difference of 218749300 milliseconds.  Allowed clock skew: 0 milliseconds.
+Mar 22, 2025 10:26:32 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: Login failed. Invalid username or password.
+Mar 22, 2025 10:44:15 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<vi.wbca.webcinema.util.response.ResponseObject> vi.wbca.webcinema.controller.user.UserController.login(vi.wbca.webcinema.dto.user.UserDTO): [Field error in object 'userDTO' on field 'password': rejected value []; codes [NotBlank.userDTO.password,NotBlank.password,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [userDTO.password,password]; arguments []; default message [password]]; default message [NOT_BLAN]] 
+Mar 22, 2025 10:46:22 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<vi.wbca.webcinema.util.response.ResponseObject> vi.wbca.webcinema.controller.user.UserController.login(vi.wbca.webcinema.dto.user.UserDTO): [Field error in object 'userDTO' on field 'password': rejected value []; codes [NotBlank.userDTO.password,NotBlank.password,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [userDTO.password,password]; arguments []; default message [password]]; default message [NOT_BLANK]] 
+Mar 22, 2025 10:47:57 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: Access Denied
+Mar 22, 2025 10:48:31 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: Access Denied
+Mar 22, 2025 10:49:33 AM vi.wbca.webcinema.exception.GlobalExceptionHandler handleException
+INFO: User not found.
