@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.util.logging;
+package vi.wbca.webcinema.util.logging.logForm;
 
 import lombok.AccessLevel;
 import lombok.Builder;
