@@ -9,6 +9,8 @@ import vi.wbca.webcinema.model.Promotion;
 public interface PromotionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "bills", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "rankCustomer", ignore = true)
     Promotion toPromotion(PromotionDTO promotionDTO);
 
     PromotionDTO toPromotionDTO(Promotion promotion);
