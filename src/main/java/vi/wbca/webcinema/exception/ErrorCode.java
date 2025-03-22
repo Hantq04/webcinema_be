@@ -63,6 +63,8 @@ public enum ErrorCode {
     SCHEDULE_EXPIRED(1242, "Cannot book ticket. The schedule has already ended.", HttpStatus.BAD_REQUEST),
     PROMOTION_NOT_EXISTED(1243, "Promotion is already existed.", HttpStatus.BAD_REQUEST),
     SEAT_EXISTED(1244, "Seat is already existed in this room.", HttpStatus.BAD_REQUEST),
+    DATE_TIME_EXCEPTION(1245, "Start date must not be later than end date.", HttpStatus.BAD_REQUEST),
+    DATE_FORMAT(1246, "Invalid date format. The correct format is yyyy-MM-dd.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
