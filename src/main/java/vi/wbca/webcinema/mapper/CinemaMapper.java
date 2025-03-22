@@ -9,6 +9,7 @@ import vi.wbca.webcinema.model.Cinema;
 public interface CinemaMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "rooms", ignore = true)
+    @Mapping(target = "active", ignore = true)
     Cinema toCinema(CinemaDTO cinemaDTO);
 
     CinemaDTO toCinemaDTO(Cinema cinema);
