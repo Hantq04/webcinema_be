@@ -1,0 +1,8 @@
+Mar 22, 2025 11:24:15 AM vi.wbca.webcinema.util.logging.LoggingUtils loggingError
+WARNING: [AppException][User not found.][[vi.wbca.webcinema.service.userService.UserServiceImpl.lambda$updateUser$3(UserServiceImpl.java:149), java.base/java.util.Optional.orElseThrow(Optional.java:403), vi.wbca.webcinema.service.userService.UserServiceImpl.updateUser(UserServiceImpl.java:149)]]
+Mar 22, 2025 11:31:26 AM vi.wbca.webcinema.util.logging.LoggingUtils loggingError
+WARNING: [AppException][User not found.][[vi.wbca.webcinema.service.userService.UserServiceImpl.lambda$updateUser$3(UserServiceImpl.java:149), java.base/java.util.Optional.orElseThrow(Optional.java:403), vi.wbca.webcinema.service.userService.UserServiceImpl.updateUser(UserServiceImpl.java:149)]]
+Mar 22, 2025 11:31:44 AM vi.wbca.webcinema.util.logging.LoggingUtils loggingError
+WARNING: [ExpiredJwtException][JWT expired at 2025-03-19T14:39:32Z. Current time: 2025-03-22T04:31:44Z, a difference of 222732562 milliseconds.  Allowed clock skew: 0 milliseconds.][[io.jsonwebtoken.impl.DefaultJwtParser.parse(DefaultJwtParser.java:427), io.jsonwebtoken.impl.DefaultJwtParser.parse(DefaultJwtParser.java:529), io.jsonwebtoken.impl.DefaultJwtParser.parseClaimsJws(DefaultJwtParser.java:589)]]
+Mar 22, 2025 11:32:04 AM vi.wbca.webcinema.util.logging.LoggingUtils loggingError
+WARNING: [AppException][Login failed. Invalid username or password.][[vi.wbca.webcinema.service.userService.UserServiceImpl.login(UserServiceImpl.java:142), vi.wbca.webcinema.controller.user.UserController.login(UserController.java:62), java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)]]
