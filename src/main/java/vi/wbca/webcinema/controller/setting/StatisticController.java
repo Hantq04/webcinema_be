@@ -28,7 +28,7 @@ public class StatisticController {
     private final BillService billService;
 
     @GetMapping("/cinema-revenue-statistic")
-//    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> getRevenueByCinema(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
