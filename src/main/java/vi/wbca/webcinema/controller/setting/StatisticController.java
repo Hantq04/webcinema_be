@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO;
+import vi.wbca.webcinema.dto.cinema.FoodRevenueDTO;
+import vi.wbca.webcinema.service.billFoodService.BillFoodService;
 import vi.wbca.webcinema.service.billService.BillService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -26,6 +28,7 @@ import java.util.logging.Logger;
 public class StatisticController {
     private static final Logger logger = Logger.getLogger(StatisticController.class.getName());
     private final BillService billService;
+    private final BillFoodService billFoodService;
 
     @GetMapping("/cinema-revenue-statistic")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
@@ -44,9 +47,15 @@ public class StatisticController {
         );
     }
 
-    @GetMapping("/cinema-revenue-statistic")
-    public ResponseEntity<ResponseObject> getFoodRevenueSevenDays(@RequestParam LocalDateTime from, @RequestParam LocalDateTime to) {
+    @GetMapping("/food-revenue-statistic")
+    public ResponseEntity<ResponseObject> getFoodRevenueSevenDays() {
+
         logger.info("----------Web Cinema: Food Revenue Statistic");
+
+        LocalDateTime endTime = LocalDateTime.now();
+        LocalDateTime startTime = endTime.minusDays(6);
+        List<FoodRevenueDTO> responseData = billFoodService.getFoodRevenueSevenDays(startTime, endTime);
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Get food revenue statistic successfully.", responseData)
         );
