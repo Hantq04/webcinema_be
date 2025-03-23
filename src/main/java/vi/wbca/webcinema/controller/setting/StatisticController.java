@@ -43,4 +43,12 @@ public class StatisticController {
                 new ResponseObject(HttpStatus.OK, "Get cinema revenue statistic successfully.", responseData)
         );
     }
+
+    @GetMapping("/cinema-revenue-statistic")
+    public ResponseEntity<ResponseObject> getFoodRevenueSevenDays(@RequestParam LocalDateTime from, @RequestParam LocalDateTime to) {
+        logger.info("----------Web Cinema: Food Revenue Statistic");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get food revenue statistic successfully.", responseData)
+        );
+    }
 }
