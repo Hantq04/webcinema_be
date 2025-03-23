@@ -3,6 +3,7 @@ package vi.wbca.webcinema.service.billFoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.bill.BillFoodDTO;
+import vi.wbca.webcinema.dto.cinema.FoodRevenueDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.BillFoodMapper;
@@ -12,6 +13,7 @@ import vi.wbca.webcinema.model.Food;
 import vi.wbca.webcinema.repository.BillFoodRepo;
 import vi.wbca.webcinema.repository.FoodRepo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,5 +83,13 @@ public class BillFoodServiceImpl implements BillFoodService{
     public void deleteBillFood(Bill bill) {
         List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
         billFoodRepo.deleteAll(billFoods);
+    }
+
+    @Override
+    public List<FoodRevenueDTO> getFoodRevenueSevenDays(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
+            throw new AppException(ErrorCode.DATE_TIME_EXCEPTION);
+        }
+        return billFoodRepo.getFoodRevenueSevenDays(start, end);
     }
 }
