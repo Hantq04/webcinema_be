@@ -16,7 +16,6 @@ import vi.wbca.webcinema.service.billFoodService.BillFoodService;
 import vi.wbca.webcinema.service.billTicketService.BillTicketService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;

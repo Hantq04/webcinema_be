@@ -11,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class FoodRevenueDTO {
     String nameOfFood;
 
-    Double totalRevenue;
+    Long totalQuantity;
 }
