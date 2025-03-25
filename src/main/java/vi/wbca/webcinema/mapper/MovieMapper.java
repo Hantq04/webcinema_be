@@ -9,6 +9,7 @@ import vi.wbca.webcinema.model.Movie;
 public interface MovieMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "schedules", ignore = true)
+    @Mapping(target = "active", ignore = true)
     @Mapping(target = "movieType", ignore = true)
     @Mapping(target = "rate", ignore = true)
     Movie toMovie(MovieDTO movieDTO);
