@@ -9,6 +9,7 @@ import vi.wbca.webcinema.model.Bill;
 public interface BillMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "billFoods", ignore = true)
+    @Mapping(target = "billTickets", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "promotion", ignore = true)
