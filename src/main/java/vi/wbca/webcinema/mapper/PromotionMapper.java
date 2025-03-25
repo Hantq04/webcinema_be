@@ -13,5 +13,6 @@ public interface PromotionMapper {
     @Mapping(target = "rankCustomer", ignore = true)
     Promotion toPromotion(PromotionDTO promotionDTO);
 
+    @Mapping(target = "nameRankCustomer", ignore = true)
     PromotionDTO toPromotionDTO(Promotion promotion);
 }
