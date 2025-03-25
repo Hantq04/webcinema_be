@@ -28,6 +28,11 @@ public class WebSecurityConfig {
     LogoutService logoutService;
 
     static String[] listEndpoint = {
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
             "api/v1/user/**",
             "/api/v1/test/**",
             "/api/v1/rank/**",
