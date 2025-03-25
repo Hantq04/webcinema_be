@@ -48,6 +48,7 @@ public class StatisticController {
     }
 
     @GetMapping("/food-revenue-statistic")
+    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> getFoodRevenueSevenDays() {
 
         logger.info("----------Web Cinema: Food Revenue Statistic");

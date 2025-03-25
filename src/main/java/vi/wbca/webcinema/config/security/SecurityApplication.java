@@ -48,9 +48,4 @@ public class SecurityApplication {
     public AuthenticationConfiguration authenticationConfiguration() {
         return new AuthenticationConfiguration();
     }
-
-    @Bean
-    public HandlerExceptionResolver handlerExceptionResolver() {
-        return new DefaultHandlerExceptionResolver();
-    }
 }
