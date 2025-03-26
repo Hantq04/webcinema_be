@@ -67,6 +67,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public void updateSchedule(ScheduleDTO scheduleDTO) {
         Schedule schedule = scheduleRepo.findByCode(scheduleDTO.getCode())
                 .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
+
         schedule.setStartAt(scheduleDTO.getStartAt());
         scheduleRepo.save(schedule);
     }
