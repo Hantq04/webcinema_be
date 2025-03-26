@@ -173,6 +173,7 @@ public class UserServiceImpl implements UserService {
         listUsers.forEach(userName -> {
             User currentUser = userRepo.findByUserName(userName)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
             currentUser.getRoles().forEach(roleRepo::delete);
             currentUser.getAccessTokens().forEach(accessTokenService::deleteAccessToken);
             userRepo.delete(currentUser);
