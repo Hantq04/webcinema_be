@@ -90,6 +90,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     public void roundUpToNearestFiveMinutes(Calendar calendar) {
         int minutes = calendar.get(Calendar.MINUTE);
+        // Round up time to the nearest 5 minutes
         int roundedMinutes = ((minutes + 4) / 5) * 5;
         calendar.set(Calendar.MINUTE, roundedMinutes);
         calendar.set(Calendar.SECOND, 0);
