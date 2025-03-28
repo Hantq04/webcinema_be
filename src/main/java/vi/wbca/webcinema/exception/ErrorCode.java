@@ -53,7 +53,7 @@ public enum ErrorCode {
     BILL_EXISTED(1232, "This customer bill is already existed.", HttpStatus.BAD_REQUEST),
     BILL_FOOD_NOT_FOUND(1233, "Bill food not found.", HttpStatus.BAD_REQUEST),
     ID_NOT_FOUND(1234, "Id not found.", HttpStatus.BAD_REQUEST),
-    START_TIME_NOT_FOUND(1235, "Start time not found.", HttpStatus.BAD_REQUEST),
+    START_TIME_NOT_FOUND(1235, "Start time not found or already expired.", HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_BELONG_TO_ROOM(1236, "Schedule does not belong to the selected room.", HttpStatus.BAD_REQUEST),
     SEAT_NOT_BELONG_TO_ROOM(1237, "Seat does not belong to the selected room.", HttpStatus.BAD_REQUEST),
     SEAT_OCCUPIED(1238, "Selected seat is already occupied.", HttpStatus.BAD_REQUEST),
@@ -91,7 +91,7 @@ public enum ErrorCode {
     INVALID_DIRECTOR(1321, "Director name must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_LANGUAGE(1322, "Language must be at least 3 characters.", HttpStatus.BAD_REQUEST),
     INVALID_TRAILER_FORM(1323, "The trailer link is invalid.", HttpStatus.BAD_REQUEST),
-    INVALID_SHOW_TIME(1324, "Invalid show time.", HttpStatus.BAD_REQUEST),
+    INVALID_SHOW_TIME(1324, "The time is either before opening or after closing hours", HttpStatus.BAD_REQUEST),
     INVALID_SEAT(1325, "Invalid seat.", HttpStatus.BAD_REQUEST),
     INVALID_START_TIME(1326, "Start time must be today or later.", HttpStatus.BAD_REQUEST);
 
