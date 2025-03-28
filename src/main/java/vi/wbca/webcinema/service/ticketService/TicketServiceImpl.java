@@ -10,6 +10,7 @@ import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.TicketMapper;
 import vi.wbca.webcinema.model.*;
 import vi.wbca.webcinema.repository.*;
+import vi.wbca.webcinema.service.scheduleService.ScheduleService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.util.Calendar;
@@ -25,6 +26,7 @@ public class TicketServiceImpl implements TicketService{
     private final RoomRepo roomRepo;
     private final SeatStatusRepo seatStatusRepo;
     private final GeneralSettingRepo generalSettingRepo;
+    private final ScheduleService scheduleService;
 
     @Override
     public void insertTicket(TicketDTO ticketDTO) {
@@ -33,13 +35,12 @@ public class TicketServiceImpl implements TicketService{
         Room room = getRoom(ticketDTO);
         Schedule schedule = getSchedule(ticketDTO, room);
 
-        if (schedule.getEndAt().before(new Date())) {
-            throw new AppException(ErrorCode.SCHEDULE_EXPIRED);
-        }
+        //Update ticket by checking schedule
+        updateTicket(schedule);
 
-        // Check seat availability in the room
-        checkSeatAvailable(room, schedule);
         Seat seat = getSeat(ticketDTO, room);
+        // Update seat availability in the room
+        updateSeatStatusIfAvailable(seat);
 
         // Check schedule and seat belong to room
         validateScheduleAndSeatInRoom(room, schedule, seat);
@@ -74,26 +75,20 @@ public class TicketServiceImpl implements TicketService{
 
         Seat seat = seatRepo.findByLineAndNumberAndRoom(line, number, room)
                 .orElseThrow(() -> new AppException(ErrorCode.SEAT_NOT_FOUND));
-        SeatStatus seatStatus = seatStatusRepo.findByCode(ESeatStatus.OCCUPIED.toString())
-                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
 
-        // Check seat available or occupied
-        if (seat.getSeatStatus().equals(seatStatus)) {
+        Schedule schedule = getSchedule(ticketDTO, room);
+
+        boolean isAlreadyBooked = ticketRepo.existsByScheduleAndSeat(schedule, seat);
+        if (isAlreadyBooked) {
             throw new AppException(ErrorCode.SEAT_OCCUPIED);
         }
 
+        SeatStatus seatStatus = seatStatusRepo.findByCode(ESeatStatus.OCCUPIED.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
         seat.setSeatStatus(seatStatus);
         seatRepo.save(seat);
+
         return seat;
-    }
-
-    public void checkSeatAvailable(Room room, Schedule schedule) {
-        int totalSeats = seatRepo.countByRoom(room);
-        int bookedSeats = ticketRepo.countBySchedule(schedule);
-
-        if (bookedSeats >= totalSeats) {
-            throw new AppException(ErrorCode.ROOM_FULL);
-        }
     }
 
     public Room getRoom(TicketDTO ticketDTO) {
@@ -152,6 +147,27 @@ public class TicketServiceImpl implements TicketService{
     public GeneralSetting generalSetting() {
         return generalSettingRepo.findTopByOrderByIdDesc()
                 .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
+    }
+
+    public void updateTicket(Schedule schedule) {
+        if (schedule.getEndAt().before(new Date())) {
+            Ticket ticket = ticketRepo.findBySchedule(schedule);
+            ticket.setActive(false);
+            scheduleService.deactivateExpiredSchedule();
+            throw new AppException(ErrorCode.SCHEDULE_EXPIRED);
+        }
+    }
+
+    public void updateSeatStatusIfAvailable(Seat seat) {
+        boolean hasActiveSchedules = scheduleRepo.existsByRoomAndStartAtBeforeAndEndAtAfter(
+                seat.getRoom(), new Date(), new Date()
+        );
+        if (!hasActiveSchedules) {
+            SeatStatus status = seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
+                    .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
+            seat.setSeatStatus(status);
+            seatRepo.save(seat);
+        }
     }
 
     @Override
