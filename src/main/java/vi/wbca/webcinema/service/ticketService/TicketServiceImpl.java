@@ -78,6 +78,7 @@ public class TicketServiceImpl implements TicketService{
 
         Schedule schedule = getSchedule(ticketDTO, room);
 
+        // Check seat status
         boolean isAlreadyBooked = ticketRepo.existsByScheduleAndSeat(schedule, seat);
         if (isAlreadyBooked) {
             throw new AppException(ErrorCode.SEAT_OCCUPIED);
