@@ -15,4 +15,8 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     Optional<Ticket> findByCode(String code);
 
     Integer countBySchedule(Schedule schedule);
+
+    Ticket findBySchedule(Schedule schedule);
+
+    boolean existsByScheduleAndSeat(Schedule schedule, Seat seat);
 }

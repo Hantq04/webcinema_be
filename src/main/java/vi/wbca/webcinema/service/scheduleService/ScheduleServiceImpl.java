@@ -32,20 +32,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleDTO insertSchedule(ScheduleDTO scheduleDTO) {
-        Room room = setRoom(scheduleDTO);
-
-        if (scheduleRepo.existsByRoomAndStartAt(room, scheduleDTO.getStartAt())) {
-            throw new AppException(ErrorCode.DUPLICATE_SHOWTIME);
-        }
-        if (scheduleDTO.getStartAt().before(new Date())) {
-            throw new AppException(ErrorCode.INVALID_START_TIME);
-        }
-
         Schedule schedule = scheduleMapper.toSchedule(scheduleDTO);
+        Room room = setRoom(scheduleDTO);
         Movie movie = setMovie(scheduleDTO);
 
+        Date startAt = scheduleDTO.getStartAt();
+        startAt = checkLastEndAt(room.getId(), startAt);
+        Date endAt = setEndTime(startAt, movie.getMovieDuration());
+
+        if (scheduleRepo.countByRoomAndTimeOverlap(room, startAt, endAt) > 0) {
+            throw new AppException(ErrorCode.DUPLICATE_SHOWTIME);
+        }
+
         setName(schedule, movie);
-        schedule.setEndAt(setEndTime(schedule, movie).getTime());
+        schedule.setStartAt(startAt);
+        schedule.setEndAt(endAt);
         schedule.setCode(GenerateCode.generateCode());
         schedule.setActive(true);
         schedule.setMovie(movie);
@@ -56,11 +57,42 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleMapper.toScheduleDTO(schedule);
     }
 
-    public Calendar setEndTime(Schedule schedule, Movie movie) {
+    public Date setEndTime(Date startAt, int duration) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(schedule.getStartAt());
-        calendar.add(Calendar.MINUTE, movie.getMovieDuration());
-        return calendar;
+        calendar.setTime(startAt);
+        calendar.add(Calendar.MINUTE, duration);
+        roundUpToNearestFiveMinutes(calendar);
+        return calendar.getTime();
+    }
+
+    public Date checkLastEndAt(Long roomId, Date startAt) {
+        Date lastEndAt = scheduleRepo.findLastEndAt(roomId, startAt);
+
+        if (lastEndAt != null) {
+            long diffMinutes = (startAt.getTime() - lastEndAt.getTime()) / (60 * 1000);
+
+            // Adjust startAt to start 20 minutes later
+            if (diffMinutes < 20) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(lastEndAt);
+                calendar.add(Calendar.MINUTE, 20);
+
+                roundUpToNearestFiveMinutes(calendar);
+                return calendar.getTime();
+            }
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startAt);
+
+        roundUpToNearestFiveMinutes(calendar);
+        return calendar.getTime();
+    }
+
+    public void roundUpToNearestFiveMinutes(Calendar calendar) {
+        int minutes = calendar.get(Calendar.MINUTE);
+        int roundedMinutes = ((minutes + 4) / 5) * 5;
+        calendar.set(Calendar.MINUTE, roundedMinutes);
+        calendar.set(Calendar.SECOND, 0);
     }
 
     @Override
@@ -73,8 +105,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public void setName(Schedule schedule, Movie movie) {
-        int startHour = getHour(schedule.getStartAt());
-        int endHour = getHour(setEndTime(schedule, movie).getTime());
+        Date startAt = schedule.getStartAt();
+        int startHour = getHour(startAt);
+        int endHour = getHour(setEndTime(startAt, movie.getMovieDuration()));
 
         GeneralSetting setting = generalSetting();
 
