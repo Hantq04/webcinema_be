@@ -14,4 +14,6 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
     Optional<Room> findByCode(String code);
 
     Optional<Room> findByCodeAndCinema(String code, Cinema cinema);
+
+
 }

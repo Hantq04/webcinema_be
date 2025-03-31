@@ -33,6 +33,7 @@ public class SeatServiceImpl implements SeatService{
         // Generate seats for the room if not already exists
         generateSeatsForRoom(room);
 
+        request.setTotalSeats(room.getCapacity());
         request.setRoomName(room.getName());
         request.setRoomCode(room.getCode());
 
