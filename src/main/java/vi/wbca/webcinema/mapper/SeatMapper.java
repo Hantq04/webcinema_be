@@ -15,6 +15,7 @@ public interface SeatMapper {
     @Mapping(target = "seatType", ignore = true)
     Seat toSeat(SeatDTO seatDTO);
 
+    @Mapping(target = "totalSeats", ignore = true)
     @Mapping(target = "roomName", ignore = true)
     @Mapping(target = "roomCode", ignore = true)
     SeatDTO toSeatDTO(Seat seat);
