@@ -30,6 +30,12 @@ public class SeatServiceImpl implements SeatService{
         Room room = roomRepo.findByNameAndCode(request.getRoomName(), request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
+        // Check if the room already created seat
+        boolean hasSeats  = seatRepo.existsByRoom(room);
+        if (hasSeats) {
+            throw new AppException(ErrorCode.SEAT_EXISTED);
+        }
+
         // Generate seats for the room if not already exists
         generateSeatsForRoom(room);
 

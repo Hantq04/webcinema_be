@@ -25,4 +25,6 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
     void updateSeatStatusByBill(@Param("bill") Bill bill, @Param("status") SeatStatus status);
 
     boolean existsByRoomAndLineAndNumber(Room room, String line, Integer number);
+
+    boolean existsByRoom(Room room);
 }
