@@ -62,7 +62,7 @@ public enum ErrorCode {
     PAYMENT_EXCEPTION(1241, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST),
     SCHEDULE_EXPIRED(1242, "Cannot book ticket. The schedule has already ended.", HttpStatus.BAD_REQUEST),
     PROMOTION_NOT_EXISTED(1243, "Promotion is already existed.", HttpStatus.BAD_REQUEST),
-    SEAT_EXISTED(1244, "Seat is already existed in this room.", HttpStatus.BAD_REQUEST),
+    SEAT_EXISTED(1244, "Seats have already been created for this room.", HttpStatus.BAD_REQUEST),
     DATE_TIME_EXCEPTION(1245, "Start date must not be later than end date.", HttpStatus.BAD_REQUEST),
     DATE_FORMAT(1246, "Invalid date format. The correct format is yyyy-MM-dd.", HttpStatus.BAD_REQUEST),
 
