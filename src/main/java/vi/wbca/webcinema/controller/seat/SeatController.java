@@ -5,8 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.room.SeatDTO;
+import vi.wbca.webcinema.groupValidate.seat.InsertSeat;
+import vi.wbca.webcinema.groupValidate.seat.UpdateSeat;
 import vi.wbca.webcinema.service.seatService.SeatService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -24,7 +27,7 @@ public class SeatController {
 
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public ResponseEntity<ResponseObject> insertSeat(@Valid @RequestBody SeatDTO request) {
+    public ResponseEntity<ResponseObject> insertSeat(@Validated(InsertSeat.class) @RequestBody SeatDTO request) {
 
         logger.info("----------Web Cinema: Insert New Seat----------");
 
@@ -37,7 +40,7 @@ public class SeatController {
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public ResponseEntity<ResponseObject> updateSeat(@Valid @RequestBody SeatDTO request) {
+    public ResponseEntity<ResponseObject> updateSeat(@Validated(UpdateSeat.class) @RequestBody SeatDTO request) {
 
         logger.info("----------Web Cinema: Update Seat----------");
 
