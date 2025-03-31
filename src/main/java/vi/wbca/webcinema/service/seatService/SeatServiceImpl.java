@@ -12,6 +12,7 @@ import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.model.*;
 import vi.wbca.webcinema.repository.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,19 +32,47 @@ public class SeatServiceImpl implements SeatService{
         Room room = roomRepo.findByNameAndCode(request.getRoomName(), request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        if (seatRepo.existsByRoomAndLineAndNumber(room, request.getLine(), request.getNumber()) ) {
-            throw new AppException(ErrorCode.SEAT_EXISTED);
-        }
-        seat.setActive(true);
-        seat.setRoom(room);
-        seat.setSeatStatus(getSeatStatus());
+        generateSeatsForRoom(room);
 
         request.setRoomName(room.getName());
         request.setRoomCode(room.getCode());
         seatRepo.save(seat);
 
-        setSeatType(seat, request.getLine());
         return seatMapper.toSeatDTO(seat);
+    }
+
+    public void generateSeatsForRoom(Room room) {
+        int capacity = room.getCapacity();
+
+        int roomLine = (int) Math.ceil(Math.sqrt(capacity));
+        int seatsPerRow = (int) Math.ceil((double) capacity / roomLine);
+
+        List<Seat> seats = new ArrayList<>();
+
+        for (int i = 0; i < roomLine; i++) {
+            char rowLabel = (char) ('A' + i);
+            for (int j = 1; j <= seatsPerRow && seats.size() < capacity; j++) {
+                // Check if the seat already exists
+                if (seatRepo.existsByRoomAndLineAndNumber(room, String.valueOf(rowLabel), j)) {
+                    continue;// Skip if it already exists
+                }
+
+                Seat seat = new Seat();
+                seat.setLine(String.valueOf(rowLabel));
+                seat.setNumber(j);
+                seat.setRoom(room);
+                seat.setSeatStatus(getSeatStatus());
+                setSeatType(seat, String.valueOf(rowLabel));
+                seat.setActive(true);
+
+                seats.add(seat);
+            }
+        }
+
+        if (!seats.isEmpty()) {
+            // Save only if new seats are available
+            seatRepo.saveAll(seats);
+        }
     }
 
     public void setSeatType(Seat seat, String line) {
@@ -52,7 +81,7 @@ public class SeatServiceImpl implements SeatService{
             SeatType seatType = seatTypeRepo.findByNameType(ESeatType.STANDARD.toString())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
             seat.setSeatType(seatType);
-        } else if (rowNumber >= 5 && rowNumber < 22) {
+        } else if (rowNumber >= 5 && rowNumber < 17) {
             SeatType seatType = seatTypeRepo.findByNameType(ESeatType.VIP.toString())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
             seat.setSeatType(seatType);
