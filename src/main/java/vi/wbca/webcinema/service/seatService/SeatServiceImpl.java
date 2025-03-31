@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SeatServiceImpl implements SeatService{
     private final SeatRepo seatRepo;
-    private final SeatMapper seatMapper;
     private final SeatStatusRepo seatStatusRepo;
     private final RoomRepo roomRepo;
     private final SeatTypeRepo seatTypeRepo;
@@ -28,17 +27,16 @@ public class SeatServiceImpl implements SeatService{
 
     @Override
     public SeatDTO insertSeat(SeatDTO request) {
-        Seat seat = seatMapper.toSeat(request);
         Room room = roomRepo.findByNameAndCode(request.getRoomName(), request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
+        // Generate seats for the room if not already exists
         generateSeatsForRoom(room);
 
         request.setRoomName(room.getName());
         request.setRoomCode(room.getCode());
-        seatRepo.save(seat);
 
-        return seatMapper.toSeatDTO(seat);
+        return request;
     }
 
     public void generateSeatsForRoom(Room room) {
