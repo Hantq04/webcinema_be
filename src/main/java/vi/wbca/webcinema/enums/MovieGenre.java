@@ -14,6 +14,5 @@ public enum MovieGenre {
     ROMANCE,
     SCI_FI,
     THRILLER,
-    WAR,
-    WESTERN
+    WAR
 }

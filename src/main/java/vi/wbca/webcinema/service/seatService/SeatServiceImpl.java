@@ -8,7 +8,6 @@ import vi.wbca.webcinema.enums.ESeatStatus;
 import vi.wbca.webcinema.enums.ESeatType;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.model.*;
 import vi.wbca.webcinema.repository.*;
 
