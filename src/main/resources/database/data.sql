@@ -31,3 +31,14 @@ INSERT INTO movie_types (is_active, movie_type_name) VALUES
     (true, 'Giật gân'),
     (true, 'Chiến tranh');
 
+INSERT INTO rates (code, description) VALUES
+    ('G', 'Phù hợp với mọi lứa tuổi. Không có nội dung gây hại.'),
+    ('PG', 'Cần có sự hướng dẫn của cha mẹ. Một số nội dung có thể không phù hợp với trẻ nhỏ.'),
+    ('PG-13', 'Trẻ em dưới 13 tuổi cần có sự giám sát của cha mẹ. Có thể có nội dung mạnh như bạo lực nhẹ hoặc từ ngữ nhạy cảm.'),
+    ('R', 'Hạn chế: Dưới 17 tuổi phải có người lớn đi kèm. Có thể chứa bạo lực mạnh, ngôn ngữ thô tục hoặc nội dung người lớn.'),
+    ('NC-17', 'Cấm người dưới 18 tuổi. Nội dung dành riêng cho người trưởng thành, có thể chứa cảnh nóng hoặc bạo lực nặng.'),
+
+INSERT INTO user_status (code, name) VALUES
+    ('ACTIVE', 'Tài khoản đã được kích hoạt'),
+    ('INACTIVE', 'Tài khoản chưa được kích hoạt'),
+
