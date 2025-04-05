@@ -38,6 +38,10 @@ INSERT INTO rates (code, description) VALUES
     ('R', 'Hạn chế: Dưới 17 tuổi phải có người lớn đi kèm. Có thể chứa bạo lực mạnh, ngôn ngữ thô tục hoặc nội dung người lớn.'),
     ('NC-17', 'Cấm người dưới 18 tuổi. Nội dung dành riêng cho người trưởng thành, có thể chứa cảnh nóng hoặc bạo lực nặng.');
 
+INSERT INTO seat_status (code, name_status) VALUES
+    ('AVAILABLE', 'Ghế trống'),
+    ('OCCUPIED', 'Ghế đã được đặt');
+
 INSERT INTO seat_types (name_type) VALUES
     ('Standard'),
     ('VIP'),
@@ -45,5 +49,5 @@ INSERT INTO seat_types (name_type) VALUES
 
 INSERT INTO user_status (code, name) VALUES
     ('ACTIVE', 'Tài khoản đã được kích hoạt'),
-    ('INACTIVE', 'Tài khoản chưa được kích hoạt'),
+    ('INACTIVE', 'Tài khoản chưa được kích hoạt');
 
