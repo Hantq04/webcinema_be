@@ -36,6 +36,10 @@ INSERT INTO promotions (description, end_time,is_active, name, percent, quantity
     ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 3, 'Food'),
     ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 2, 'Food');
 
+INSERT INTO rank_customers (description, is_active, name, point) VALUES
+    ('Dành cho khách hàng có tổng chi tiêu tích lũy đạt 3.000.000 VND', true, 'VIP', 3000000),
+    ('Đối với khách hàng vừa mới đăng ký tài khoản', true, 'Standard', 0);
+
 INSERT INTO rates (code, description) VALUES
     ('G', 'Phù hợp với mọi lứa tuổi. Không có nội dung gây hại.'),
     ('PG', 'Cần có sự hướng dẫn của cha mẹ. Một số nội dung có thể không phù hợp với trẻ nhỏ.'),
