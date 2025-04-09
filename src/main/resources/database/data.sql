@@ -3,6 +3,11 @@
 INSERT INTO banners (image_url, title) VALUES
     ('src/home/image/movie_image.jpg', 'Thunderbolt* - Sắp ra mắt');
 
+INSERT INTO cinemas (address, code, description, is_active, name_of_cinema) VALUES
+    ('Hà Nội', 'BETA_HN431', 'Số 123 Thanh Xuân', 'Hà Nội', true, 'Beta Thanh Xuân'),
+    ('Hồ Chí Minh', 'BETA_HC762', 'Số 123 Hồ Chí Minh', true, 'Beta Hồ Chí Minh'),
+    ('Đà Nẵng', 'BETA_DN250', 'Số 123 Đà Nẵng', true, 'Beta Đà Nẵng');
+
 INSERT INTO foods (description, image, is_active, name_of_food, price) VALUES
     ('Mô tả đồ ăn', 'src/image/food_image.jpg', true, 'Bỏng ngô', 30000),
     ('Mô tả đồ ăn', 'src/image/food_image.jpg', true, 'Coca cola', 20000),
@@ -31,14 +36,16 @@ INSERT INTO movie_types (is_active, movie_type_name) VALUES
     (true, 'Giật gân'),
     (true, 'Chiến tranh');
 
-INSERT INTO promotions (description, end_time,is_active, name, percent, quantity, start_time, rank_customer_id, promotion_type) VALUES
-    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 3, 'Food'),
-    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 3, 'Food'),
-    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 2, 'Food');
+
 
 INSERT INTO rank_customers (description, is_active, name, point) VALUES
     ('Dành cho khách hàng có tổng chi tiêu tích lũy đạt 3.000.000 VND', true, 'VIP', 3000000),
     ('Đối với khách hàng vừa mới đăng ký tài khoản', true, 'Standard', 0);
+
+INSERT INTO promotions (description, end_time,is_active, name, percent, quantity, start_time, rank_customer_id, promotion_type) VALUES
+    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 2, 'Food'),
+    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 2, 'Food'),
+    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 1, 'Food');
 
 INSERT INTO rates (code, description) VALUES
     ('G', 'Phù hợp với mọi lứa tuổi. Không có nội dung gây hại.'),
