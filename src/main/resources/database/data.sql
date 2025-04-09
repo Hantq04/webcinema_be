@@ -31,6 +31,11 @@ INSERT INTO movie_types (is_active, movie_type_name) VALUES
     (true, 'Giật gân'),
     (true, 'Chiến tranh');
 
+INSERT INTO promotions (description, end_time,is_active, name, percent, quantity, start_time, rank_customer_id, promotion_type) VALUES
+    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 3, 'Food'),
+    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 3, 'Food'),
+    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 2, 'Food');
+
 INSERT INTO rates (code, description) VALUES
     ('G', 'Phù hợp với mọi lứa tuổi. Không có nội dung gây hại.'),
     ('PG', 'Cần có sự hướng dẫn của cha mẹ. Một số nội dung có thể không phù hợp với trẻ nhỏ.'),
