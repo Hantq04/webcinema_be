@@ -23,9 +23,9 @@ public class Movie {
     @Column(name = "movie_duration")
     Integer movieDuration;
 
-    @Column(name = "end_time", columnDefinition = "DATETIME")
+    @Column(name = "end_date", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endTime;
+    Date endDate;
 
     @Column(name = "premiere_date", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
