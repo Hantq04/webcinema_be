@@ -27,7 +27,7 @@ public class MovieDTO {
     Integer movieDuration;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endTime;
+    Date endDate;
 
     @NotNull(message = "NOT_NULL", groups = {InsertMovie.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
