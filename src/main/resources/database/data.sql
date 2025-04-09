@@ -60,6 +60,11 @@ INSERT INTO movies (description, director, end_date, hero_image, image, ia_activ
      'src/home/image/movie_hero_image.jpg', 'src/home/image/movie_image.jpg', true, 'English', 128,
      'Địa đạo: Mặt trời trong bóng tối', '2025-04-04 00:00:00', 'https://www.youtube.com/watch?v=-OGDDtsIBHA', 14, 4);
 
+INSERT INTO rooms (capacity, code, description, is_active, name, type, cinema_id) VALUES
+    ('', '', '', true, '', '', ),
+    ('', '', '', true, '', '', ),
+    ('', '', '', true, '', '', );
+
 INSERT INTO rank_customers (description, is_active, name, point) VALUES
     ('Dành cho khách hàng có tổng chi tiêu tích lũy đạt 3.000.000 VND', true, 'VIP', 3000000),
     ('Đối với khách hàng vừa mới đăng ký tài khoản', true, 'Standard', 0);
