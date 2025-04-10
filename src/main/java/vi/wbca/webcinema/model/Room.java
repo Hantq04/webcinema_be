@@ -19,7 +19,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "capatity")
+    @Column(name = "capacity")
     Integer capacity;
 
     @Enumerated(EnumType.STRING)
