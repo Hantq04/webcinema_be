@@ -34,7 +34,7 @@ public class MovieServiceImpl implements MovieService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(movie.getPremiereDate());
         calendar.add(Calendar.DAY_OF_MONTH, 30);
-        movie.setEndTime(calendar.getTime());
+        movie.setEndDate(calendar.getTime());
         movie.setActive(true);
         movie.setMovieType(setType(movieDTO));
         movie.setRate(setRate(movieDTO));
