@@ -2,12 +2,12 @@
 
 INSERT INTO banners (image_url, title) VALUES
     ('src/home/image/movie_image.jpg', 'Thunderbolt* - Sắp ra mắt'),
-    ('src/home/image/movie_image.jpg', 'Mickey 17 - Đang chiếu')
-    ('src/home/image/movie_image.jpg', '28 Year Later - Sắp ra mắt')
+    ('src/home/image/movie_image.jpg', 'Mickey 17 - Đang chiếu'),
+    ('src/home/image/movie_image.jpg', '28 Year Later - Sắp ra mắt'),
     ('src/home/image/movie_image.jpg', 'Địa đạo: Mặt trời trong bóng tối - Đang chiếu');
 
 INSERT INTO cinemas (address, code, description, is_active, name_of_cinema) VALUES
-    ('Hà Nội', 'BETA_HN431', 'Số 123 Thanh Xuân', 'Hà Nội', true, 'Beta Thanh Xuân'),
+    ('Hà Nội', 'BETA_HN431', 'Số 123 Thanh Xuân, Hà Nội', true, 'Beta Thanh Xuân'),
     ('Hồ Chí Minh', 'BETA_HC762', 'Số 123 Hồ Chí Minh', true, 'Beta Hồ Chí Minh'),
     ('Đà Nẵng', 'BETA_DN250', 'Số 123 Đà Nẵng', true, 'Beta Đà Nẵng');
 
@@ -46,7 +46,7 @@ INSERT INTO rates (code, description) VALUES
     ('R', 'Hạn chế: Dưới 17 tuổi phải có người lớn đi kèm. Có thể chứa bạo lực mạnh, ngôn ngữ thô tục hoặc nội dung người lớn.'),
     ('NC-17', 'Cấm người dưới 18 tuổi. Nội dung dành riêng cho người trưởng thành, có thể chứa cảnh nóng hoặc bạo lực nặng.');
 
-INSERT INTO movies (description, director, end_date, hero_image, image, ia_active, language, movie_duration, name, premiere_date, trailer, movie_type_id, rate_id) VALUES
+INSERT INTO movies (description, director, end_date, hero_image, image, is_active, language, movie_duration, name, premiere_date, trailer, movie_type_id, rate_id) VALUES
     ('Thunderbolts* là một bộ phim siêu anh hùng sắp ra m...', 'Jake Schreier', '2025-06-01 00:00:00',
      'src/home/image/movie_hero_image.jpg', 'src/home/image/movie_image.jpg', true, 'English', 120,
      'Thunderbolts*', '2025-05-02 00:00:00', 'https://www.youtube.com/watch?v=hUUszE29jS0', 1, 4),
@@ -60,20 +60,20 @@ INSERT INTO movies (description, director, end_date, hero_image, image, ia_activ
      'src/home/image/movie_hero_image.jpg', 'src/home/image/movie_image.jpg', true, 'English', 128,
      'Địa đạo: Mặt trời trong bóng tối', '2025-04-04 00:00:00', 'https://www.youtube.com/watch?v=-OGDDtsIBHA', 14, 4);
 
-INSERT INTO rooms (capacity, code, description, is_active, name, type, cinema_id) VALUES
-    ('250', 'A1', 'Mô tả', true, 'Beta Thanh Xuân', 'IMAX', 1),
-    ('100', 'A2', 'Mô tả', true, 'Beta Thanh Xuân', 'STANDARD', 1),
-    ('100', 'A1', 'Mô tả', true, 'Beta Hồ Chí Minh', 'STANDARD', 2),
-    ('200', 'A3', 'Mô tả', true, 'Beta Đà Nẵng', 'IMAX', 3);
+INSERT INTO rooms (capatity, code, description, is_active, name, type, cinema_id) VALUES
+    (250, 'A1', 'Mô tả', true, 'Beta Thanh Xuân', 'IMAX', 2),
+    (100, 'A2', 'Mô tả', true, 'Beta Thanh Xuân', 'STANDARD', 2),
+    (100, 'B1', 'Mô tả', true, 'Beta Hồ Chí Minh', 'STANDARD', 3),
+    (200, 'C1', 'Mô tả', true, 'Beta Đà Nẵng', 'IMAX', 4);
 
 INSERT INTO rank_customers (description, is_active, name, point) VALUES
     ('Dành cho khách hàng có tổng chi tiêu tích lũy đạt 3.000.000 VND', true, 'VIP', 3000000),
     ('Đối với khách hàng vừa mới đăng ký tài khoản', true, 'Standard', 0);
 
-INSERT INTO promotions (description, end_time,is_active, name, percent, quantity, start_time, rank_customer_id, promotion_type) VALUES
-    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 2, 'Food'),
-    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 2, 'Food'),
-    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00',true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 1, 'Food');
+INSERT INTO promotions (description, end_time, is_active, name, percent, quantity, start_time, rank_customer_id, promotion_type) VALUES
+    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 3, 'Food'),
+    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 3, 'Food'),
+    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 2, 'Food');
 
 INSERT INTO seat_status (code, name_status) VALUES
     ('AVAILABLE', 'Ghế trống'),

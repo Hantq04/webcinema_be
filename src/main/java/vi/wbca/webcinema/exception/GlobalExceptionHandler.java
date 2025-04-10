@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import vi.wbca.webcinema.util.MessageUtils;
 import vi.wbca.webcinema.util.logging.LoggingUtils;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
@@ -23,24 +24,27 @@ import java.util.Arrays;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final MessageUtils messageUtils;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseObject> handleException(Exception exception) {
         ErrorCode errorCode;
 
         if (exception instanceof AppException appException) {
+            String errorMessages = messageUtils.getMessage(appException.getErrorCode().getMessage());
             log.info("Error :: Throw Exception");
             log.info("Error Throw Location :: {}", Arrays.toString(Arrays.copyOfRange(appException.getStackTrace(), 0, 3)));
 
             LoggingUtils.loggingError(exception);
             return ResponseEntity.status(appException.getErrorCode().getStatusCode()).body(
-                    new ResponseObject(appException.getErrorCode().getCode(), appException.getMessage(), "")
+                    new ResponseObject(appException.getErrorCode().getCode(), errorMessages, "")
             );
         }
 
         if (exception instanceof MethodArgumentNotValidException e) {
             FieldError fieldError = e.getFieldError();
             errorCode = ErrorCode.INVALID_KEY;
+            String errorMessages = messageUtils.getMessage(errorCode.getMessage());
 
             if (fieldError != null) {
                 String enumKey = fieldError.getDefaultMessage();
@@ -56,7 +60,7 @@ public class GlobalExceptionHandler {
 
             LoggingUtils.loggingError(exception);
             return ResponseEntity.status(e.getStatusCode()).body(
-                    new ResponseObject(errorCode.getCode(), errorCode.getMessage(), "")
+                    new ResponseObject(errorCode.getCode(), errorMessages, "")
             );
         } else if (exception instanceof BadCredentialsException) {
             errorCode = ErrorCode.UNAUTHENTICATED;
@@ -85,7 +89,7 @@ public class GlobalExceptionHandler {
         log.info("Error Location: {}", Arrays.toString(Arrays.copyOfRange(exception.getStackTrace(), 0, 3)));
         LoggingUtils.loggingError(exception);
         return ResponseEntity.status(errorCode.getStatusCode()).body(
-                new ResponseObject(errorCode.getCode(), errorCode.getMessage(), "")
+                new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), "")
         );
     }
 }
