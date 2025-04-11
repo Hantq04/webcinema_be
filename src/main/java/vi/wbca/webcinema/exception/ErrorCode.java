@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 public enum ErrorCode {
     // Security and other error, code 11**
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error!", HttpStatus.INTERNAL_SERVER_ERROR),
-    INVALID_KEY(1100, "Invalid message key.", HttpStatus.BAD_REQUEST),
-    UNAUTHENTICATED(1101, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
+    UNCATEGORIZED_EXCEPTION(9999, "error.9999", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_KEY(1100, "error.1100", HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(1101, "error.1101", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1102, "error.1102", HttpStatus.FORBIDDEN),
-    INVALID_SIGNATURE(1103, "Invalid JWT signature.", HttpStatus.FORBIDDEN),
+    INVALID_SIGNATURE(1103, "error.1103", HttpStatus.FORBIDDEN),
     EXPIRED_TOKEN(1104, "error.1104", HttpStatus.FORBIDDEN),
-    EXPIRED_REFRESH_TOKEN(1105, "Refresh token is already expired. Please login again.", HttpStatus.FORBIDDEN),
+    EXPIRED_REFRESH_TOKEN(1105, "error.1105", HttpStatus.FORBIDDEN),
 
     // Throw Exception, code 12**
     USERNAME_EXISTED(1200, "Username is already existed.", HttpStatus.BAD_REQUEST),
