@@ -58,13 +58,11 @@ public enum ErrorCode {
     SEAT_NOT_BELONG_TO_ROOM(1237, "Seat does not belong to the selected room.", HttpStatus.BAD_REQUEST),
     SEAT_OCCUPIED(1238, "Selected seat is already occupied.", HttpStatus.BAD_REQUEST),
     ROOM_FULL(1239, "No seats available in this room.", HttpStatus.BAD_REQUEST),
-    PAYMENT_SUCCESS(1240, "Payment has already been completed successfully.", HttpStatus.BAD_REQUEST),
-    PAYMENT_EXCEPTION(1241, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST),
-    SCHEDULE_EXPIRED(1242, "Cannot book ticket. The schedule has already ended.", HttpStatus.BAD_REQUEST),
-    PROMOTION_NOT_EXISTED(1243, "Promotion is already existed.", HttpStatus.BAD_REQUEST),
-    SEAT_EXISTED(1244, "Seats have already been created for this room.", HttpStatus.BAD_REQUEST),
-    DATE_TIME_EXCEPTION(1245, "Start date must not be later than end date.", HttpStatus.BAD_REQUEST),
-    DATE_FORMAT(1246, "Invalid date format. The correct format is yyyy-MM-dd.", HttpStatus.BAD_REQUEST),
+    SCHEDULE_EXPIRED(1240, "Cannot book ticket. The schedule has already ended.", HttpStatus.BAD_REQUEST),
+    PROMOTION_NOT_EXISTED(1241, "Promotion is already existed.", HttpStatus.BAD_REQUEST),
+    SEAT_EXISTED(1242, "Seats have already been created for this room.", HttpStatus.BAD_REQUEST),
+    DATE_TIME_EXCEPTION(1243, "Start date must not be later than end date.", HttpStatus.BAD_REQUEST),
+    DATE_FORMAT(1244, "Invalid date format. The correct format is yyyy-MM-dd.", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "This field cannot be blank.", HttpStatus.BAD_REQUEST),
@@ -93,7 +91,11 @@ public enum ErrorCode {
     INVALID_TRAILER_FORM(1323, "The trailer link is invalid.", HttpStatus.BAD_REQUEST),
     INVALID_SHOW_TIME(1324, "The time is either before opening or after closing hours", HttpStatus.BAD_REQUEST),
     INVALID_SEAT(1325, "Invalid seat.", HttpStatus.BAD_REQUEST),
-    INVALID_START_TIME(1326, "Start time must be today or later.", HttpStatus.BAD_REQUEST);
+    INVALID_START_TIME(1326, "Start time must be today or later.", HttpStatus.BAD_REQUEST),
+
+    // Payment, code 70***
+    PAYMENT_SUCCESS(1240, "Payment has already been completed successfully.", HttpStatus.BAD_REQUEST),
+    PAYMENT_EXCEPTION(1241, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
