@@ -94,8 +94,8 @@ public enum ErrorCode {
     INVALID_START_TIME(1326, "error.1326", HttpStatus.BAD_REQUEST),
 
     // Payment, code 70***
-    PAYMENT_SUCCESS(70010, "Payment has already been completed successfully.", HttpStatus.BAD_REQUEST),
-    PAYMENT_EXCEPTION(70020, "Payment failed or was cancelled by user.", HttpStatus.BAD_REQUEST);
+    PAYMENT_SUCCESS(70010, "error.70010", HttpStatus.BAD_REQUEST),
+    PAYMENT_EXCEPTION(70020, "error.70020", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
