@@ -61,19 +61,19 @@ INSERT INTO movies (description, director, end_date, hero_image, image, is_activ
      'Địa đạo: Mặt trời trong bóng tối', '2025-04-04 00:00:00', 'https://www.youtube.com/watch?v=-OGDDtsIBHA', 14, 4);
 
 INSERT INTO rooms (capacity, code, description, is_active, name, type, cinema_id) VALUES
-    (250, 'A1', 'Mô tả', true, 'Beta Thanh Xuân', 'IMAX', 2),
-    (100, 'A2', 'Mô tả', true, 'Beta Thanh Xuân', 'STANDARD', 2),
-    (100, 'B1', 'Mô tả', true, 'Beta Hồ Chí Minh', 'STANDARD', 3),
-    (200, 'C1', 'Mô tả', true, 'Beta Đà Nẵng', 'IMAX', 4);
+    (250, 'A1', 'Mô tả', true, 'Beta Thanh Xuân', 'IMAX', 1),
+    (100, 'A2', 'Mô tả', true, 'Beta Thanh Xuân', 'STANDARD', 1),
+    (100, 'B1', 'Mô tả', true, 'Beta Hồ Chí Minh', 'STANDARD', 2),
+    (200, 'C1', 'Mô tả', true, 'Beta Đà Nẵng', 'IMAX', 3);
 
 INSERT INTO rank_customers (description, is_active, name, point) VALUES
     ('Dành cho khách hàng có tổng chi tiêu tích lũy đạt 3.000.000 VND', true, 'VIP', 3000000),
     ('Đối với khách hàng vừa mới đăng ký tài khoản', true, 'Standard', 0);
 
 INSERT INTO promotions (description, end_time, is_active, name, percent, quantity, start_time, rank_customer_id, promotion_type) VALUES
-    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 3, 'Food'),
-    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 3, 'Food'),
-    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 2, 'Food');
+    ('Giảm 10% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 10, 10, '2025-04-15 00:00:00', 2, 'Food'),
+    ('Giảm 20% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 20, 10, '2025-04-15 00:00:00', 2, 'Food'),
+    ('Giảm 30% cho đồ ăn đã đặt', '2025-04-30 00:00:00', true, 'Đồ ăn', 30, 10, '2025-04-15 00:00:00', 1, 'Food');
 
 INSERT INTO seat_status (code, name_status) VALUES
     ('AVAILABLE', 'Ghế trống'),
