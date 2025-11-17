@@ -7,12 +7,21 @@ import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.movie.MovieDTO;
 import vi.wbca.webcinema.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
-import vi.wbca.webcinema.enums.ESeatStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.MovieMapper;
-import vi.wbca.webcinema.model.*;
-import vi.wbca.webcinema.repository.*;
+import vi.wbca.webcinema.model.cinema.Cinema;
+import vi.wbca.webcinema.model.cinema.Room;
+import vi.wbca.webcinema.model.movie.Movie;
+import vi.wbca.webcinema.model.movie.MovieType;
+import vi.wbca.webcinema.model.movie.Rate;
+import vi.wbca.webcinema.model.seat.SeatStatus;
+import vi.wbca.webcinema.repository.cinema.CinemaRepo;
+import vi.wbca.webcinema.repository.cinema.RoomRepo;
+import vi.wbca.webcinema.repository.movie.MovieRepo;
+import vi.wbca.webcinema.repository.movie.MovieTypeRepo;
+import vi.wbca.webcinema.repository.movie.RateRepo;
+import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 
 import java.util.Calendar;
 

@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.groupValidate.user.InsertUser;
 import vi.wbca.webcinema.groupValidate.user.LoginUser;
 import vi.wbca.webcinema.groupValidate.user.UpdateUser;
-import vi.wbca.webcinema.model.Role;
+import vi.wbca.webcinema.model.user.Role;
 
 import java.util.List;
 

@@ -6,11 +6,11 @@ import vi.wbca.webcinema.dto.bill.BillTicketDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.BillTicketMapper;
-import vi.wbca.webcinema.model.Bill;
-import vi.wbca.webcinema.model.BillTicket;
-import vi.wbca.webcinema.model.Ticket;
-import vi.wbca.webcinema.repository.BillTicketRepo;
-import vi.wbca.webcinema.repository.TicketRepo;
+import vi.wbca.webcinema.model.bill.Bill;
+import vi.wbca.webcinema.model.bill.BillTicket;
+import vi.wbca.webcinema.model.movie.Ticket;
+import vi.wbca.webcinema.repository.bill.BillTicketRepo;
+import vi.wbca.webcinema.repository.movie.TicketRepo;
 
 import java.util.List;
 import java.util.Objects;

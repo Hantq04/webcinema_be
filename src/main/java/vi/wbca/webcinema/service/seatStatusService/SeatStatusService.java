@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.seatStatusService;
 
-import vi.wbca.webcinema.model.SeatStatus;
+import vi.wbca.webcinema.model.seat.SeatStatus;
 
 import java.util.List;
 

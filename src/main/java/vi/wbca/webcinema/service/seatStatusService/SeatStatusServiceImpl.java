@@ -2,8 +2,8 @@ package vi.wbca.webcinema.service.seatStatusService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.SeatStatus;
-import vi.wbca.webcinema.repository.SeatStatusRepo;
+import vi.wbca.webcinema.model.seat.SeatStatus;
+import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 
 import java.util.List;
 

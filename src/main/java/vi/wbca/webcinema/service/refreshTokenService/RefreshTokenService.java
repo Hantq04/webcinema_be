@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service.refreshTokenService;
 
 import vi.wbca.webcinema.dto.token.TokenDTO;
-import vi.wbca.webcinema.model.User;
+import vi.wbca.webcinema.model.user.User;
 
 public interface RefreshTokenService {
     void insertRefreshToken(User user);

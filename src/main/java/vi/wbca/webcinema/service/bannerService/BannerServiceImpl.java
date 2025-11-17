@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.model.Banner;
-import vi.wbca.webcinema.repository.BannerRepo;
+import vi.wbca.webcinema.model.setting.Banner;
+import vi.wbca.webcinema.repository.setting.BannerRepo;
 
 @Service
 @RequiredArgsConstructor

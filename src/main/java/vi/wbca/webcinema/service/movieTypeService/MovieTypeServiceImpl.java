@@ -2,8 +2,8 @@ package vi.wbca.webcinema.service.movieTypeService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.MovieType;
-import vi.wbca.webcinema.repository.MovieTypeRepo;
+import vi.wbca.webcinema.model.movie.MovieType;
+import vi.wbca.webcinema.repository.movie.MovieTypeRepo;
 
 import java.util.List;
 

@@ -9,12 +9,12 @@ import vi.wbca.webcinema.config.EmailService;
 import vi.wbca.webcinema.enums.EUserStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.model.ConfirmEmail;
-import vi.wbca.webcinema.model.User;
-import vi.wbca.webcinema.model.UserStatus;
-import vi.wbca.webcinema.repository.ConfirmEmailRepo;
-import vi.wbca.webcinema.repository.UserRepo;
-import vi.wbca.webcinema.repository.UserStatusRepo;
+import vi.wbca.webcinema.model.setting.ConfirmEmail;
+import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.model.user.UserStatus;
+import vi.wbca.webcinema.repository.setting.ConfirmEmailRepo;
+import vi.wbca.webcinema.repository.user.UserRepo;
+import vi.wbca.webcinema.repository.user.UserStatusRepo;
 import vi.wbca.webcinema.util.EmailUtils;
 import vi.wbca.webcinema.util.generate.GenerateOTP;
 

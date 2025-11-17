@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.seatTypeService;
 
-import vi.wbca.webcinema.model.SeatType;
+import vi.wbca.webcinema.model.seat.SeatType;
 
 import java.util.List;
 

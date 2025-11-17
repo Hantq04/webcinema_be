@@ -7,11 +7,11 @@ import vi.wbca.webcinema.dto.token.TokenDTO;
 import vi.wbca.webcinema.enums.TokenStatus;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.model.AccessToken;
-import vi.wbca.webcinema.model.RefreshToken;
-import vi.wbca.webcinema.model.User;
-import vi.wbca.webcinema.repository.AccessTokenRepo;
-import vi.wbca.webcinema.repository.RefreshTokenRepo;
+import vi.wbca.webcinema.model.token.AccessToken;
+import vi.wbca.webcinema.model.token.RefreshToken;
+import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.repository.token.AccessTokenRepo;
+import vi.wbca.webcinema.repository.token.RefreshTokenRepo;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
 import java.util.Date;

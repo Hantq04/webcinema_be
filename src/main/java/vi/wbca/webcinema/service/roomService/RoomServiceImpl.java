@@ -6,10 +6,10 @@ import vi.wbca.webcinema.dto.room.RoomDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.RoomMapper;
-import vi.wbca.webcinema.model.Cinema;
-import vi.wbca.webcinema.model.Room;
-import vi.wbca.webcinema.repository.CinemaRepo;
-import vi.wbca.webcinema.repository.RoomRepo;
+import vi.wbca.webcinema.model.cinema.Cinema;
+import vi.wbca.webcinema.model.cinema.Room;
+import vi.wbca.webcinema.repository.cinema.CinemaRepo;
+import vi.wbca.webcinema.repository.cinema.RoomRepo;
 
 @Service
 @RequiredArgsConstructor

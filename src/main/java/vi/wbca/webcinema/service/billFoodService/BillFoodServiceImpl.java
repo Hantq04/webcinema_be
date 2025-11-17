@@ -7,11 +7,11 @@ import vi.wbca.webcinema.dto.cinema.FoodRevenueDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.BillFoodMapper;
-import vi.wbca.webcinema.model.Bill;
-import vi.wbca.webcinema.model.BillFood;
-import vi.wbca.webcinema.model.Food;
-import vi.wbca.webcinema.repository.BillFoodRepo;
-import vi.wbca.webcinema.repository.FoodRepo;
+import vi.wbca.webcinema.model.bill.Bill;
+import vi.wbca.webcinema.model.bill.BillFood;
+import vi.wbca.webcinema.model.cinema.Food;
+import vi.wbca.webcinema.repository.bill.BillFoodRepo;
+import vi.wbca.webcinema.repository.cinema.FoodRepo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,7 +1,6 @@
 package vi.wbca.webcinema.util;
 
-import vi.wbca.webcinema.model.Bill;
-import vi.wbca.webcinema.model.User;
+import vi.wbca.webcinema.model.user.User;
 
 public class EmailUtils {
     public static String getEmailMessage(User user, String otp) {

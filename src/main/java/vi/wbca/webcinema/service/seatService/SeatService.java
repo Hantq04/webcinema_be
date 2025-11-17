@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service.seatService;
 
 import vi.wbca.webcinema.dto.room.SeatDTO;
-import vi.wbca.webcinema.model.Seat;
+import vi.wbca.webcinema.model.seat.Seat;
 
 public interface SeatService {
     SeatDTO insertSeat(SeatDTO seatDTO);

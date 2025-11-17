@@ -2,8 +2,8 @@ package vi.wbca.webcinema.service.rateService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.Rate;
-import vi.wbca.webcinema.repository.RateRepo;
+import vi.wbca.webcinema.model.movie.Rate;
+import vi.wbca.webcinema.repository.movie.RateRepo;
 
 import java.util.List;
 

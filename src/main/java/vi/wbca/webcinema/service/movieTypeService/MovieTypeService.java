@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.movieTypeService;
 
-import vi.wbca.webcinema.model.MovieType;
+import vi.wbca.webcinema.model.movie.MovieType;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package vi.wbca.webcinema.service.roleService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.Role;
-import vi.wbca.webcinema.repository.RoleRepo;
+import vi.wbca.webcinema.model.user.Role;
+import vi.wbca.webcinema.repository.user.RoleRepo;
 
 import java.util.Optional;
 

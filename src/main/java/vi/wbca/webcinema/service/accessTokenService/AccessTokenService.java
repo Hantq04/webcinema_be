@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service.accessTokenService;
 
-import vi.wbca.webcinema.model.AccessToken;
-import vi.wbca.webcinema.model.User;
+import vi.wbca.webcinema.model.token.AccessToken;
+import vi.wbca.webcinema.model.user.User;
 
 public interface AccessTokenService {
     void insertAccessToken(User user, String token);

@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.rateService;
 
-import vi.wbca.webcinema.model.Rate;
+import vi.wbca.webcinema.model.movie.Rate;
 
 import java.util.List;
 

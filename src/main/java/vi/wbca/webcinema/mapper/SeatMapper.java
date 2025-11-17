@@ -3,7 +3,7 @@ package vi.wbca.webcinema.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import vi.wbca.webcinema.dto.room.SeatDTO;
-import vi.wbca.webcinema.model.Seat;
+import vi.wbca.webcinema.model.seat.Seat;
 
 @Mapper(componentModel = "spring")
 public interface SeatMapper {

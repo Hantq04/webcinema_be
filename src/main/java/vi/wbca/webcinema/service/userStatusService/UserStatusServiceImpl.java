@@ -2,8 +2,8 @@ package vi.wbca.webcinema.service.userStatusService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.UserStatus;
-import vi.wbca.webcinema.repository.UserStatusRepo;
+import vi.wbca.webcinema.model.user.UserStatus;
+import vi.wbca.webcinema.repository.user.UserStatusRepo;
 
 import java.util.List;
 

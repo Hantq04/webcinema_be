@@ -6,8 +6,8 @@ import vi.wbca.webcinema.dto.cinema.FoodDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.FoodMapper;
-import vi.wbca.webcinema.model.Food;
-import vi.wbca.webcinema.repository.FoodRepo;
+import vi.wbca.webcinema.model.cinema.Food;
+import vi.wbca.webcinema.repository.cinema.FoodRepo;
 
 @Service
 @RequiredArgsConstructor

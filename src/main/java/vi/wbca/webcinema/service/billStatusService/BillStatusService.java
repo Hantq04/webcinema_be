@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service.billStatusService;
 
-import vi.wbca.webcinema.model.BillStatus;
+import vi.wbca.webcinema.model.bill.BillStatus;
 
 import java.util.List;
 

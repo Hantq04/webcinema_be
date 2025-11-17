@@ -6,10 +6,10 @@ import vi.wbca.webcinema.dto.ticket.PromotionDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.PromotionMapper;
-import vi.wbca.webcinema.model.Promotion;
-import vi.wbca.webcinema.model.RankCustomer;
-import vi.wbca.webcinema.repository.PromotionRepo;
-import vi.wbca.webcinema.repository.RankCustomerRepo;
+import vi.wbca.webcinema.model.bill.Promotion;
+import vi.wbca.webcinema.model.user.RankCustomer;
+import vi.wbca.webcinema.repository.bill.PromotionRepo;
+import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 
 import java.util.Calendar;
 import java.util.Date;

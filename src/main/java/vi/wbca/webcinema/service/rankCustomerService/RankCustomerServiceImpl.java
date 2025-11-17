@@ -3,8 +3,8 @@ package vi.wbca.webcinema.service.rankCustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vi.wbca.webcinema.model.RankCustomer;
-import vi.wbca.webcinema.repository.RankCustomerRepo;
+import vi.wbca.webcinema.model.user.RankCustomer;
+import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 
 import java.util.List;
 
