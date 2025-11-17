@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.schedule.ScheduleDTO;
 import vi.wbca.webcinema.groupValidate.schedule.InsertSchedule;
 import vi.wbca.webcinema.groupValidate.schedule.UpdateSchedule;
-import vi.wbca.webcinema.service.scheduleService.ScheduleService;
+import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 

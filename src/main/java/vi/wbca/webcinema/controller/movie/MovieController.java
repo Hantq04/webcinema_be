@@ -15,7 +15,7 @@ import vi.wbca.webcinema.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.groupValidate.movie.UpdateMovie;
-import vi.wbca.webcinema.service.movieService.MovieService;
+import vi.wbca.webcinema.service.MovieService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 

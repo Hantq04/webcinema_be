@@ -10,7 +10,7 @@ import vi.wbca.webcinema.dto.cinema.CinemaDTO;
 import vi.wbca.webcinema.groupValidate.cinema.DeleteCinema;
 import vi.wbca.webcinema.groupValidate.cinema.InsertCinema;
 import vi.wbca.webcinema.groupValidate.cinema.UpdateCinema;
-import vi.wbca.webcinema.service.cinemaService.CinemaService;
+import vi.wbca.webcinema.service.CinemaService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 

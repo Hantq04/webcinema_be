@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.bill.BillDTO;
 import vi.wbca.webcinema.dto.bill.BillTicketDTO;
-import vi.wbca.webcinema.service.billService.BillService;
+import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO;
 import vi.wbca.webcinema.dto.cinema.FoodRevenueDTO;
-import vi.wbca.webcinema.service.billFoodService.BillFoodService;
-import vi.wbca.webcinema.service.billService.BillService;
+import vi.wbca.webcinema.service.BillFoodService;
+import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 

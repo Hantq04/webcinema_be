@@ -21,7 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import vi.wbca.webcinema.enums.TokenStatus;
 import vi.wbca.webcinema.model.token.AccessToken;
-import vi.wbca.webcinema.service.accessTokenService.AccessTokenService;
+import vi.wbca.webcinema.service.AccessTokenService;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
 import java.io.IOException;

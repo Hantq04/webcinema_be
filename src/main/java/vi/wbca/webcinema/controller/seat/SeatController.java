@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.room.SeatDTO;
 import vi.wbca.webcinema.groupValidate.seat.InsertSeat;
 import vi.wbca.webcinema.groupValidate.seat.UpdateSeat;
-import vi.wbca.webcinema.service.seatService.SeatService;
+import vi.wbca.webcinema.service.SeatService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
