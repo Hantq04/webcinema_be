@@ -54,7 +54,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserDTO request) {
-        validateRegister(request);
+        if (userRepo.existsByUserName(request.getUserName())) {
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        }
+        if (userRepo.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -68,49 +76,6 @@ public class UserServiceImpl implements UserService {
         } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-    }
-
-    public void validateRegister(UserDTO request) {
-        if (userRepo.existsByUserName(request.getUserName())) {
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
-        }
-
-        if (userRepo.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
-
-        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
-        }
-    }
-
-    public void userStatusAndRank(User user) {
-        if (!user.isActive()) {
-            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.toString());
-            user.setUserStatus(userStatus);
-        }
-        user.setRankCustomer(setRankCustomer());
-        user.setPoint(0);
-        userRepo.save(user);
-    }
-
-    public void addRole(String role, User user) {
-        switch (role) {
-            case Constants.ADMIN -> roleRepo.save(Role.builder()
-                    .roleName(Constants.ROLE_ADMIN_NAME)
-                    .code(Constants.ADMIN)
-                    .user(user).build());
-            case Constants.USER -> roleRepo.save(Role.builder()
-                    .roleName(Constants.ROLE_USER_NAME)
-                    .code(Constants.USER)
-                    .user(user).build());
-            default -> throw new AppException(ErrorCode.INVALID_ROLE);
-        }
-    }
-
-    public RankCustomer setRankCustomer() {
-        return rankCustomerRepo.findByName(CustomerRank.STANDARD.toString())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 
     @Override
@@ -196,5 +161,34 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toUserDTO(user);
+    }
+
+    public void userStatusAndRank(User user) {
+        if (!user.isActive()) {
+            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.toString());
+            user.setUserStatus(userStatus);
+        }
+        user.setRankCustomer(setRankCustomer());
+        user.setPoint(0);
+        userRepo.save(user);
+    }
+
+    public void addRole(String role, User user) {
+        switch (role) {
+            case Constants.ADMIN -> roleRepo.save(Role.builder()
+                    .roleName(Constants.ROLE_ADMIN_NAME)
+                    .code(Constants.ADMIN)
+                    .user(user).build());
+            case Constants.USER -> roleRepo.save(Role.builder()
+                    .roleName(Constants.ROLE_USER_NAME)
+                    .code(Constants.USER)
+                    .user(user).build());
+            default -> throw new AppException(ErrorCode.INVALID_ROLE);
+        }
+    }
+
+    public RankCustomer setRankCustomer() {
+        return rankCustomerRepo.findByName(CustomerRank.STANDARD.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 }

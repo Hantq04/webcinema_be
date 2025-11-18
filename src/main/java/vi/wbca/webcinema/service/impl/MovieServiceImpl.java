@@ -70,16 +70,6 @@ public class MovieServiceImpl implements MovieService {
         movieRepo.save(movie);
     }
 
-    public MovieType setType(MovieDTO movieDTO) {
-        return movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
-                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
-    }
-
-    public Rate setRate(MovieDTO movieDTO) {
-        return rateRepo.findByCode(movieDTO.getCode())
-                .orElseThrow(() -> new AppException(ErrorCode.RATE_NOT_FOUND));
-    }
-
     @Override
     public void deleteMovie(String name) {
         Movie movie = movieRepo.findByName(name)
@@ -117,6 +107,16 @@ public class MovieServiceImpl implements MovieService {
         SeatStatus seatStatus = seatStatusRepo.findByCode(name)
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
         return movieRepo.getMovieWithSeatStatus(seatStatus.getId(), pageable);
+    }
+
+    public MovieType setType(MovieDTO movieDTO) {
+        return movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
+                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
+    }
+
+    public Rate setRate(MovieDTO movieDTO) {
+        return rateRepo.findByCode(movieDTO.getCode())
+                .orElseThrow(() -> new AppException(ErrorCode.RATE_NOT_FOUND));
     }
 
     public Cinema getCinema(String code) {

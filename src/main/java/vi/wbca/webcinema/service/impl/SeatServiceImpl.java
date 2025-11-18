@@ -56,6 +56,41 @@ public class SeatServiceImpl implements SeatService {
         return request;
     }
 
+    @Override
+    public void updateSeat(SeatDTO request) {
+        Seat seat = findById(request.getId());
+
+        seat.setLine(request.getLine());
+        seat.setNumber(request.getNumber());
+
+        seatRepo.save(seat);
+    }
+
+    @Override
+    public void deleteSeat(Long id) {
+        Seat seat = findById(id);
+        seatRepo.delete(seat);
+    }
+
+    @Override
+    public Seat findById(Long id) {
+        return seatRepo.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public void refreshSeat(String code) {
+        Bill bill = getBill(code);
+        Long statusCode = bill.getBillStatus().getId();
+        if (statusCode == 2) return;
+
+        SeatStatus seatStatus = getSeatStatus();
+        validatedBillTicket(bill);
+
+        seatRepo.updateSeatStatusByBill(bill, seatStatus);
+    }
+
     public void generateSeatsForRoom(Room room) {
         int capacity = room.getCapacity();
 
@@ -108,31 +143,9 @@ public class SeatServiceImpl implements SeatService {
         seatRepo.save(seat);
     }
 
-    @Override
-    public void updateSeat(SeatDTO request) {
-        Seat seat = findById(request.getId());
-
-        seat.setLine(request.getLine());
-        seat.setNumber(request.getNumber());
-
-        seatRepo.save(seat);
-    }
-
-    @Override
-    public void deleteSeat(Long id) {
-        Seat seat = findById(id);
-        seatRepo.delete(seat);
-    }
-
     public SeatStatus getSeatStatus() {
         return seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
-    }
-
-    @Override
-    public Seat findById(Long id) {
-        return seatRepo.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
     public Bill getBill(String code) {
@@ -143,18 +156,5 @@ public class SeatServiceImpl implements SeatService {
     public void validatedBillTicket(Bill bill) {
         List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
         if (billTickets.isEmpty()) throw new AppException(ErrorCode.CODE_NOT_FOUND);
-    }
-
-    @Override
-    @Transactional
-    public void refreshSeat(String code) {
-        Bill bill = getBill(code);
-        Long statusCode = bill.getBillStatus().getId();
-        if (statusCode == 2) return;
-
-        SeatStatus seatStatus = getSeatStatus();
-        validatedBillTicket(bill);
-
-        seatRepo.updateSeatStatusByBill(bill, seatStatus);
     }
 }

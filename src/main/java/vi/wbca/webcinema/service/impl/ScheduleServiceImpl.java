@@ -58,6 +58,31 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleMapper.toScheduleDTO(schedule);
     }
 
+    @Override
+    public void updateSchedule(ScheduleDTO scheduleDTO) {
+        Schedule schedule = scheduleRepo.findByCode(scheduleDTO.getCode())
+                .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
+
+        schedule.setStartAt(scheduleDTO.getStartAt());
+        scheduleRepo.save(schedule);
+    }
+
+    @Override
+    public void deactivateExpiredSchedule() {
+        List<Schedule> expiredSchedule = scheduleRepo.findAllByEndAtBeforeAndIsActiveTrue(new Date());
+        for (Schedule schedule: expiredSchedule) {
+            schedule.setActive(false);
+        }
+        scheduleRepo.saveAll(expiredSchedule);
+    }
+
+    @Override
+    public void deleteSchedule(String code, Long movieId) {
+        Schedule schedule = scheduleRepo.findByCodeAndMovieId(code, movieId)
+                .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
+        scheduleRepo.delete(schedule);
+    }
+
     public Date setEndTime(Date startAt, int duration) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startAt);
@@ -95,15 +120,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         int roundedMinutes = ((minutes + 4) / 5) * 5;
         calendar.set(Calendar.MINUTE, roundedMinutes);
         calendar.set(Calendar.SECOND, 0);
-    }
-
-    @Override
-    public void updateSchedule(ScheduleDTO scheduleDTO) {
-        Schedule schedule = scheduleRepo.findByCode(scheduleDTO.getCode())
-                .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
-
-        schedule.setStartAt(scheduleDTO.getStartAt());
-        scheduleRepo.save(schedule);
     }
 
     public void setName(Schedule schedule, Movie movie) {
@@ -173,15 +189,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
     }
 
-    @Override
-    public void deactivateExpiredSchedule() {
-        List<Schedule> expiredSchedule = scheduleRepo.findAllByEndAtBeforeAndIsActiveTrue(new Date());
-        for (Schedule schedule: expiredSchedule) {
-            schedule.setActive(false);
-        }
-        scheduleRepo.saveAll(expiredSchedule);
-    }
-
     public Movie setMovie(ScheduleDTO scheduleDTO) {
         return movieRepo.findByName(scheduleDTO.getMovieName())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
@@ -190,12 +197,5 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Room setRoom(ScheduleDTO scheduleDTO) {
         return roomRepo.findByNameAndCode(scheduleDTO.getRoomName(), scheduleDTO.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-    }
-
-    @Override
-    public void deleteSchedule(String code, Long movieId) {
-        Schedule schedule = scheduleRepo.findByCodeAndMovieId(code, movieId)
-                .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
-        scheduleRepo.delete(schedule);
     }
 }

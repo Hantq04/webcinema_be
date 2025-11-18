@@ -68,6 +68,13 @@ public class TicketServiceImpl implements TicketService {
         ticketRepo.save(ticket);
     }
 
+    @Override
+    public void deleteTicket(String code) {
+        Ticket ticket = ticketRepo.findByCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+        ticketRepo.delete(ticket);
+    }
+
     public Schedule getSchedule(TicketDTO ticketDTO, Room room) {
         return scheduleRepo.findByStartAtAndRoom(ticketDTO.getStartTime(), room)
                 .orElseThrow(() -> new AppException(ErrorCode.START_TIME_NOT_FOUND));
@@ -180,12 +187,5 @@ public class TicketServiceImpl implements TicketService {
             seat.setSeatStatus(status);
             seatRepo.save(seat);
         }
-    }
-
-    @Override
-    public void deleteTicket(String code) {
-        Ticket ticket = ticketRepo.findByCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-        ticketRepo.delete(ticket);
     }
 }

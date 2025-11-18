@@ -64,6 +64,41 @@ public class BillServiceImpl implements BillService {
         billMapper.toBillDTO(bill);
     }
 
+    @Override
+    public void updateBill(BillDTO billDTO) {
+        User user = getCustomer(billDTO);
+        Bill bill = billRepo.findByUser(user)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        billFoodService.updateBillFood(billDTO.getFoods(), bill);
+        billTicketService.updateBillTicket(billDTO.getTickets(), bill);
+
+        calculateTotal(bill, user);
+        bill.setUpdateTime(new Date());
+
+        billDTO.setTotalMoney(bill.getTotalMoney());
+        billRepo.save(bill);
+    }
+
+    @Override
+    public void deleteBill(String code) {
+        Bill bill = billRepo.findByTradingCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+
+        billFoodService.deleteBillFood(bill);
+        billTicketService.deleteBillTicket(bill);
+
+        billRepo.delete(bill);
+    }
+
+    @Override
+    public List<CinemaRevenueDTO> getRevenueByCinema(LocalDateTime from, LocalDateTime to) {
+        if (from.isAfter(to)) {
+            throw new AppException(ErrorCode.DATE_TIME_EXCEPTION);
+        }
+        return billRepo.getRevenueWithTime(from, to);
+    }
+
     public void insertBillFood(BillDTO billDTO, Bill bill) {
         for (BillFoodDTO billFoodDTO : billDTO.getFoods()) {
             billFoodDTO.setCustomerName(billDTO.getCustomerName());
@@ -143,40 +178,5 @@ public class BillServiceImpl implements BillService {
     public BillStatus getStatus(String eBillStatus) {
         return billStatusRepo.findByName(eBillStatus)
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
-    }
-
-    @Override
-    public void updateBill(BillDTO billDTO) {
-        User user = getCustomer(billDTO);
-        Bill bill = billRepo.findByUser(user)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        billFoodService.updateBillFood(billDTO.getFoods(), bill);
-        billTicketService.updateBillTicket(billDTO.getTickets(), bill);
-
-        calculateTotal(bill, user);
-        bill.setUpdateTime(new Date());
-
-        billDTO.setTotalMoney(bill.getTotalMoney());
-        billRepo.save(bill);
-    }
-
-    @Override
-    public void deleteBill(String code) {
-        Bill bill = billRepo.findByTradingCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-
-        billFoodService.deleteBillFood(bill);
-        billTicketService.deleteBillTicket(bill);
-
-        billRepo.delete(bill);
-    }
-
-    @Override
-    public List<CinemaRevenueDTO> getRevenueByCinema(LocalDateTime from, LocalDateTime to) {
-        if (from.isAfter(to)) {
-            throw new AppException(ErrorCode.DATE_TIME_EXCEPTION);
-        }
-        return billRepo.getRevenueWithTime(from, to);
     }
 }

@@ -41,15 +41,15 @@ public class PromotionServiceImpl implements PromotionService {
         promotionRepo.save(promotion);
     }
 
-    public RankCustomer setRankCustomerId(PromotionDTO promotionDTO) {
-        return rankCustomerRepo.findByName(promotionDTO.getNameRankCustomer())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-    }
-
     @Override
     public void deletePromotion(String name) {
         Promotion promotion = promotionRepo.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         promotionRepo.delete(promotion);
+    }
+
+    public RankCustomer setRankCustomerId(PromotionDTO promotionDTO) {
+        return rankCustomerRepo.findByName(promotionDTO.getNameRankCustomer())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 }

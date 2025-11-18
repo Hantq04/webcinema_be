@@ -35,11 +35,6 @@ public class BillFoodServiceImpl implements BillFoodService {
         billFoodRepo.save(billFood);
     }
 
-    public Food getFood(BillFoodDTO billFoodDTO) {
-        return foodRepo.findByNameOfFood(billFoodDTO.getName())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-    }
-
     @Override
     public void updateBillFood(List<BillFoodDTO> billFoodDTOs, Bill bill) {
         // Retrieve existing BillFood records from the database
@@ -92,5 +87,10 @@ public class BillFoodServiceImpl implements BillFoodService {
             throw new AppException(ErrorCode.DATE_TIME_EXCEPTION);
         }
         return billFoodRepo.getFoodRevenueSevenDays(start, end);
+    }
+
+    public Food getFood(BillFoodDTO billFoodDTO) {
+        return foodRepo.findByNameOfFood(billFoodDTO.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 }

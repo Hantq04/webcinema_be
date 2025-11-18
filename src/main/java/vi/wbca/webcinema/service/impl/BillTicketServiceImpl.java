@@ -37,11 +37,6 @@ public class BillTicketServiceImpl implements BillTicketService {
         billTicketRepo.save(billTicket);
     }
 
-    public Ticket getTicket(BillTicketDTO billTicketDTO) {
-        return ticketRepo.findByCode(billTicketDTO.getCode())
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-    }
-
     @Override
     public void updateBillTicket(List<BillTicketDTO> billTicketDTOs, Bill bill) {
         // Retrieve existing BillTicket records from the database
@@ -92,5 +87,10 @@ public class BillTicketServiceImpl implements BillTicketService {
         BillTicket billTicket = billTicketRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         billTicketRepo.delete(billTicket);
+    }
+
+    public Ticket getTicket(BillTicketDTO billTicketDTO) {
+        return ticketRepo.findByCode(billTicketDTO.getCode())
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
     }
 }
