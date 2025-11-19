@@ -43,7 +43,8 @@ public class TicketServiceImpl implements TicketService {
     public void insertTicket(TicketDTO ticketDTO) {
         Ticket ticket = ticketMapper.toTicket(ticketDTO);
 
-        Room room = getRoom(ticketDTO);
+        Room room = roomRepo.findByNameAndCode(ticketDTO.getRoomName(), ticketDTO.getRoomCode())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         Schedule schedule = getSchedule(ticketDTO, room);
 
         //Update ticket by checking schedule
@@ -54,7 +55,12 @@ public class TicketServiceImpl implements TicketService {
         updateSeatStatusIfAvailable(seat);
 
         // Check schedule and seat belong to room
-        validateScheduleAndSeatInRoom(room, schedule, seat);
+        if (!schedule.getRoom().getId().equals(room.getId())) {
+            throw new AppException(ErrorCode.SCHEDULE_NOT_BELONG_TO_ROOM);
+        }
+        if (!seat.getRoom().getId().equals(room.getId())) {
+            throw new AppException(ErrorCode.SEAT_NOT_BELONG_TO_ROOM);
+        }
         double finalPrice = calculateFinalPrice(schedule, seat);
 
         ticket.setCode(GenerateCode.generateCode());
@@ -108,20 +114,6 @@ public class TicketServiceImpl implements TicketService {
         seatRepo.save(seat);
 
         return seat;
-    }
-
-    public Room getRoom(TicketDTO ticketDTO) {
-        return roomRepo.findByNameAndCode(ticketDTO.getRoomName(), ticketDTO.getRoomCode())
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-    }
-
-    public void validateScheduleAndSeatInRoom(Room room, Schedule schedule, Seat seat) {
-        if (!schedule.getRoom().getId().equals(room.getId())) {
-            throw new AppException(ErrorCode.SCHEDULE_NOT_BELONG_TO_ROOM);
-        }
-        if (!seat.getRoom().getId().equals(room.getId())) {
-            throw new AppException(ErrorCode.SEAT_NOT_BELONG_TO_ROOM);
-        }
     }
 
     public Double calculateFinalPrice(Schedule schedule, Seat seat) {
