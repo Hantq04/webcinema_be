@@ -40,7 +40,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshToken.setExpiredTime(new Date(System.currentTimeMillis() + refTokenExpiredTime));
         refreshToken.setUser(user);
-
         refreshTokenRepo.save(refreshToken);
     }
 
@@ -65,14 +64,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         response.setRefreshToken(refreshToken.getToken());
 
         boolean isExpired = accessToken.getExpiredAt().before(new Date());
-
         if (isExpired) {
             String newAccessToken = jwtTokenProvider.generateToken(accessToken.getUser());
 
             accessToken.setTokenStatus(TokenStatus.ACTIVE);
             accessToken.setAccessToken(newAccessToken);
             accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
-
             accessTokenRepo.save(accessToken);
             response.setAccessToken(newAccessToken);
         }

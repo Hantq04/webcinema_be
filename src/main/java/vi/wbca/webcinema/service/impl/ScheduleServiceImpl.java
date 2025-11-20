@@ -34,8 +34,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduleDTO insertSchedule(ScheduleDTO scheduleDTO) {
         Schedule schedule = scheduleMapper.toSchedule(scheduleDTO);
-        Room room = setRoom(scheduleDTO);
-        Movie movie = setMovie(scheduleDTO);
+        Room room = roomRepo.findByNameAndCode(scheduleDTO.getRoomName(), scheduleDTO.getRoomCode())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        Movie movie = movieRepo.findByName(scheduleDTO.getMovieName())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         Date startAt = scheduleDTO.getStartAt();
         startAt = checkLastEndAt(room.getId(), startAt);
@@ -44,7 +46,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (scheduleRepo.countByRoomAndTimeOverlap(room, startAt, endAt) > 0) {
             throw new AppException(ErrorCode.DUPLICATE_SHOWTIME);
         }
-
         setName(schedule, movie);
         schedule.setStartAt(startAt);
         schedule.setEndAt(endAt);
@@ -52,7 +53,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setActive(true);
         schedule.setMovie(movie);
         schedule.setRoom(room);
-
         scheduleRepo.save(schedule);
         deactivateExpiredSchedule();
         return scheduleMapper.toScheduleDTO(schedule);
@@ -127,7 +127,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         int startHour = getHour(startAt);
         int endHour = getHour(setEndTime(startAt, movie.getMovieDuration()));
 
-        GeneralSetting setting = generalSetting();
+        GeneralSetting setting = generalSettingRepo.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
 
         // Only apply if startAt greater than timeBeginToChange
         if (schedule.getStartAt().after(setting.getTimeBeginToChange())) {
@@ -182,20 +183,5 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (startHour == breakTime) {
             throw new AppException(ErrorCode.SHOW_TIME_IN_BREAK);
         }
-    }
-
-    public GeneralSetting generalSetting() {
-        return generalSettingRepo.findTopByOrderByIdDesc()
-                .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
-    }
-
-    public Movie setMovie(ScheduleDTO scheduleDTO) {
-        return movieRepo.findByName(scheduleDTO.getMovieName())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-    }
-
-    public Room setRoom(ScheduleDTO scheduleDTO) {
-        return roomRepo.findByNameAndCode(scheduleDTO.getRoomName(), scheduleDTO.getRoomCode())
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
     }
 }

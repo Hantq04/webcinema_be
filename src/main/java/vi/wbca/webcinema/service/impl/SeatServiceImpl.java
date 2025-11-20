@@ -81,22 +81,22 @@ public class SeatServiceImpl implements SeatService {
     @Override
     @Transactional
     public void refreshSeat(String code) {
-        Bill bill = getBill(code);
+        Bill bill = billRepo.findByTradingCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
         Long statusCode = bill.getBillStatus().getId();
         if (statusCode == 2) return;
 
         SeatStatus seatStatus = getSeatStatus();
-        validatedBillTicket(bill);
+        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+        if (billTickets.isEmpty()) throw new AppException(ErrorCode.CODE_NOT_FOUND);
 
         seatRepo.updateSeatStatusByBill(bill, seatStatus);
     }
 
     public void generateSeatsForRoom(Room room) {
         int capacity = room.getCapacity();
-
         int roomLine = (int) Math.ceil(Math.sqrt(capacity));
         int seatsPerRow = (int) Math.ceil((double) capacity / roomLine);
-
         List<Seat> seats = new ArrayList<>();
 
         for (int i = 0; i < roomLine; i++) {
@@ -106,7 +106,6 @@ public class SeatServiceImpl implements SeatService {
                 if (seatRepo.existsByRoomAndLineAndNumber(room, String.valueOf(rowLabel), j)) {
                     continue;// Skip if it already exists
                 }
-
                 Seat seat = new Seat();
                 seat.setLine(String.valueOf(rowLabel));
                 seat.setNumber(j);
@@ -114,11 +113,9 @@ public class SeatServiceImpl implements SeatService {
                 seat.setSeatStatus(getSeatStatus());
                 setSeatType(seat, String.valueOf(rowLabel));
                 seat.setActive(true);
-
                 seats.add(seat);
             }
         }
-
         if (!seats.isEmpty()) {
             // Save only if new seats are available
             seatRepo.saveAll(seats);
@@ -146,15 +143,5 @@ public class SeatServiceImpl implements SeatService {
     public SeatStatus getSeatStatus() {
         return seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
-    }
-
-    public Bill getBill(String code) {
-        return billRepo.findByTradingCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-    }
-
-    public void validatedBillTicket(Bill bill) {
-        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-        if (billTickets.isEmpty()) throw new AppException(ErrorCode.CODE_NOT_FOUND);
     }
 }

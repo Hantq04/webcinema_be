@@ -29,13 +29,13 @@ public class PromotionServiceImpl implements PromotionService {
 
         if (promotionDTO.getStartTime() == null) {
             promotion.setStartTime(new Date());
-        } else promotion.setStartTime(promotionDTO.getStartTime());
-
+        } else {
+            promotion.setStartTime(promotionDTO.getStartTime());
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(promotion.getStartTime());
         calendar.add(Calendar.HOUR, 24);
         promotion.setEndTime(calendar.getTime());
-
         promotion.setActive(true);
         promotion.setRankCustomer(setRankCustomerId(promotionDTO));
         promotionRepo.save(promotion);
