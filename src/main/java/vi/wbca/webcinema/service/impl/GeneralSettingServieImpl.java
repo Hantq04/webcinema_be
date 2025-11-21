@@ -24,14 +24,12 @@ public class GeneralSettingServieImpl implements GeneralSettingService {
 
         LocalTime breakTime = generalSettingDTO.getBreakTime();
         generalSetting.setBreakTime(breakTime);
-
         LocalTime open = generalSettingDTO.getOpenTime();
         int businessHours = generalSettingDTO.getBusinessHours();
         LocalTime close = open.plusHours(businessHours);
 
         generalSetting.setCloseTime(open);
         generalSetting.setCloseTime(close);
-
         generalSettingRepo.save(generalSetting);
         return generalSettingMapper.toGeneralSettingDTO(generalSetting);
     }

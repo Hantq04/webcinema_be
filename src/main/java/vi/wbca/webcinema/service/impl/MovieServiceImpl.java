@@ -40,15 +40,16 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public MovieDTO insertMovie(MovieDTO movieDTO) {
         Movie movie = movieMapper.toMovie(movieDTO);
+        MovieType movieType = movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
+                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(movie.getPremiereDate());
         calendar.add(Calendar.DAY_OF_MONTH, 30);
         movie.setEndDate(calendar.getTime());
         movie.setActive(true);
-        movie.setMovieType(setType(movieDTO));
+        movie.setMovieType(movieType);
         movie.setRate(setRate(movieDTO));
-
         movieRepo.save(movie);
         return movieMapper.toMovieDTO(movie);
     }
@@ -66,7 +67,6 @@ public class MovieServiceImpl implements MovieService {
         movie.setLanguage(movieDTO.getLanguage());
         movie.setTrailer(movieDTO.getTrailer());
         movie.setRate(setRate(movieDTO));
-
         movieRepo.save(movie);
     }
 
@@ -107,11 +107,6 @@ public class MovieServiceImpl implements MovieService {
         SeatStatus seatStatus = seatStatusRepo.findByCode(name)
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
         return movieRepo.getMovieWithSeatStatus(seatStatus.getId(), pageable);
-    }
-
-    public MovieType setType(MovieDTO movieDTO) {
-        return movieTypeRepo.findByMovieTypeName(movieDTO.getMovieTypeName())
-                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
     }
 
     public Rate setRate(MovieDTO movieDTO) {

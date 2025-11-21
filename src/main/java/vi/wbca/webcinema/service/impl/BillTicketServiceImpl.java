@@ -33,7 +33,6 @@ public class BillTicketServiceImpl implements BillTicketService {
         billTicket.setQuantity(1);
         billTicket.setBill(bill);
         billTicket.setTicket(ticket);
-
         billTicketRepo.save(billTicket);
     }
 
@@ -55,16 +54,13 @@ public class BillTicketServiceImpl implements BillTicketService {
             if (billTicketDTO.getId() != null) {
                 billTicket = billTicketRepo.findById(billTicketDTO.getId())
                         .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-
                 billTicket.setTicket(ticket);
             } else {
                  billTicket = billTicketMapper.toBillTicket(billTicketDTO);
-
                  billTicket.setQuantity(1);
                  billTicket.setTicket(ticket);
                  billTicket.setBill(bill);
             }
-
             billTicketRepo.save(billTicket);
         }
 

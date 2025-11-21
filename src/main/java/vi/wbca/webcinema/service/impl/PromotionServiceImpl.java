@@ -26,6 +26,8 @@ public class PromotionServiceImpl implements PromotionService {
     public void insertPromotion(PromotionDTO promotionDTO) {
         Promotion promotion = promotionMapper.toPromotion(promotionDTO);
         promotion.setPromotionType(promotionDTO.getPromotionType());
+        RankCustomer rankCustomer = rankCustomerRepo.findByName(promotionDTO.getNameRankCustomer())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         if (promotionDTO.getStartTime() == null) {
             promotion.setStartTime(new Date());
@@ -37,7 +39,7 @@ public class PromotionServiceImpl implements PromotionService {
         calendar.add(Calendar.HOUR, 24);
         promotion.setEndTime(calendar.getTime());
         promotion.setActive(true);
-        promotion.setRankCustomer(setRankCustomerId(promotionDTO));
+        promotion.setRankCustomer(rankCustomer);
         promotionRepo.save(promotion);
     }
 
@@ -46,10 +48,5 @@ public class PromotionServiceImpl implements PromotionService {
         Promotion promotion = promotionRepo.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         promotionRepo.delete(promotion);
-    }
-
-    public RankCustomer setRankCustomerId(PromotionDTO promotionDTO) {
-        return rankCustomerRepo.findByName(promotionDTO.getNameRankCustomer())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 }
