@@ -39,12 +39,12 @@ public class BillServiceImpl implements BillService {
     @Override
     public void createBill(BillDTO billDTO) {
         User user = getCustomer(billDTO);
-        BillStatus pendingStatus = getStatus(EBillStatus.PENDING.toString());
+        BillStatus pendingStatus = billStatusRepo.findByName(EBillStatus.PENDING.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
 
         if (billRepo.existsByUserAndBillStatus(user, pendingStatus)) {
             throw new AppException(ErrorCode.BILL_EXISTED);
         }
-
         Bill bill = billMapper.toBill(billDTO);
         bill.setCreateTime(new Date());
         bill.setTradingCode(GenerateCode.generateTradingCode());
@@ -116,16 +116,15 @@ public class BillServiceImpl implements BillService {
     public void calculateTotal(Bill bill, User user) {
         double totalFood = calculateBillFood(bill);
         double totalTicket = calculateBillTicket(bill);
-
         double totalMoney = totalFood + totalTicket;
 
-        Promotion promotion = getPromotion(user);
+        Promotion promotion = promotionRepo.findByRankCustomer(user.getRankCustomer())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         if (promotion.getQuantity() == 0 || promotion.getEndTime().before(new Date())) {
             promotion.setActive(false);
             promotionRepo.save(promotion);
         }
-
         if (promotion.isActive()) {
             double discounted = totalMoney * promotion.getPercent() / 100;
             double finalTotal = totalMoney - discounted;
@@ -163,11 +162,6 @@ public class BillServiceImpl implements BillService {
             }
         }
         return total;
-    }
-
-    public Promotion getPromotion(User user) {
-        return promotionRepo.findByRankCustomer(user.getRankCustomer())
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 
     public User getCustomer(BillDTO billDTO) {

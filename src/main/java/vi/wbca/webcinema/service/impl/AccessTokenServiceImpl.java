@@ -25,7 +25,6 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     @Override
     public void insertAccessToken(User user, String token) {
         AccessToken accessToken = new AccessToken();
-
         accessToken.setTokenStatus(TokenStatus.ACTIVE);
         accessToken.setAccessToken(token);
         accessToken.setUser(user);
