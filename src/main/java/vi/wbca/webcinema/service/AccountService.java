@@ -35,11 +35,9 @@ public class AccountService {
     @Value("${application.email.verify-expiration}")
     private long expiredTime;
 
-    public void sendVerificationEmail(User user)
-            throws MessagingException, UnsupportedEncodingException {
+    public void sendVerificationEmail(User user) throws MessagingException, UnsupportedEncodingException {
         String subject = "Email Verification";
         String content = EmailUtils.getEmailMessage(user, generateOTP);
-
         emailService.sendMail(user.getEmail(), subject, content);
         createConfirmEmail(user);
     }
@@ -62,16 +60,13 @@ public class AccountService {
         if (user.isActive()) {
             throw new AppException(ErrorCode.USER_ACTIVE);
         }
-
         Calendar calendar = Calendar.getInstance();
         if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
-
         user.setActive(true);
         code.setConfirm(true);
-
         UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.ACTIVE.name());
         user.setUserStatus(userStatus);
 
@@ -87,7 +82,6 @@ public class AccountService {
         emailService.sendMail(email, subject, content);
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
-
         createConfirmEmail(user);
         return "Please verify your account within 5 minutes.";
     }
@@ -96,16 +90,13 @@ public class AccountService {
         if (!newPassword.equals(confirmPassword)) {
             throw new AppException(ErrorCode.PASSWORD_MISMATCH);
         }
-
         ConfirmEmail code = confirmEmailRepo.findByConfirmCode(otp)
                 .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
-
         Calendar calendar = Calendar.getInstance();
         if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
-
         User user = userRepo.findByConfirmEmails(code)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -120,7 +111,6 @@ public class AccountService {
         emailService.sendMail(email, subject, content);
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
-
         createConfirmEmail(user);
         return "Check your email for the password change OTP.";
     }

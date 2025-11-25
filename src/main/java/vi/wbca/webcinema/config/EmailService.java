@@ -23,7 +23,6 @@ public class EmailService {
         messageHelper.setFrom("no-reply@example.com", "Support Team");
         messageHelper.setReplyTo("support@example.com");
         messageHelper.setText(content, true);
-
         javaMailSender.send(message);
     }
 }

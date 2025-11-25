@@ -12,8 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ErrorLog {
     String errorLevel;
-
     String description;
-
     String location;
 }

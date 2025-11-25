@@ -40,7 +40,6 @@ public class LogoutService implements LogoutHandler {
             throw new AppException(ErrorCode.AUTH_TOKEN_EXCEPTION);
         }
         String jwtToken = authHeader.substring(7);
-
         AccessToken storedToken = accessTokenService.findByAccessToken(jwtToken);
 
         storedToken.setTokenStatus(TokenStatus.REVOKED);
