@@ -23,11 +23,8 @@ public class UserStatusController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertUserStatus(@RequestBody UserStatus userStatus) {
-
         logger.info("----------Web Cinema: Insert New User Status----------");
-
         UserStatus responseData = userStatusService.insertUserStatus(userStatus);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User status insert successfully.", responseData)
         );
@@ -36,9 +33,7 @@ public class UserStatusController {
     @GetMapping("/get-all-status")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<UserStatus> getAllStatus() {
-
         logger.info("----------Web Cinema: Get All User Status----------");
-
         return userStatusService.getAllStatus();
     }
 }

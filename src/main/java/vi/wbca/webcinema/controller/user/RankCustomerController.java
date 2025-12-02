@@ -25,9 +25,7 @@ public class RankCustomerController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertRank(@RequestBody RankCustomer rankCustomer) {
-
         logger.info("----------Web Cinema: Insert New Rank Customer----------");
-
         rankCustomerService.insertRank(rankCustomer);
 
         Map<String, String> responseData = new HashMap<>();
@@ -43,9 +41,7 @@ public class RankCustomerController {
     @GetMapping("/get-all-rank")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<RankCustomer> getAllRank() {
-
         logger.info("----------Web Cinema: Delete Rank Customer----------");
-
         return rankCustomerService.getAllRank();
     }
 }
