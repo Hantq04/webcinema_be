@@ -29,19 +29,14 @@ public class LogoutService implements LogoutHandler {
 
     @SneakyThrows
     @Override
-    public void logout(HttpServletRequest request,
-                       HttpServletResponse response,
-                       Authentication authentication) {
-
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         logger.info("----------Web Cinema: Logout----------");
-
         final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new AppException(ErrorCode.AUTH_TOKEN_EXCEPTION);
         }
         String jwtToken = authHeader.substring(7);
         AccessToken storedToken = accessTokenService.findByAccessToken(jwtToken);
-
         storedToken.setTokenStatus(TokenStatus.REVOKED);
         accessTokenService.save(storedToken);
 

@@ -37,7 +37,8 @@ public class VNPayService {
     private final RankCustomerRepo rankCustomerRepo;
 
     public String createPayment(String code, String returnUrl) {
-        Bill bill = getBill(code);
+        Bill bill = billRepo.findByTradingCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -141,9 +142,15 @@ public class VNPayService {
 
         var orderInfo = request.getParameter("vnp_OrderInfo");
         String tradingCode = extractTradingCode(orderInfo);
-        Bill bill = getBill(tradingCode);
-        User user = getUser(bill);
-        RankCustomer rankCustomer = getRankCustomer();
+
+        Bill bill = billRepo.findByTradingCode(tradingCode)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+
+        User user = userRepo.findByUserName(bill.getUser().getUsername())
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+
+        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRank.VIP.toString())
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
@@ -217,23 +224,8 @@ public class VNPayService {
         return parts.length > 1 ? parts[1].trim() : "";
     }
 
-    public Bill getBill(String code) {
-        return billRepo.findByTradingCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-    }
-
     public BillStatus getStatus(String eBillStatus) {
         return billStatusRepo.findByName(eBillStatus)
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-    }
-
-    public User getUser(Bill bill) {
-        return userRepo.findByUserName(bill.getUser().getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
-    }
-
-    public RankCustomer getRankCustomer() {
-        return rankCustomerRepo.findByName(CustomerRank.VIP.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
     }
 
@@ -255,7 +247,6 @@ public class VNPayService {
     private void sendResponse(StringBuilder detail, String userEmail) throws MessagingException, UnsupportedEncodingException {
         String subject = "VNPay Payment Response";
         String body = EmailUtils.getConfirmPaymentMessage(formatDetailAsList(detail.toString()));
-        // Sending the email
         emailService.sendMail(userEmail, subject, body);
     }
 }

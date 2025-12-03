@@ -17,7 +17,6 @@ public class EmailService {
     public void sendMail(String to, String subject, String content) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
-
         messageHelper.setTo(to);
         messageHelper.setSubject(subject);
         messageHelper.setFrom("no-reply@example.com", "Support Team");

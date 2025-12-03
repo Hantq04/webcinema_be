@@ -18,15 +18,11 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException)
-            throws IOException {
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException authException) throws IOException {
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
-
         response.setStatus(errorCode.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
         ErrorLog errorForm = ErrorLog.builder()
                 .errorLevel(authException.getClass().getSimpleName())
                 .description(authException.getMessage())
@@ -36,7 +32,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ResponseObject responseError = new ResponseObject(
                 errorCode.getCode(), errorCode.getMessage(), errorForm);
-
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(responseError));
         response.flushBuffer();
