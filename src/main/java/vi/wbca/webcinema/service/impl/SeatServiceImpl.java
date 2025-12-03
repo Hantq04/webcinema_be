@@ -39,30 +39,24 @@ public class SeatServiceImpl implements SeatService {
     public SeatDTO insertSeat(SeatDTO request) {
         Room room = roomRepo.findByNameAndCode(request.getRoomName(), request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-
         // Check if the room already created seat
         boolean hasSeats  = seatRepo.existsByRoom(room);
         if (hasSeats) {
             throw new AppException(ErrorCode.SEAT_EXISTED);
         }
-
         // Generate seats for the room if not already exists
         generateSeatsForRoom(room);
-
         request.setTotalSeats(room.getCapacity());
         request.setRoomName(room.getName());
         request.setRoomCode(room.getCode());
-
         return request;
     }
 
     @Override
     public void updateSeat(SeatDTO request) {
         Seat seat = findById(request.getId());
-
         seat.setLine(request.getLine());
         seat.setNumber(request.getNumber());
-
         seatRepo.save(seat);
     }
 
@@ -89,7 +83,6 @@ public class SeatServiceImpl implements SeatService {
         SeatStatus seatStatus = getSeatStatus();
         List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
         if (billTickets.isEmpty()) throw new AppException(ErrorCode.CODE_NOT_FOUND);
-
         seatRepo.updateSeatStatusByBill(bill, seatStatus);
     }
 

@@ -27,11 +27,8 @@ public class BillController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
-
         logger.info("----------Web Cinema: Insert New Bill----------");
-
         billService.createBill(request);
-
         Map<String, Object> responseData = new HashMap<>();
         responseData.put(Constants.USER_NAME, request.getCustomerName());
         responseData.put(Constants.LIST_ORDER, request.getFoods());
@@ -40,12 +37,10 @@ public class BillController {
         // Custom ticket response
         Map<String, Object> ticketInfo = new HashMap<>();
         List<String> ticketCodes = request.getTickets().stream()
-                .map(BillTicketDTO::getCode)
-                .toList();
+                .map(BillTicketDTO::getCode).toList();
         ticketInfo.put(Constants.CODE, ticketCodes);
         ticketInfo.put(Constants.QUANTITY, ticketCodes.size());
         responseData.put(Constants.LIST_TICKET, ticketInfo);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill successfully.", responseData)
         );
@@ -54,17 +49,13 @@ public class BillController {
     @PutMapping("/update")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
-
         logger.info("----------Web Cinema: Update Bill----------");
-
         billService.updateBill(request);
-
         Map<String, Object> responseData = new HashMap<>();
         responseData.put(Constants.USER_NAME, request.getCustomerName());
         responseData.put(Constants.LIST_ORDER, request.getFoods());
         responseData.put(Constants.LIST_TICKET, request.getTickets());
         responseData.put(Constants.TOTAL_MONEY, request.getTotalMoney());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated bill successfully.", responseData)
         );
@@ -73,11 +64,8 @@ public class BillController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String tradingCode) {
-
         logger.info("----------Web Cinema: Delete Bill----------");
-
         billService.deleteBill(tradingCode);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill successfully.", "")
         );

@@ -28,11 +28,8 @@ public class SeatController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSeat(@Validated(InsertSeat.class) @RequestBody SeatDTO request) {
-
         logger.info("----------Web Cinema: Insert New Seat----------");
-
         SeatDTO responseData = seatService.insertSeat(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat successfully.", responseData)
         );
@@ -41,15 +38,11 @@ public class SeatController {
     @PutMapping("/update")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateSeat(@Validated(UpdateSeat.class) @RequestBody SeatDTO request) {
-
         logger.info("----------Web Cinema: Update Seat----------");
-
         seatService.updateSeat(request);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.LINE, request.getLine());
         responseData.put(Constants.NUMBER, request.getNumber().toString());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated seat successfully.", responseData)
         );
@@ -58,11 +51,8 @@ public class SeatController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteSeat(@Valid @RequestParam Long id) {
-
         logger.info("----------Web Cinema: Delete Seat----------");
-
         seatService.deleteSeat(id);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted seat successfully.", "")
         );
@@ -71,11 +61,8 @@ public class SeatController {
     @PutMapping("/refresh")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String code) {
-
         logger.info("----------Web Cinema: Update Seat Status----------");
-
         seatService.refreshSeat(code);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated seat status successfully.", "")
         );

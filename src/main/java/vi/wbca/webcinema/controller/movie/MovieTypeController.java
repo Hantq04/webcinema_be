@@ -24,11 +24,8 @@ public class MovieTypeController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertMovieType(@Valid @RequestBody MovieType request) {
-
         logger.info("----------Web Cinema: Insert New Movie Type----------");
-
         MovieType responseData = movieTypeService.insertMovieType(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert room successfully.", responseData)
         );
@@ -37,9 +34,7 @@ public class MovieTypeController {
     @GetMapping("/get-all-type")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<MovieType> getAllType() {
-
         logger.info("----------Web Cinema: Get All Movie Type----------");
-
         return movieTypeService.getAllType();
     }
 }

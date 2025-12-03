@@ -22,9 +22,7 @@ public class PaymentController {
     @PostMapping("/submit-payment")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public String submitPayment(@Valid @RequestParam String code, HttpServletRequest request) {
-
         logger.info("----------Web Cinema: Submit Payment----------");
-
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         return vnPayService.createPayment(code, baseUrl);
     }
@@ -32,9 +30,7 @@ public class PaymentController {
     @GetMapping("/vnPay-payment")
     public String confirmPayment(@Valid HttpServletRequest request) throws
             MessagingException, UnsupportedEncodingException {
-
         logger.info("----------Web Cinema: Confirm Payment----------");
-
         return vnPayService.paymentReturn(request) == 1 ? "Payment Successful" : "Payment Cancelled";
     }
 }

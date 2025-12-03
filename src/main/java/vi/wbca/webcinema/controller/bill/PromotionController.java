@@ -25,18 +25,14 @@ public class PromotionController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertPromotion(@Valid @RequestBody PromotionDTO request) {
-
         logger.info("----------Web Cinema: Insert New Promotion----------");
-
         promotionService.insertPromotion(request);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.PERCENT, request.getPercent().toString());
         responseData.put(Constants.QUANTITY, request.getQuantity().toString());
         responseData.put(Constants.TYPE, request.getPromotionType().toString());
         responseData.put(Constants.DESCRIPTION, request.getDescription());
         responseData.put(Constants.NAME, request.getName());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert promotion successfully.", responseData)
         );
@@ -45,11 +41,8 @@ public class PromotionController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestParam String name) {
-
         logger.info("----------Web Cinema: Delete Promotion----------");
-
         promotionService.deletePromotion(name);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted promotion successfully.", "")
         );

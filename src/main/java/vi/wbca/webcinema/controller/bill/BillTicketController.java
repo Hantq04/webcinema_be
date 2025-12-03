@@ -26,16 +26,12 @@ public class BillTicketController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertBillTicket(@Valid @RequestBody BillTicketDTO request, Bill bill) {
-
         logger.info("----------Web Cinema: Insert New Bill Ticket----------");
-
         billTicketService.insertBillTicket(request, bill);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.QUANTITY, request.getQuantity().toString());
         responseData.put(Constants.USER_NAME, request.getCustomerName());
         responseData.put(Constants.TICKET, request.getCode());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill ticket successfully.", responseData)
         );
@@ -44,11 +40,8 @@ public class BillTicketController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteBillTicket(@Valid @RequestParam Long id) {
-
         logger.info("----------Web Cinema: Delete Bill Ticket----------");
-
         billTicketService.deleteTicket(id);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted bill ticket successfully.", "")
         );

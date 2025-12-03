@@ -28,11 +28,8 @@ public class CinemaController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertCinema(@Validated(InsertCinema.class) @RequestBody CinemaDTO request) {
-
         logger.info("----------Web Cinema: Insert New Cinema----------");
-
         CinemaDTO responseData = cinemaService.insertCinema(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert cinema successfully.", responseData)
         );
@@ -41,17 +38,13 @@ public class CinemaController {
     @PutMapping("/update")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateCinema(@Validated(UpdateCinema.class) @RequestBody CinemaDTO request) {
-
         logger.info("----------Web Cinema: Update Cinema----------");
-
         cinemaService.updateCinema(request);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.CODE, request.getCode());
         responseData.put(Constants.NAME, request.getNameOfCinema());
         responseData.put(Constants.ADDRESS, request.getAddress());
         responseData.put(Constants.DESCRIPTION, request.getDescription());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated cinema successfully.", responseData)
         );
@@ -60,11 +53,8 @@ public class CinemaController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteCinema(@Validated(DeleteCinema.class) @RequestParam String code) {
-
         logger.info("----------Web Cinema: Delete Cinema----------");
-
         cinemaService.deleteCinema(code);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted cinema successfully.", "")
         );

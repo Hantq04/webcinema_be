@@ -24,11 +24,8 @@ public class SeatTypeController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSeatType(@Valid @RequestBody SeatType seatType) {
-
         logger.info("----------Web Cinema: Insert New Seat Type----------");
-
         SeatType response = seatTypeService.insertSeatType(seatType);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat type successfully.", response)
         );
@@ -37,9 +34,7 @@ public class SeatTypeController {
     @GetMapping("/get-all-type")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<SeatType> getAllType() {
-
         logger.info("----------Web Cinema: Get All Seat Type----------");
-
         return seatTypeService.getAllType();
     }
 }

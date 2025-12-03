@@ -23,11 +23,8 @@ public class TicketController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertTicket(@Valid @RequestBody TicketDTO request) {
-
         logger.info("----------Web Cinema: Insert New Ticket----------");
-
         ticketService.insertTicket(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert ticket successfully.", request)
         );
@@ -36,11 +33,8 @@ public class TicketController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteTicket(@Valid @RequestParam String code) {
-
         logger.info("----------Web Cinema: Delete Ticket----------");
-
         ticketService.deleteTicket(code);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted ticket successfully.", "")
         );

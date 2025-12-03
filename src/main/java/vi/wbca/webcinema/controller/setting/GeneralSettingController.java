@@ -23,9 +23,7 @@ public class GeneralSettingController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSetting(@Valid @RequestBody GeneralSettingDTO request) {
-
         logger.info("----------Web Cinema: Insert New General Setting----------");
-
         GeneralSettingDTO responseData = generalSettingService.insertSetting(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert general setting successfully.", responseData)
@@ -35,9 +33,7 @@ public class GeneralSettingController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteSetting(@Valid @RequestParam Long id) {
-
         logger.info("----------Web Cinema: Delete General Setting----------");
-
         generalSettingService.deleteSetting(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted general setting successfully.", "")

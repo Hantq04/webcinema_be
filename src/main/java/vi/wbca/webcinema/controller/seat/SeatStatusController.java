@@ -24,11 +24,8 @@ public class SeatStatusController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSeatStatus(@Valid @RequestBody SeatStatus seatStatus) {
-
         logger.info("----------Web Cinema: Insert New Seat Status----------");
-
         SeatStatus response = seatStatusService.insertSeatStatus(seatStatus);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat status successfully.", response)
         );
@@ -37,9 +34,7 @@ public class SeatStatusController {
     @GetMapping("/get-all-status")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public List<SeatStatus> getAllStatus() {
-
         logger.info("----------Web Cinema: Get All Seat Status----------");
-
         return seatStatusService.getAllStatus();
     }
 }

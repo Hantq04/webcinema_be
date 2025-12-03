@@ -83,13 +83,11 @@ public class UserController {
     public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Update User----------");
         userService.updateUser(request);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.USER_NAME, request.getUserName());
         responseData.put(Constants.EMAIL, request.getEmail());
         responseData.put(Constants.PHONE_NUMBER, request.getPhoneNumber());
         responseData.put(Constants.LIST_ROLE, request.getListRoles().toString());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User updated successfully.", responseData)
         );

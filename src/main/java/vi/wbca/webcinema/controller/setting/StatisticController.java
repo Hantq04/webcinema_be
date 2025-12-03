@@ -35,13 +35,10 @@ public class StatisticController {
     public ResponseEntity<ResponseObject> getRevenueByCinema(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-
         logger.info("----------Web Cinema: Cinema Revenue Statistic");
-
         LocalDateTime fromTime = from.atStartOfDay();
         LocalDateTime toTime = to.atTime(LocalTime.MAX);
         List<CinemaRevenueDTO> responseData = billService.getRevenueByCinema(fromTime, toTime);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Get cinema revenue statistic successfully.", responseData)
         );
@@ -50,13 +47,10 @@ public class StatisticController {
     @GetMapping("/food-revenue-statistic")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> getFoodRevenueSevenDays() {
-
         logger.info("----------Web Cinema: Food Revenue Statistic");
-
         LocalDateTime endTime = LocalDateTime.now();
         LocalDateTime startTime = endTime.minusDays(6);
         List<FoodRevenueDTO> responseData = billFoodService.getFoodRevenueSevenDays(startTime, endTime);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Get food revenue statistic successfully.", responseData)
         );

@@ -25,11 +25,8 @@ public class RoomController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertRoom(@Valid @RequestBody RoomDTO request) {
-
         logger.info("----------Web Cinema: Insert New Room----------");
-
         RoomDTO responseData = roomService.insertRoom(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert room successfully.", responseData)
         );
@@ -38,18 +35,14 @@ public class RoomController {
     @PutMapping("/update")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> updateRoom(@Valid @RequestBody RoomDTO request) {
-
         logger.info("----------Web Cinema: Update Room----------");
-
         roomService.updateRoom(request);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.CODE, request.getCode());
         responseData.put(Constants.NAME, request.getName());
         responseData.put(Constants.DESCRIPTION, request.getDescription());
         responseData.put(Constants.CAPACITY, request.getCapacity().toString());
         responseData.put(Constants.TYPE, request.getType().toString());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated room successfully.", responseData)
         );
@@ -58,11 +51,8 @@ public class RoomController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteRoom(@Valid @RequestParam String code) {
-
         logger.info("----------Web Cinema: Delete Room----------");
-
         roomService.deleteRoom(code);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted room successfully.", "")
         );

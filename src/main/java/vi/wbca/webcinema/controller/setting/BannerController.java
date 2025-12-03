@@ -25,15 +25,11 @@ public class BannerController {
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertBanner(@Valid @RequestBody Banner banner) {
-
         logger.info("----------Web Cinema: Insert New Banner----------");
-
         bannerService.insertBanner(banner);
-
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.IMAGE, banner.getImageUrl());
         responseData.put(Constants.TITLE, banner.getTitle());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert banner successfully.", responseData)
         );
