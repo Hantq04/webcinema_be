@@ -88,3 +88,10 @@ INSERT INTO user_status (code, name) VALUES
     ('ACTIVE', 'Tài khoản đã được kích hoạt'),
     ('INACTIVE', 'Tài khoản chưa được kích hoạt');
 
+INSERT INTO bill_status (name) VALUES
+    ('Success'),
+    ('Pending'),
+    ('Failure'),
+    ('Cancelled'),
+    ('Refunded');
+
