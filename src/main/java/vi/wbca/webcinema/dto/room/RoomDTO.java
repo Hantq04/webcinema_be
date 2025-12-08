@@ -6,7 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.enums.RoomType;
+import vi.wbca.webcinema.enums.RoomTypeEnum;
 
 @Getter
 @Setter
@@ -23,7 +23,7 @@ public class RoomDTO {
     Integer capacity;
 
     @Enumerated(EnumType.STRING)
-    RoomType type;
+    RoomTypeEnum type;
 
     @NotBlank(message = "NOT_BLANK")
     @Size(min = 6, max = 50, message = "INVALID_DESCRIPTION")

@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum EUserStatus {
+public enum UserStatusEnum {
     ACTIVE,
     INACTIVE
 }

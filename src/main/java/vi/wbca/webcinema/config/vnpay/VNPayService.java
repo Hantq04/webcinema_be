@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
-import vi.wbca.webcinema.enums.CustomerRank;
-import vi.wbca.webcinema.enums.EBillStatus;
+import vi.wbca.webcinema.enums.CustomerRankEnum;
+import vi.wbca.webcinema.enums.BillStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.bill.Bill;
@@ -48,7 +48,7 @@ public class VNPayService {
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
 
-        if (bill.getBillStatus().equals(getStatus(EBillStatus.PENDING.toString()))) {
+        if (bill.getBillStatus().equals(getStatus(BillStatusEnum.PENDING.toString()))) {
             Map<String, String> vnp_Params = new HashMap<>();
 
             vnp_Params.put("vnp_Version", vnp_Version);
@@ -110,7 +110,7 @@ public class VNPayService {
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             return VNPayConfig.vnp_PayUrl + "?" + queryUrl;
         } else {
-            if (bill.getBillStatus().equals(getStatus(EBillStatus.SUCCESS.toString()))) {
+            if (bill.getBillStatus().equals(getStatus(BillStatusEnum.SUCCESS.toString()))) {
                 throw new AppException(ErrorCode.PAYMENT_SUCCESS);
             }
             else throw new AppException(ErrorCode.PAYMENT_EXCEPTION);
@@ -149,7 +149,7 @@ public class VNPayService {
         User user = userRepo.findByUserName(bill.getUser().getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
 
-        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRank.VIP.toString())
+        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRankEnum.VIP.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         if (signValue.equals(vnp_SecureHash)) {
@@ -198,7 +198,7 @@ public class VNPayService {
                 // Send the response via email
                 sendResponse(message, userEmail);
 
-                bill.setBillStatus(getStatus(EBillStatus.SUCCESS.toString()));
+                bill.setBillStatus(getStatus(BillStatusEnum.SUCCESS.toString()));
                 user.setPoint(calculatePoint(bill, user));
 
                 if (user.getPoint() >= rankCustomer.getPoint()) {
@@ -209,7 +209,7 @@ public class VNPayService {
 
                 return 1;
             } else {
-                bill.setBillStatus(getStatus(EBillStatus.CANCELLED.toString()));
+                bill.setBillStatus(getStatus(BillStatusEnum.CANCELLED.toString()));
                 billRepo.save(bill);
 
                 return 0;

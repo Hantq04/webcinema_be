@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.enums.PromotionType;
+import vi.wbca.webcinema.enums.PromotionTypeEnum;
 import vi.wbca.webcinema.model.user.RankCustomer;
 
 import java.util.Date;
@@ -30,7 +30,7 @@ public class Promotion {
 
     @Column(name = "promotion_type")
     @Enumerated(EnumType.STRING)
-    PromotionType promotionType;
+    PromotionTypeEnum promotionType;
 
     @Column(name = "start_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")

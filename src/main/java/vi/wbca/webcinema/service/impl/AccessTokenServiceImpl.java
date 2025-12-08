@@ -3,7 +3,7 @@ package vi.wbca.webcinema.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.token.AccessToken;
@@ -25,7 +25,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     @Override
     public void insertAccessToken(User user, String token) {
         AccessToken accessToken = new AccessToken();
-        accessToken.setTokenStatus(TokenStatus.ACTIVE);
+        accessToken.setTokenStatus(TokenStatusEnum.ACTIVE);
         accessToken.setAccessToken(token);
         accessToken.setUser(user);
         accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
@@ -50,9 +50,9 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Override
     public void revokeAllUserTokens(User user) {
-        List<AccessToken> validTokens = accessTokenRepo.findAllByUserAndTokenStatus(user, TokenStatus.ACTIVE);
+        List<AccessToken> validTokens = accessTokenRepo.findAllByUserAndTokenStatus(user, TokenStatusEnum.ACTIVE);
         if (!validTokens.isEmpty()) {
-            validTokens.forEach(token -> token.setTokenStatus(TokenStatus.REVOKED));
+            validTokens.forEach(token -> token.setTokenStatus(TokenStatusEnum.REVOKED));
             accessTokenRepo.saveAll(validTokens);
         }
     }

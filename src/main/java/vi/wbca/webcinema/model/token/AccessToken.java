@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.model.user.User;
 
 import java.util.Date;
@@ -23,7 +23,7 @@ public class AccessToken {
 
     @Column(name = "token_status")
     @Enumerated(EnumType.STRING)
-    TokenStatus tokenStatus;
+    TokenStatusEnum tokenStatus;
 
     @Column(name = "access_token")
     String accessToken;

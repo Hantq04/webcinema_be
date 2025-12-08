@@ -3,7 +3,7 @@ package vi.wbca.webcinema.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.schedule.ScheduleDTO;
-import vi.wbca.webcinema.enums.ShowTime;
+import vi.wbca.webcinema.enums.ShowTimeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.ScheduleMapper;
@@ -166,11 +166,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     private String getShowTimeName(int hour) {
-        if (hour >= 8 && hour < 11) return ShowTime.MORNING.toString();
-        if (hour >= 11 && hour < 14) return ShowTime.NOON.toString();
-        if (hour >= 14 && hour < 17) return ShowTime.AFTERNOON.toString();
-        if (hour >= 17 && hour < 22) return ShowTime.EVENING.toString();
-        return ShowTime.LATE_NIGHT.toString();
+        if (hour >= 8 && hour < 11) return ShowTimeEnum.MORNING.toString();
+        if (hour >= 11 && hour < 14) return ShowTimeEnum.NOON.toString();
+        if (hour >= 14 && hour < 17) return ShowTimeEnum.AFTERNOON.toString();
+        if (hour >= 17 && hour < 22) return ShowTimeEnum.EVENING.toString();
+        return ShowTimeEnum.LATE_NIGHT.toString();
     }
 
     public void breakTime(Schedule schedule, GeneralSetting setting) {

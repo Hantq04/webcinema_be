@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.token.TokenDTO;
-import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.token.AccessToken;
@@ -67,7 +67,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         if (isExpired) {
             String newAccessToken = jwtTokenProvider.generateToken(accessToken.getUser());
 
-            accessToken.setTokenStatus(TokenStatus.ACTIVE);
+            accessToken.setTokenStatus(TokenStatusEnum.ACTIVE);
             accessToken.setAccessToken(newAccessToken);
             accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
             accessTokenRepo.save(accessToken);

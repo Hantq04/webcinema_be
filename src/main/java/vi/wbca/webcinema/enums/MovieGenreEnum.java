@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum MovieGenre {
+public enum MovieGenreEnum {
     ACTION,
     ADVENTURE,
     ANIMATION,

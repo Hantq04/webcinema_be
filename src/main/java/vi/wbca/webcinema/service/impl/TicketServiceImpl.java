@@ -3,8 +3,8 @@ package vi.wbca.webcinema.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.ticket.TicketDTO;
-import vi.wbca.webcinema.enums.ESeatStatus;
-import vi.wbca.webcinema.enums.ESeatType;
+import vi.wbca.webcinema.enums.SeatStatusEnum;
+import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.TicketMapper;
@@ -108,7 +108,7 @@ public class TicketServiceImpl implements TicketService {
             throw new AppException(ErrorCode.SEAT_OCCUPIED);
         }
 
-        SeatStatus seatStatus = seatStatusRepo.findByCode(ESeatStatus.OCCUPIED.toString())
+        SeatStatus seatStatus = seatStatusRepo.findByCode(SeatStatusEnum.OCCUPIED.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
         seat.setSeatStatus(seatStatus);
         seatRepo.save(seat);
@@ -152,7 +152,7 @@ public class TicketServiceImpl implements TicketService {
             case 3 -> "DELUXE";
             default -> throw new AppException(ErrorCode.INVALID_SEAT);
         };
-        return ESeatType.getPriceByType(seatTypeName);
+        return SeatTypeEnum.getPriceByType(seatTypeName);
     }
 
     public GeneralSetting generalSetting() {
@@ -174,7 +174,7 @@ public class TicketServiceImpl implements TicketService {
                 seat.getRoom(), new Date(), new Date()
         );
         if (!hasActiveSchedules) {
-            SeatStatus status = seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
+            SeatStatus status = seatStatusRepo.findByCode(SeatStatusEnum.AVAILABLE.toString())
                     .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
             seat.setSeatStatus(status);
             seatRepo.save(seat);

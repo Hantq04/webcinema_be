@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.token.AccessToken;
@@ -37,7 +37,7 @@ public class LogoutService implements LogoutHandler {
         }
         String jwtToken = authHeader.substring(7);
         AccessToken storedToken = accessTokenService.findByAccessToken(jwtToken);
-        storedToken.setTokenStatus(TokenStatus.REVOKED);
+        storedToken.setTokenStatus(TokenStatusEnum.REVOKED);
         accessTokenService.save(storedToken);
 
         ResponseEntity<ResponseObject> logoutResponse = ResponseEntity.status(HttpStatus.OK).body(

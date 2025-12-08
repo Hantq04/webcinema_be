@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.model.token.AccessToken;
 import vi.wbca.webcinema.model.user.User;
 
@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface AccessTokenRepo extends JpaRepository<AccessToken, Long> {
     Optional<AccessToken> findByAccessToken(String token);
 
-    List<AccessToken> findAllByUserAndTokenStatus(User user, TokenStatus tokenStatus);
+    List<AccessToken> findAllByUserAndTokenStatus(User user, TokenStatusEnum tokenStatus);
 
     @Query(value = """
             SELECT * FROM access_tokens

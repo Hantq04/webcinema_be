@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.dto.room.SeatDTO;
-import vi.wbca.webcinema.enums.ESeatStatus;
-import vi.wbca.webcinema.enums.ESeatType;
+import vi.wbca.webcinema.enums.SeatStatusEnum;
+import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.bill.Bill;
@@ -118,15 +118,15 @@ public class SeatServiceImpl implements SeatService {
     public void setSeatType(Seat seat, String line) {
         int rowNumber = line.charAt(0) - 'A' + 1;
         if (rowNumber >= 1 && rowNumber <= 4) {
-            SeatType seatType = seatTypeRepo.findByNameType(ESeatType.STANDARD.toString())
+            SeatType seatType = seatTypeRepo.findByNameType(SeatTypeEnum.STANDARD.toString())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
             seat.setSeatType(seatType);
         } else if (rowNumber >= 5 && rowNumber < 17) {
-            SeatType seatType = seatTypeRepo.findByNameType(ESeatType.VIP.toString())
+            SeatType seatType = seatTypeRepo.findByNameType(SeatTypeEnum.VIP.toString())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
             seat.setSeatType(seatType);
         } else {
-            SeatType seatType = seatTypeRepo.findByNameType(ESeatType.DELUXE.toString())
+            SeatType seatType = seatTypeRepo.findByNameType(SeatTypeEnum.DELUXE.toString())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
             seat.setSeatType(seatType);
         }
@@ -134,7 +134,7 @@ public class SeatServiceImpl implements SeatService {
     }
 
     public SeatStatus getSeatStatus() {
-        return seatStatusRepo.findByCode(ESeatStatus.AVAILABLE.toString())
+        return seatStatusRepo.findByCode(SeatStatusEnum.AVAILABLE.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
     }
 }

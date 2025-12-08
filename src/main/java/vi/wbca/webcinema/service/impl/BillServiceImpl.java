@@ -6,7 +6,7 @@ import vi.wbca.webcinema.dto.bill.BillDTO;
 import vi.wbca.webcinema.dto.bill.BillFoodDTO;
 import vi.wbca.webcinema.dto.bill.BillTicketDTO;
 import vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO;
-import vi.wbca.webcinema.enums.EBillStatus;
+import vi.wbca.webcinema.enums.BillStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.BillMapper;
@@ -39,7 +39,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public void createBill(BillDTO billDTO) {
         User user = getCustomer(billDTO);
-        BillStatus pendingStatus = billStatusRepo.findByName(EBillStatus.PENDING.toString())
+        BillStatus pendingStatus = billStatusRepo.findByName(BillStatusEnum.PENDING.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
 
         if (billRepo.existsByUserAndBillStatus(user, pendingStatus)) {

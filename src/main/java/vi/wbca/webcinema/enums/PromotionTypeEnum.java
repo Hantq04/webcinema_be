@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum PromotionType {
+public enum PromotionTypeEnum {
     FOOD,
     TICKET,
     ALL,

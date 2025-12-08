@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum CustomerRank {
+public enum CustomerRankEnum {
     STANDARD,
     VIP
 }

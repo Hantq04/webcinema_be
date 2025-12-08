@@ -13,8 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.dto.user.UserDTO;
-import vi.wbca.webcinema.enums.CustomerRank;
-import vi.wbca.webcinema.enums.EUserStatus;
+import vi.wbca.webcinema.enums.CustomerRankEnum;
+import vi.wbca.webcinema.enums.UserStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.UserMapper;
@@ -165,10 +165,10 @@ public class UserServiceImpl implements UserService {
 
     public void userStatusAndRank(User user) {
         if (!user.isActive()) {
-            UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.INACTIVE.toString());
+            UserStatus userStatus = userStatusRepo.findByCode(UserStatusEnum.INACTIVE.toString());
             user.setUserStatus(userStatus);
         }
-        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRank.STANDARD.toString())
+        RankCustomer rankCustomer = rankCustomerRepo.findByName(CustomerRankEnum.STANDARD.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         user.setRankCustomer(rankCustomer);
         user.setPoint(0);

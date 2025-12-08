@@ -3,7 +3,7 @@ package vi.wbca.webcinema.model.cinema;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.enums.RoomType;
+import vi.wbca.webcinema.enums.RoomTypeEnum;
 import vi.wbca.webcinema.model.movie.Schedule;
 import vi.wbca.webcinema.model.seat.Seat;
 
@@ -26,7 +26,7 @@ public class Room {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    RoomType type;
+    RoomTypeEnum type;
 
     @Column(name = "description")
     String description;

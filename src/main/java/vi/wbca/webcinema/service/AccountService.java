@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
-import vi.wbca.webcinema.enums.EUserStatus;
+import vi.wbca.webcinema.enums.UserStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.setting.ConfirmEmail;
@@ -67,7 +67,7 @@ public class AccountService {
         }
         user.setActive(true);
         code.setConfirm(true);
-        UserStatus userStatus = userStatusRepo.findByCode(EUserStatus.ACTIVE.name());
+        UserStatus userStatus = userStatusRepo.findByCode(UserStatusEnum.ACTIVE.name());
         user.setUserStatus(userStatus);
 
         userRepo.save(user);

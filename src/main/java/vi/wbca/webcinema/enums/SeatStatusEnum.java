@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum ESeatStatus {
+public enum SeatStatusEnum {
     AVAILABLE,
     OCCUPIED
 }

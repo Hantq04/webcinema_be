@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.enums.PromotionType;
+import vi.wbca.webcinema.enums.PromotionTypeEnum;
 
 import java.util.Date;
 
@@ -29,7 +29,7 @@ public class PromotionDTO {
     Integer quantity;
 
     @Enumerated(EnumType.STRING)
-    PromotionType promotionType;
+    PromotionTypeEnum promotionType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date startTime;

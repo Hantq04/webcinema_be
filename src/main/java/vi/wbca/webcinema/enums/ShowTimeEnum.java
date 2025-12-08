@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum ShowTime {
+public enum ShowTimeEnum {
     MORNING,
     NOON,
     AFTERNOON,

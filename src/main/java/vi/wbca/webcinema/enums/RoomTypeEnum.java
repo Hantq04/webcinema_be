@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum RoomType {
+public enum RoomTypeEnum {
     STANDARD,
     VIP,
     IMAX;

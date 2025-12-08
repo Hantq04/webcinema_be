@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import vi.wbca.webcinema.enums.TokenStatus;
+import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.model.token.AccessToken;
 import vi.wbca.webcinema.service.AccessTokenService;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
 
                 if (jwtTokenProvider.isTokenValid(jwt, userDetails)
-                        && accessToken.getTokenStatus().equals(TokenStatus.ACTIVE)) {
+                        && accessToken.getTokenStatus().equals(TokenStatusEnum.ACTIVE)) {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
@@ -88,7 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
 
         if (accessToken != null) {
-            accessToken.setTokenStatus(TokenStatus.EXPIRED);
+            accessToken.setTokenStatus(TokenStatusEnum.EXPIRED);
             accessTokenService.save(accessToken);
         }
     }

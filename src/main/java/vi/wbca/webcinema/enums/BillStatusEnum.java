@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.enums;
 
-public enum EBillStatus {
+public enum BillStatusEnum {
     SUCCESS,
     PENDING,
     FAILURE,

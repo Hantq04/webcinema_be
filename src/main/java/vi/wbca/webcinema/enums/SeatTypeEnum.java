@@ -7,7 +7,7 @@ import vi.wbca.webcinema.exception.ErrorCode;
 
 @Getter
 @AllArgsConstructor
-public enum ESeatType {
+public enum SeatTypeEnum {
     STANDARD(60000),
     VIP(70000),
     DELUXE(80000);
@@ -15,7 +15,7 @@ public enum ESeatType {
     private final double price;
 
     public static Double getPriceByType(String type) {
-        for (ESeatType seatType: values()) {
+        for (SeatTypeEnum seatType: values()) {
             if (seatType.name().equalsIgnoreCase(type)) {
                 return seatType.getPrice();
             }
