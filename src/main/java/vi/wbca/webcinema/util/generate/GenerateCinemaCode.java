@@ -8,7 +8,6 @@ public class GenerateCinemaCode {
         String name = "BETA";
         String normalizedLocation = removeVietnameseAccents(location);
         String cityCode = extractCityCode(normalizedLocation);
-
         int randomNum = new Random().nextInt(900) + 100;
         return name + "_" + cityCode + randomNum;
     }

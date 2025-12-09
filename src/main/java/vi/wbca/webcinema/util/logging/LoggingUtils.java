@@ -22,11 +22,9 @@ public class LoggingUtils {
     private static FileHandler createLoggingFolder() {
         try {
             if (!Files.exists(DIRECTORY)) Files.createDirectories(DIRECTORY);
-
             String fileName = DIRECTORY + "/log-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".txt";
             FileHandler fileHandler = new FileHandler(fileName, MAX_FILE_SIZE, FILE_COUNT, true);
             fileHandler.setFormatter(new SimpleFormatter());
-
             return fileHandler;
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,11 +38,9 @@ public class LoggingUtils {
                 .description(error.getMessage())
                 .location(Arrays.toString(Arrays.copyOfRange(error.getStackTrace(), 0, 3)))
                 .build();
-
         FileHandler fileHandler = createLoggingFolder();
         logger.addHandler(fileHandler);
         logger.setUseParentHandlers(false);
-
         logger.warning("[" + errorForm.getErrorLevel()
                 + "][" + errorForm.getDescription()
                 + "][" + errorForm.getLocation() + "]"
