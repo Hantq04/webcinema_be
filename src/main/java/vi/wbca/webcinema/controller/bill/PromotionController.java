@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.ticket.PromotionDTO;
+import vi.wbca.webcinema.model.bill.Promotion;
 import vi.wbca.webcinema.service.PromotionService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -45,6 +47,16 @@ public class PromotionController {
         promotionService.deletePromotion(name);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted promotion successfully.", "")
+        );
+    }
+
+    @GetMapping("/get-all-promotion")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> getAllPromotion() {
+        logger.info("----------Web Cinema: Get All Promotion----------");
+        List<Promotion> responseData = promotionService.getAllPromotion();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all promotion successfully.", responseData)
         );
     }
 }

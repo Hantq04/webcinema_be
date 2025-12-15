@@ -14,6 +14,7 @@ import vi.wbca.webcinema.service.PromotionService;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +49,10 @@ public class PromotionServiceImpl implements PromotionService {
         Promotion promotion = promotionRepo.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         promotionRepo.delete(promotion);
+    }
+
+    @Override
+    public List<Promotion> getAllPromotion() {
+        return promotionRepo.findAll();
     }
 }
