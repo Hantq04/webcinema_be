@@ -33,8 +33,11 @@ public class MovieTypeController {
 
     @GetMapping("/get-all-type")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public List<MovieType> getAllType() {
+    public ResponseEntity<ResponseObject> getAllType() {
         logger.info("----------Web Cinema: Get All Movie Type----------");
-        return movieTypeService.getAllType();
+        List<MovieType> responseData = movieTypeService.getAllType();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all movie type successfully.", responseData)
+        );
     }
 }

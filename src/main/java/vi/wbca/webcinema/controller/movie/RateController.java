@@ -33,8 +33,11 @@ public class RateController {
 
     @GetMapping("/get-all-rate")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public List<Rate> getAllRate() {
+    public ResponseEntity<ResponseObject> getAllRate() {
         logger.info("----------Web Cinema: Get All Rate----------");
-        return rateService.getAllRate();
+        List<Rate> responseData = rateService.getAllRate();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all rate successfully.", responseData)
+        );
     }
 }

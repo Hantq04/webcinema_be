@@ -33,8 +33,11 @@ public class BillStatusController {
 
     @GetMapping("/get-all-status")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public List<BillStatus> getAllStatus() {
+    public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All Bill Status----------");
-        return billStatusService.getAllStatus();
+        List<BillStatus> responseData = billStatusService.getAllStatus();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all bill status successfully", responseData)
+        );
     }
 }
