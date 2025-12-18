@@ -40,8 +40,11 @@ public class RankCustomerController {
 
     @GetMapping("/get-all-rank")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public List<RankCustomer> getAllRank() {
-        logger.info("----------Web Cinema: Delete Rank Customer----------");
-        return rankCustomerService.getAllRank();
+    public ResponseEntity<ResponseObject> getAllRank() {
+        logger.info("----------Web Cinema: Get All Rank Customer----------");
+        List<RankCustomer> responseData = rankCustomerService.getAllRank();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all rank successfully.", responseData)
+        );
     }
 }

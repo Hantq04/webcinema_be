@@ -38,9 +38,7 @@ public class BannerController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> deleteBanner(@Valid @RequestParam Long id) {
-
         logger.info("----------Web Cinema: Delete Banner----------");
-
         bannerService.deleteBanner(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted banner successfully.", "")

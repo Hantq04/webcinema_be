@@ -32,8 +32,11 @@ public class UserStatusController {
 
     @GetMapping("/get-all-status")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public List<UserStatus> getAllStatus() {
+    public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All User Status----------");
-        return userStatusService.getAllStatus();
+        List<UserStatus> responseData = userStatusService.getAllStatus();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all user successfully.", responseData)
+        );
     }
 }
