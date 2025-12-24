@@ -33,8 +33,11 @@ public class SeatStatusController {
 
     @GetMapping("/get-all-status")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public List<SeatStatus> getAllStatus() {
+    public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All Seat Status----------");
-        return seatStatusService.getAllStatus();
+        List<SeatStatus> responseData = seatStatusService.getAllStatus();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all seat status successfully.", responseData)
+        );
     }
 }

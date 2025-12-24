@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.room.SeatDTO;
 import vi.wbca.webcinema.groupValidate.seat.InsertSeat;
 import vi.wbca.webcinema.groupValidate.seat.UpdateSeat;
+import vi.wbca.webcinema.model.seat.Seat;
 import vi.wbca.webcinema.service.SeatService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -65,6 +67,16 @@ public class SeatController {
         seatService.refreshSeat(code);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated seat status successfully.", "")
+        );
+    }
+
+    @GetMapping("/get-all-seat")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> getAllSeat() {
+        logger.info("----------Web Cinema: Get All Seat----------");
+        List<Seat> responseData = seatService.getAllSeat();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all seat successfully.", responseData)
         );
     }
 }

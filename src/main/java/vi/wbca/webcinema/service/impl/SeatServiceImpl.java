@@ -86,6 +86,11 @@ public class SeatServiceImpl implements SeatService {
         seatRepo.updateSeatStatusByBill(bill, seatStatus);
     }
 
+    @Override
+    public List<Seat> getAllSeat() {
+        return seatRepo.findAll();
+    }
+
     public void generateSeatsForRoom(Room room) {
         int capacity = room.getCapacity();
         int roomLine = (int) Math.ceil(Math.sqrt(capacity));
