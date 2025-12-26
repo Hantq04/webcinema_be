@@ -7,10 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.dto.setting.GeneralSettingDTO;
+import vi.wbca.webcinema.model.setting.GeneralSetting;
 import vi.wbca.webcinema.service.GeneralSettingService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -37,6 +39,16 @@ public class GeneralSettingController {
         generalSettingService.deleteSetting(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted general setting successfully.", "")
+        );
+    }
+
+    @GetMapping("/get-all-setting")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> getAllSetting() {
+        logger.info("----------Web Cinema: Get All General Setting----------");
+        List<GeneralSetting> responseData = generalSettingService.getAllSetting();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all general setting successfully.", responseData)
         );
     }
 }

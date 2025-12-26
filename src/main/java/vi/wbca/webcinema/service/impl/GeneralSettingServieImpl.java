@@ -11,6 +11,7 @@ import vi.wbca.webcinema.repository.setting.GeneralSettingRepo;
 import vi.wbca.webcinema.service.GeneralSettingService;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +40,10 @@ public class GeneralSettingServieImpl implements GeneralSettingService {
         GeneralSetting generalSetting = generalSettingRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
         generalSettingRepo.delete(generalSetting);
+    }
+
+    @Override
+    public List<GeneralSetting> getAllSetting() {
+        return generalSettingRepo.findAll();
     }
 }
