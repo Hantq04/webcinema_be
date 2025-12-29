@@ -8,6 +8,8 @@ import vi.wbca.webcinema.model.setting.Banner;
 import vi.wbca.webcinema.repository.setting.BannerRepo;
 import vi.wbca.webcinema.service.BannerService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BannerServiceImpl implements BannerService {
@@ -23,5 +25,10 @@ public class BannerServiceImpl implements BannerService {
         Banner banner = bannerRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TITLE_NOT_FOUND));
         bannerRepo.delete(banner);
+    }
+
+    @Override
+    public List<Banner> getAllBanner() {
+        return bannerRepo.findAll();
     }
 }

@@ -12,6 +12,7 @@ import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -42,6 +43,16 @@ public class BannerController {
         bannerService.deleteBanner(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Deleted banner successfully.", "")
+        );
+    }
+
+    @GetMapping("/get-all-banner")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> getAllBanner() {
+        logger.info("----------Web Cinema: Get All Banner----------");
+        List<Banner> responseData = bannerService.getAllBanner();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all banner successfully.", responseData)
         );
     }
 }
