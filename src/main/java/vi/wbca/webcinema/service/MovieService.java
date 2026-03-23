@@ -2,9 +2,9 @@ package vi.wbca.webcinema.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import vi.wbca.webcinema.dto.movie.MovieDTO;
-import vi.wbca.webcinema.dto.movie.MovieResponseDTO;
-import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
+import vi.wbca.webcinema.model.dto.movie.MovieDTO;
+import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
+import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 
 public interface MovieService {
     MovieDTO insertMovie(MovieDTO movieDTO);

@@ -2,13 +2,13 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.bill.BillTicketDTO;
+import vi.wbca.webcinema.model.dto.bill.BillTicketDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.BillTicketMapper;
-import vi.wbca.webcinema.model.bill.Bill;
-import vi.wbca.webcinema.model.bill.BillTicket;
-import vi.wbca.webcinema.model.movie.Ticket;
+import vi.wbca.webcinema.model.entity.bill.Bill;
+import vi.wbca.webcinema.model.entity.bill.BillTicket;
+import vi.wbca.webcinema.model.entity.movie.Ticket;
 import vi.wbca.webcinema.repository.bill.BillTicketRepo;
 import vi.wbca.webcinema.repository.movie.TicketRepo;
 import vi.wbca.webcinema.service.BillTicketService;

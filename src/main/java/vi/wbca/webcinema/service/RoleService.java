@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.model.user.Role;
+import vi.wbca.webcinema.model.entity.user.Role;
 
 import java.util.Optional;
 

@@ -2,8 +2,8 @@ package vi.wbca.webcinema.repository.token;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.model.token.RefreshToken;
-import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.model.entity.token.RefreshToken;
+import vi.wbca.webcinema.model.entity.user.User;
 
 import java.util.Optional;
 

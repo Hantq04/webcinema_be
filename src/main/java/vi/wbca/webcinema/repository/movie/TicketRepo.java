@@ -2,9 +2,9 @@ package vi.wbca.webcinema.repository.movie;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.model.movie.Schedule;
-import vi.wbca.webcinema.model.seat.Seat;
-import vi.wbca.webcinema.model.movie.Ticket;
+import vi.wbca.webcinema.model.entity.movie.Schedule;
+import vi.wbca.webcinema.model.entity.seat.Seat;
+import vi.wbca.webcinema.model.entity.movie.Ticket;
 
 import java.util.Optional;
 

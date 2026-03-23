@@ -2,8 +2,8 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.bill.BillFoodDTO;
-import vi.wbca.webcinema.model.bill.BillFood;
+import vi.wbca.webcinema.model.dto.bill.BillFoodDTO;
+import vi.wbca.webcinema.model.entity.bill.BillFood;
 
 @Mapper(componentModel = "spring")
 public interface BillFoodMapper {

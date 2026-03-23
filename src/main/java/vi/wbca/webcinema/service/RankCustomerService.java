@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.model.user.RankCustomer;
+import vi.wbca.webcinema.model.entity.user.RankCustomer;
 
 import java.util.List;
 

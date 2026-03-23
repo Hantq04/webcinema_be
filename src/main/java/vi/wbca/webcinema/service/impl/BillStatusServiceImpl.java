@@ -2,7 +2,7 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.bill.BillStatus;
+import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.service.BillStatusService;
 

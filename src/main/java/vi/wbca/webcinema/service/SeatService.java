@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.room.SeatDTO;
-import vi.wbca.webcinema.model.seat.Seat;
+import vi.wbca.webcinema.model.dto.room.SeatDTO;
+import vi.wbca.webcinema.model.entity.seat.Seat;
 
 import java.util.List;
 

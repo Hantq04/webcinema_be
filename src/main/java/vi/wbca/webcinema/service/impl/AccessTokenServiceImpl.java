@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.model.token.AccessToken;
-import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.model.entity.token.AccessToken;
+import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.repository.token.AccessTokenRepo;
 import vi.wbca.webcinema.service.AccessTokenService;
 
@@ -27,6 +27,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         AccessToken accessToken = new AccessToken();
         accessToken.setTokenStatus(TokenStatusEnum.ACTIVE);
         accessToken.setAccessToken(token);
+        accessToken.setExpiresIn(expiredTime);
         accessToken.setUser(user);
         accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
         accessTokenRepo.save(accessToken);

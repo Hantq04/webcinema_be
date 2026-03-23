@@ -2,8 +2,9 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.user.UserDTO;
-import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.model.dto.user.UserDTO;
+import vi.wbca.webcinema.model.entity.user.User;
+import vi.wbca.webcinema.model.response.UserResponse;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -24,4 +25,8 @@ public interface UserMapper {
     @Mapping(source = "roles", target = "roleNames")
     @Mapping(target = "listRoles", ignore = true)
     UserDTO toUserDTO(User user);
+
+    @Mapping(source = "username", target = "userName")
+    @Mapping(source = "roles", target = "roleNames")
+    UserResponse toResponse(User user);
 }

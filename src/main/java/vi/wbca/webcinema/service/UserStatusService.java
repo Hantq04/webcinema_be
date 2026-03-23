@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.model.user.UserStatus;
+import vi.wbca.webcinema.model.entity.user.UserStatus;
 
 import java.util.List;
 

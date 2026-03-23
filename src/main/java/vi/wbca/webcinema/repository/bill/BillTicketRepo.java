@@ -3,9 +3,9 @@ package vi.wbca.webcinema.repository.bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.model.bill.Bill;
-import vi.wbca.webcinema.model.bill.BillTicket;
-import vi.wbca.webcinema.model.movie.Ticket;
+import vi.wbca.webcinema.model.entity.bill.Bill;
+import vi.wbca.webcinema.model.entity.bill.BillTicket;
+import vi.wbca.webcinema.model.entity.movie.Ticket;
 
 import java.util.List;
 import java.util.Optional;

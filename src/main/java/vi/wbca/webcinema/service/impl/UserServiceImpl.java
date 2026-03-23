@@ -12,16 +12,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.user.UserDTO;
+import vi.wbca.webcinema.model.dto.user.UserDTO;
 import vi.wbca.webcinema.enums.CustomerRankEnum;
 import vi.wbca.webcinema.enums.UserStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.UserMapper;
-import vi.wbca.webcinema.model.user.RankCustomer;
-import vi.wbca.webcinema.model.user.Role;
-import vi.wbca.webcinema.model.user.User;
-import vi.wbca.webcinema.model.user.UserStatus;
+import vi.wbca.webcinema.model.entity.token.AccessToken;
+import vi.wbca.webcinema.model.entity.user.RankCustomer;
+import vi.wbca.webcinema.model.entity.user.Role;
+import vi.wbca.webcinema.model.entity.user.User;
+import vi.wbca.webcinema.model.entity.user.UserStatus;
+import vi.wbca.webcinema.model.response.LoginResponse;
+import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.RoleRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
@@ -54,32 +57,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserDTO request) {
-        if (userRepo.existsByUserName(request.getUserName())) {
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
-        }
-        if (userRepo.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
-        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
-        }
-
-        User user = userMapper.toUser(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        userRepo.save(user);
-        userStatusAndRank(user);
-        request.getListRoles().forEach(role -> addRole(role, user));
-
-        try {
-            accountService.sendVerificationEmail(user);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        registerAccount(request, "USER");
     }
 
     @Override
-    public UserDTO login(UserDTO userDTO) {
+    public void staffRegister(UserDTO request) {
+        registerAccount(request, "STAFF");
+    }
+
+    @Override
+    public LoginResponse login(UserDTO userDTO) {
         User user = userRepo.findByUserName(userDTO.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
         if (!user.isActive()) {
@@ -99,14 +86,17 @@ public class UserServiceImpl implements UserService {
 
             // Generate new JWT token
             String jwt = jwtTokenProvider.generateToken(userDetails);
-            UserDTO response = userMapper.toUserDTO(user);
-            response.setAccessToken(jwt);
-
             accessTokenService.insertAccessToken(user, jwt);
-            refreshTokenService.insertRefreshToken(user);
+//            refreshTokenService.insertRefreshToken(user);
+            AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
+//            response.setRefreshToken(refreshTokenService.getRefreshToken(user));
 
-            response.setRefreshToken(refreshTokenService.getRefreshToken(user));
-            return response;
+            return LoginResponse.builder()
+                    .userName(user.getUsername())
+                    .role(user.getRoles())
+                    .accessToken(jwt)
+                    .expiresIn(accessToken.getExpiresIn())
+                    .build();
         } catch (BadCredentialsException ex) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
@@ -129,12 +119,6 @@ public class UserServiceImpl implements UserService {
         currentUser.setEmail(request.getEmail());
         currentUser.setPhoneNumber(request.getPhoneNumber());
         userRepo.save(currentUser);
-
-        List<String> strRole = request.getListRoles();
-        if (!strRole.isEmpty()) {
-            currentUser.getRoles().forEach(roleRepo::delete);
-            request.getListRoles().forEach(role -> addRole(role, currentUser));
-        }
     }
 
     @Override
@@ -150,9 +134,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getAllUser() {
+    public List<UserResponse> getAllUser() {
         return userRepo.findAll()
-                .stream().map(userMapper::toUserDTO)
+                .stream().map(userMapper::toResponse)
                 .toList();
     }
 
@@ -181,11 +165,40 @@ public class UserServiceImpl implements UserService {
                     .roleName(Constants.ROLE_ADMIN_NAME)
                     .code(Constants.ADMIN)
                     .user(user).build());
+            case Constants.STAFF -> roleRepo.save(Role.builder()
+                    .roleName(Constants.ROLE_STAFF_NAME)
+                    .code(Constants.STAFF)
+                    .user(user).build());
             case Constants.USER -> roleRepo.save(Role.builder()
                     .roleName(Constants.ROLE_USER_NAME)
                     .code(Constants.USER)
                     .user(user).build());
             default -> throw new AppException(ErrorCode.INVALID_ROLE);
+        }
+    }
+
+    public void registerAccount(UserDTO request, String role) {
+        if (userRepo.existsByUserName(request.getUserName())) {
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        }
+        if (userRepo.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
+
+        User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepo.save(user);
+        userStatusAndRank(user);
+        addRole(role, user);
+
+        try {
+            accountService.sendVerificationEmail(user);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 }

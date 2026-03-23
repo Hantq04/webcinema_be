@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.schedule.ScheduleDTO;
+import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
 
 public interface ScheduleService {
     ScheduleDTO insertSchedule(ScheduleDTO scheduleDTO);

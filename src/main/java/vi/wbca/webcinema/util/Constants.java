@@ -4,10 +4,12 @@ public class Constants {
 
     // Role code
     public static final String ADMIN = "ADMIN";
+    public static final String STAFF = "STAFF";
     public static final String USER = "USER";
 
     // Role name
     public static final String ROLE_ADMIN_NAME = "Administrator";
+    public static final String ROLE_STAFF_NAME = "Staff user";
     public static final String ROLE_USER_NAME = "Regular user";
 
     // Fields

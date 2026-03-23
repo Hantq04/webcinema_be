@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.enums.TokenStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.model.token.AccessToken;
+import vi.wbca.webcinema.model.entity.token.AccessToken;
 import vi.wbca.webcinema.service.AccessTokenService;
 import vi.wbca.webcinema.util.response.ResponseObject;
 

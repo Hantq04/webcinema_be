@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.cinema.CinemaDTO;
+import vi.wbca.webcinema.model.dto.cinema.CinemaDTO;
 
 public interface CinemaService {
     CinemaDTO insertCinema(CinemaDTO cinemaDTO);

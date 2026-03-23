@@ -2,8 +2,8 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.ticket.PromotionDTO;
-import vi.wbca.webcinema.model.bill.Promotion;
+import vi.wbca.webcinema.model.dto.ticket.PromotionDTO;
+import vi.wbca.webcinema.model.entity.bill.Promotion;
 
 @Mapper(componentModel = "spring")
 public interface PromotionMapper {

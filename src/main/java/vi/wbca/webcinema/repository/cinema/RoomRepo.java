@@ -2,8 +2,8 @@ package vi.wbca.webcinema.repository.cinema;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.model.cinema.Cinema;
-import vi.wbca.webcinema.model.cinema.Room;
+import vi.wbca.webcinema.model.entity.cinema.Cinema;
+import vi.wbca.webcinema.model.entity.cinema.Room;
 
 import java.util.Optional;
 

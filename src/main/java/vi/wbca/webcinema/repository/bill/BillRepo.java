@@ -3,10 +3,10 @@ package vi.wbca.webcinema.repository.bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO;
-import vi.wbca.webcinema.model.bill.Bill;
-import vi.wbca.webcinema.model.bill.BillStatus;
-import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO;
+import vi.wbca.webcinema.model.entity.bill.Bill;
+import vi.wbca.webcinema.model.entity.bill.BillStatus;
+import vi.wbca.webcinema.model.entity.user.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     boolean existsByUserAndBillStatus(User user, BillStatus billStatus);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO(
+    SELECT new vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO(
         c.nameOfCinema, c.code, SUM(b.totalMoney)
     )
     FROM Bill b

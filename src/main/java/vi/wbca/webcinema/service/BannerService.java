@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.model.setting.Banner;
+import vi.wbca.webcinema.model.entity.setting.Banner;
 
 import java.util.List;
 

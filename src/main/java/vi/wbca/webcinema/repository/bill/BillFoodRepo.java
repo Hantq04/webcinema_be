@@ -3,10 +3,10 @@ package vi.wbca.webcinema.repository.bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.dto.cinema.FoodRevenueDTO;
-import vi.wbca.webcinema.model.bill.Bill;
-import vi.wbca.webcinema.model.bill.BillFood;
-import vi.wbca.webcinema.model.cinema.Food;
+import vi.wbca.webcinema.model.dto.cinema.FoodRevenueDTO;
+import vi.wbca.webcinema.model.entity.bill.Bill;
+import vi.wbca.webcinema.model.entity.bill.BillFood;
+import vi.wbca.webcinema.model.entity.cinema.Food;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +22,7 @@ public interface BillFoodRepo extends JpaRepository<BillFood, Long> {
     Optional<BillFood> findByBillAndFood(Bill bill, Food food);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.dto.cinema.FoodRevenueDTO(
+    SELECT new vi.wbca.webcinema.model.dto.cinema.FoodRevenueDTO(
         f.nameOfFood, SUM(bf.quantity)
     )
     FROM BillFood bf

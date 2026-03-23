@@ -2,12 +2,12 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.room.RoomDTO;
+import vi.wbca.webcinema.model.dto.room.RoomDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.RoomMapper;
-import vi.wbca.webcinema.model.cinema.Cinema;
-import vi.wbca.webcinema.model.cinema.Room;
+import vi.wbca.webcinema.model.entity.cinema.Cinema;
+import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.service.RoomService;

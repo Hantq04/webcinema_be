@@ -5,9 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.dto.movie.MovieResponseDTO;
-import vi.wbca.webcinema.dto.movie.MovieStatisticDTO;
-import vi.wbca.webcinema.model.movie.Movie;
+import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
+import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
+import vi.wbca.webcinema.model.entity.movie.Movie;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     Optional<Movie> findByName(String name);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.dto.movie.MovieStatisticDTO(
+    SELECT new vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO(
         m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate, SUM(bt.quantity)
     )
     FROM Movie m
@@ -30,7 +30,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     Page<MovieStatisticDTO> getTicketStatistics(Pageable pageable);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.dto.movie.MovieResponseDTO(
+    SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
         m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     )
     FROM Movie m
@@ -43,7 +43,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     Page<MovieResponseDTO> getMovieWithCinema(Long cinemaId, Pageable pageable);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.dto.movie.MovieResponseDTO(
+    SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
         m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     )
     FROM Movie m
@@ -55,7 +55,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     Page<MovieResponseDTO> getMovieWithRoom(Long roomId, Pageable pageable);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.dto.movie.MovieResponseDTO(
+    SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
         m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     )
     FROM Movie m

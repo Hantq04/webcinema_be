@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.model.cinema.Room;
-import vi.wbca.webcinema.model.movie.Schedule;
+import vi.wbca.webcinema.model.entity.cinema.Room;
+import vi.wbca.webcinema.model.entity.movie.Schedule;
 
 import java.util.Date;
 import java.util.List;

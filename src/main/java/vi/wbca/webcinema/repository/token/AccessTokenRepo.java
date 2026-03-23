@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.enums.TokenStatusEnum;
-import vi.wbca.webcinema.model.token.AccessToken;
-import vi.wbca.webcinema.model.user.User;
+import vi.wbca.webcinema.model.entity.token.AccessToken;
+import vi.wbca.webcinema.model.entity.user.User;
 
 import java.util.List;
 import java.util.Optional;

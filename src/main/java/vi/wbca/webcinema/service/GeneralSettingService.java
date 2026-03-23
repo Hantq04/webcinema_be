@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.setting.GeneralSettingDTO;
-import vi.wbca.webcinema.model.setting.GeneralSetting;
+import vi.wbca.webcinema.model.dto.setting.GeneralSettingDTO;
+import vi.wbca.webcinema.model.entity.setting.GeneralSetting;
 
 import java.util.List;
 

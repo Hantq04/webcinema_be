@@ -2,8 +2,8 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.schedule.ScheduleDTO;
-import vi.wbca.webcinema.model.movie.Schedule;
+import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
+import vi.wbca.webcinema.model.entity.movie.Schedule;
 
 @Mapper(componentModel = "spring")
 public interface ScheduleMapper {

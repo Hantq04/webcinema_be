@@ -2,8 +2,8 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.cinema.FoodDTO;
-import vi.wbca.webcinema.model.cinema.Food;
+import vi.wbca.webcinema.model.dto.cinema.FoodDTO;
+import vi.wbca.webcinema.model.entity.cinema.Food;
 
 @Mapper(componentModel = "spring")
 public interface FoodMapper {

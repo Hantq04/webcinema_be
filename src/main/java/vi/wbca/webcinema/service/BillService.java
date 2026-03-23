@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.bill.BillDTO;
-import vi.wbca.webcinema.dto.cinema.CinemaRevenueDTO;
+import vi.wbca.webcinema.model.dto.bill.BillDTO;
+import vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

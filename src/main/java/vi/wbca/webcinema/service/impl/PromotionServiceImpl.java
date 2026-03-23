@@ -2,12 +2,12 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.dto.ticket.PromotionDTO;
+import vi.wbca.webcinema.model.dto.ticket.PromotionDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.PromotionMapper;
-import vi.wbca.webcinema.model.bill.Promotion;
-import vi.wbca.webcinema.model.user.RankCustomer;
+import vi.wbca.webcinema.model.entity.bill.Promotion;
+import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.repository.bill.PromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.service.PromotionService;

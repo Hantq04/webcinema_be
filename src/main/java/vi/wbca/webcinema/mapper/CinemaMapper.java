@@ -2,8 +2,8 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.dto.cinema.CinemaDTO;
-import vi.wbca.webcinema.model.cinema.Cinema;
+import vi.wbca.webcinema.model.dto.cinema.CinemaDTO;
+import vi.wbca.webcinema.model.entity.cinema.Cinema;
 
 @Mapper(componentModel = "spring")
 public interface CinemaMapper {

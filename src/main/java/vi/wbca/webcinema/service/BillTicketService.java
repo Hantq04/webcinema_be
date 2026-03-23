@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.bill.BillTicketDTO;
-import vi.wbca.webcinema.model.bill.Bill;
+import vi.wbca.webcinema.model.dto.bill.BillTicketDTO;
+import vi.wbca.webcinema.model.entity.bill.Bill;
 
 import java.util.List;
 

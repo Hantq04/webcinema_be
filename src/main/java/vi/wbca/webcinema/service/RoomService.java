@@ -1,6 +1,6 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.dto.room.RoomDTO;
+import vi.wbca.webcinema.model.dto.room.RoomDTO;
 
 public interface RoomService {
     RoomDTO insertRoom(RoomDTO roomDTO);

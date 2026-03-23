@@ -8,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.dto.token.TokenDTO;
-import vi.wbca.webcinema.dto.user.UserDTO;
+import vi.wbca.webcinema.model.dto.token.TokenDTO;
+import vi.wbca.webcinema.model.dto.user.UserDTO;
 import vi.wbca.webcinema.groupValidate.user.DeleteUser;
 import vi.wbca.webcinema.groupValidate.user.InsertUser;
 import vi.wbca.webcinema.groupValidate.user.LoginUser;
 import vi.wbca.webcinema.groupValidate.user.UpdateUser;
+import vi.wbca.webcinema.model.response.LoginResponse;
+import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.service.AccountService;
 import vi.wbca.webcinema.service.RefreshTokenService;
 import vi.wbca.webcinema.service.UserService;
@@ -39,22 +41,26 @@ public class UserController {
     public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Register New User----------");
         userService.register(request);
-
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.USER_NAME, request.getUserName());
-        responseData.put(Constants.EMAIL, request.getEmail());
-        responseData.put(Constants.LIST_ROLE, request.getListRoles().toString());
-
         String message = "User registered successfully. Please check your email to get your OTP for verification.";
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+                new ResponseObject(HttpStatus.OK, message, null)
+        );
+    }
+
+    @PostMapping("/staff-register")
+    public ResponseEntity<ResponseObject> staffRegister(@Validated(InsertUser.class) @RequestBody UserDTO request) {
+        logger.info("----------Web Cinema: Register New Staff Account----------");
+        userService.staffRegister(request);
+        String message = "User registered successfully. Please check your email to get your OTP for verification.";
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@Validated(LoginUser.class) @RequestBody UserDTO userDTO) {
         logger.info("----------Web Cinema: Login Page----------");
-        UserDTO responseData = userService.login(userDTO);
+        LoginResponse responseData = userService.login(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User login successfully.", responseData)
         );
@@ -87,7 +93,6 @@ public class UserController {
         responseData.put(Constants.USER_NAME, request.getUserName());
         responseData.put(Constants.EMAIL, request.getEmail());
         responseData.put(Constants.PHONE_NUMBER, request.getPhoneNumber());
-        responseData.put(Constants.LIST_ROLE, request.getListRoles().toString());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User updated successfully.", responseData)
         );
@@ -133,7 +138,7 @@ public class UserController {
 
     @GetMapping("/get-all")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
-    public List<UserDTO> getAllUser() {
+    public List<UserResponse> getAllUser() {
         logger.info("----------Web Cinema: List User----------");
         return userService.getAllUser();
     }
