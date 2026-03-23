@@ -23,7 +23,6 @@ public interface UserMapper {
     @Mapping(target = "accessToken", ignore = true)
     @Mapping(target = "refreshToken", ignore = true)
     @Mapping(source = "roles", target = "roleNames")
-    @Mapping(target = "listRoles", ignore = true)
     UserDTO toUserDTO(User user);
 
     @Mapping(source = "username", target = "userName")

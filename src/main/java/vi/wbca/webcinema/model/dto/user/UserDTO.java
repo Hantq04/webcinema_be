@@ -17,8 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
-    Long id;
-
     @NotNull(message = "NOT_NULL", groups = {UpdateUser.class})
     Integer point;
 

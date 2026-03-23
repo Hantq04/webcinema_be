@@ -6,14 +6,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.service.BannerService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 @RestController
@@ -24,15 +28,20 @@ public class BannerController {
     private final BannerService bannerService;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public ResponseEntity<ResponseObject> insertBanner(@Valid @RequestBody Banner banner) {
-        logger.info("----------Web Cinema: Insert New Banner----------");
+    public ResponseEntity<ResponseObject> insertBanner(@RequestParam("file") MultipartFile file,
+                                                       @RequestParam("title") String title) throws IOException {
+        // Save file
+        String fileName = file.getOriginalFilename();
+        Path filePath = Paths.get("D:/project/uploads/").resolve(Objects.requireNonNull(fileName));
+        Files.write(filePath, file.getBytes());
+        String imageUrl = "http://localhost:8080/uploads/" + fileName;
+
+        Banner banner = new Banner();
+        banner.setTitle(title);
+        banner.setImageUrl(imageUrl);
         bannerService.insertBanner(banner);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.IMAGE, banner.getImageUrl());
-        responseData.put(Constants.TITLE, banner.getTitle());
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert banner successfully.", responseData)
+        return ResponseEntity.ok(
+                new ResponseObject(HttpStatus.OK, "Insert banner successfully.", banner)
         );
     }
 
