@@ -1,12 +1,11 @@
 package vi.wbca.webcinema.model.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.groupValidate.user.InsertUser;
-import vi.wbca.webcinema.groupValidate.user.LoginUser;
-import vi.wbca.webcinema.groupValidate.user.UpdateUser;
+import vi.wbca.webcinema.validation.groupValidate.user.InsertUser;
+import vi.wbca.webcinema.validation.groupValidate.user.LoginUser;
+import vi.wbca.webcinema.validation.groupValidate.user.UpdateUser;
 import vi.wbca.webcinema.model.entity.user.Role;
 
 import java.util.List;

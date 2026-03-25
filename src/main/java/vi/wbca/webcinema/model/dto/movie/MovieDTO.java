@@ -9,8 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.URL;
-import vi.wbca.webcinema.groupValidate.movie.InsertMovie;
-import vi.wbca.webcinema.groupValidate.movie.UpdateMovie;
+import vi.wbca.webcinema.validation.groupValidate.movie.InsertMovie;
+import vi.wbca.webcinema.validation.groupValidate.movie.UpdateMovie;
 
 import java.util.Date;
 
@@ -47,13 +47,6 @@ public class MovieDTO {
             message = "INVALID_IMAGE_PATH", groups = {InsertMovie.class, UpdateMovie.class}
     )
     String image;
-
-    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Pattern(
-            regexp = "^(?:[a-zA-Z]:\\\\|/)?(?:[^\\/:*?\"<>|]+[/\\\\])*[^\\/:*?\"<>|]+\\.(jpg|jpeg|png|gif|bmp)$",
-            message = "INVALID_IMAGE_PATH", groups = {InsertMovie.class, UpdateMovie.class}
-    )
-    String heroImage;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @Size(min = 3, max = 20, message = "INVALID_LANGUAGE", groups = {InsertMovie.class, UpdateMovie.class})

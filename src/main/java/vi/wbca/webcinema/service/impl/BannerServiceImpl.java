@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.setting.Banner;
+import vi.wbca.webcinema.model.request.BannerRequest;
 import vi.wbca.webcinema.repository.setting.BannerRepo;
 import vi.wbca.webcinema.service.BannerService;
+import vi.wbca.webcinema.util.ImageUtils;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -16,7 +19,12 @@ public class BannerServiceImpl implements BannerService {
     private final BannerRepo bannerRepo;
 
     @Override
-    public void insertBanner(Banner banner) {
+    public void insertBanner(BannerRequest request) throws IOException {
+        String imageUrl = ImageUtils.saveImage(request.getFile());
+
+        Banner banner = new Banner();
+        banner.setTitle(request.getTitle());
+        banner.setImageUrl(imageUrl);
         bannerRepo.save(banner);
     }
 

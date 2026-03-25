@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.groupValidate.cinema.InsertCinema;
-import vi.wbca.webcinema.groupValidate.cinema.UpdateCinema;
+import vi.wbca.webcinema.validation.groupValidate.cinema.InsertCinema;
+import vi.wbca.webcinema.validation.groupValidate.cinema.UpdateCinema;
 
 @Getter
 @Setter

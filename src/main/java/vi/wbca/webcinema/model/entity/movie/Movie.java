@@ -40,9 +40,6 @@ public class Movie {
     @Column(name = "image")
     String image;
 
-    @Column(name = "hero_image")
-    String heroImage;
-
     @Column(name = "language")
     String language;
 

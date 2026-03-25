@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.groupValidate.schedule.InsertSchedule;
-import vi.wbca.webcinema.groupValidate.schedule.UpdateSchedule;
+import vi.wbca.webcinema.validation.groupValidate.schedule.InsertSchedule;
+import vi.wbca.webcinema.validation.groupValidate.schedule.UpdateSchedule;
 
 import java.util.Date;
 

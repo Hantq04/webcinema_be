@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vi.wbca.webcinema.groupValidate.seat.InsertSeat;
-import vi.wbca.webcinema.groupValidate.seat.UpdateSeat;
+import vi.wbca.webcinema.validation.groupValidate.seat.InsertSeat;
+import vi.wbca.webcinema.validation.groupValidate.seat.UpdateSeat;
 
 @Getter
 @Setter

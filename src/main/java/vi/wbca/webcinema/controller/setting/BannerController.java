@@ -8,16 +8,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vi.wbca.webcinema.model.entity.setting.Banner;
+import vi.wbca.webcinema.model.request.BannerRequest;
 import vi.wbca.webcinema.service.BannerService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 @RestController
@@ -28,20 +25,11 @@ public class BannerController {
     private final BannerService bannerService;
 
     @PostMapping("/insert")
-    public ResponseEntity<ResponseObject> insertBanner(@RequestParam("file") MultipartFile file,
-                                                       @RequestParam("title") String title) throws IOException {
-        // Save file
-        String fileName = file.getOriginalFilename();
-        Path filePath = Paths.get("D:/project/uploads/").resolve(Objects.requireNonNull(fileName));
-        Files.write(filePath, file.getBytes());
-        String imageUrl = "http://localhost:8080/uploads/" + fileName;
+    public ResponseEntity<ResponseObject> insertBanner(@Valid @ModelAttribute BannerRequest request) throws IOException {
+        bannerService.insertBanner(request);
 
-        Banner banner = new Banner();
-        banner.setTitle(title);
-        banner.setImageUrl(imageUrl);
-        bannerService.insertBanner(banner);
         return ResponseEntity.ok(
-                new ResponseObject(HttpStatus.OK, "Insert banner successfully.", banner)
+                new ResponseObject(HttpStatus.OK, "Insert banner successfully.", null)
         );
     }
 
