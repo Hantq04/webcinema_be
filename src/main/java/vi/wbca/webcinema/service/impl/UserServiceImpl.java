@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getUserName(), request.getPassword()
+                            request.getUserName(), request.getPassWord()
                     )
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);

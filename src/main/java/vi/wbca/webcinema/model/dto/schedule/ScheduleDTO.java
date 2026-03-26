@@ -24,7 +24,7 @@ public class ScheduleDTO {
 
 //    Double price;
 
-    @NotNull(message = "NOT_NULL", groups = {InsertSchedule.class, UpdateSchedule.class})
+    @NotNull(message = "NOT_BLANK", groups = {InsertSchedule.class, UpdateSchedule.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date startAt;
 

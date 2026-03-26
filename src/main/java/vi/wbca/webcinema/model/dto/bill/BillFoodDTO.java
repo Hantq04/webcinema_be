@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BillFoodDTO {
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     Integer quantity;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

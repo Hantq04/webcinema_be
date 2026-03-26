@@ -18,5 +18,5 @@ public class LoginRequest {
 
     @Schema(description = "Mật khẩu")
     @NotBlank(message = "NOT_BLANK")
-    private String password;
+    private String passWord;
 }

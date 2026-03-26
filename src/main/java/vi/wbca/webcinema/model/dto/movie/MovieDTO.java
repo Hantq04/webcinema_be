@@ -23,13 +23,13 @@ public class MovieDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL", groups = {InsertMovie.class, UpdateMovie.class})
+    @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     Integer movieDuration;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date endDate;
 
-    @NotNull(message = "NOT_NULL", groups = {InsertMovie.class})
+    @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date premiereDate;
 

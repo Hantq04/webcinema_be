@@ -17,7 +17,7 @@ public class RoomDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     @Min(value = 50, message = "INVALID_CAPACITY")
     @Max(value = 400, message = "INVALID_CAPACITY")
     Integer capacity;

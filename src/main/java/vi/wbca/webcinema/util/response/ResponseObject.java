@@ -8,14 +8,17 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import vi.wbca.webcinema.exception.ErrorCode;
 
+import java.util.List;
+
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ResponseObject {
     int status;
     String message;
     Object data;
+    List<FieldValidationError> errors;
 
     public ResponseObject(int status, String message, Object data) {
         this.status = status;
@@ -33,5 +36,11 @@ public class ResponseObject {
         this.status = errorCode.getStatusCode().value();
         this.message = errorCode.getMessage();
         this.data = null;
+    }
+
+    public ResponseObject(int status, String message, List<FieldValidationError> errors) {
+        this.status = status;
+        this.message = message;
+        this.errors = errors;
     }
 }

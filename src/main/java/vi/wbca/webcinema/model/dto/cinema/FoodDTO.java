@@ -14,7 +14,7 @@ public class FoodDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     @Min(value = 1000, message = "INVALID_PRICE")
     Double price;
 

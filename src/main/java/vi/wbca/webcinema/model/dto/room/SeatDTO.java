@@ -16,7 +16,7 @@ public class SeatDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL", groups = {UpdateSeat.class})
+    @NotNull(message = "NOT_BLANK", groups = {UpdateSeat.class})
     @Min(value = 1, message = "INVALID_NUMBER_SEAT", groups = {UpdateSeat.class})
     @Max(value = 20, message = "INVALID_NUMBER_SEAT", groups = {UpdateSeat.class})
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -66,8 +66,7 @@ public enum ErrorCode {
 
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),
-    NOT_NULL(1301, "error.1301", HttpStatus.BAD_REQUEST),
-    NOT_EMPTY(1302, "error.1302", HttpStatus.BAD_REQUEST),
+    VALIDATE_ERROR(1301, "error.1301", HttpStatus.BAD_REQUEST),
     INVALID_USERNAME(1303, "error.1303", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1304, "error.1304", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1305, "error.1305", HttpStatus.BAD_REQUEST),

@@ -22,10 +22,10 @@ public class PromotionDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     Integer percent;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     Integer quantity;
 
     @Enumerated(EnumType.STRING)

@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import vi.wbca.webcinema.util.MessageUtils;
 import vi.wbca.webcinema.util.logging.LoggingUtils;
+import vi.wbca.webcinema.util.response.FieldValidationError;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @ControllerAdvice
@@ -42,25 +44,31 @@ public class GlobalExceptionHandler {
         }
 
         if (exception instanceof MethodArgumentNotValidException e) {
-            FieldError fieldError = e.getFieldError();
-            errorCode = ErrorCode.INVALID_KEY;
-            String errorMessages = messageUtils.getMessage(errorCode.getMessage());
+            errorCode = ErrorCode.VALIDATE_ERROR;
 
-            if (fieldError != null) {
+            List<FieldValidationError> fieldErrors = e.getFieldErrors().stream().map(fieldError -> {
                 String enumKey = fieldError.getDefaultMessage();
+                ErrorCode fieldErrorCode = errorCode;
                 try {
-                    errorCode = ErrorCode.valueOf(enumKey);
+                    fieldErrorCode = ErrorCode.valueOf(enumKey);
                 } catch (IllegalArgumentException ex) {
                     log.info("Exception: {}", ex.getMessage());
                 }
-            }
+                String msg;
+                if (fieldErrorCode == ErrorCode.NOT_BLANK) {
+                    msg = messageUtils.getMessage(fieldErrorCode.getMessage(), fieldError.getField());
+                } else {
+                    msg = messageUtils.getMessage(fieldErrorCode.getMessage());
+                }
+                return new FieldValidationError(fieldError.getField(), msg);
+            }).toList();
 
             log.info("Error :: Validation Exception");
-            log.info("Error Field :: {}", fieldError);
+            log.info("Error Fields :: {}", e.getFieldErrors());
 
             LoggingUtils.loggingError(exception);
             return ResponseEntity.status(e.getStatusCode()).body(
-                    new ResponseObject(errorCode.getCode(), errorMessages, "")
+                    new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), fieldErrors)
             );
         } else if (exception instanceof BadCredentialsException) {
             errorCode = ErrorCode.UNAUTHENTICATED;

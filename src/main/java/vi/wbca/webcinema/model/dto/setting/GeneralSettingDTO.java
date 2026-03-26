@@ -18,24 +18,24 @@ public class GeneralSettingDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     LocalTime breakTime;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     Integer businessHours;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     LocalTime openTime;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     LocalTime closeTime;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     Integer percentWeekend;
 
-    @NotNull(message = "NOT_NULL")
+    @NotNull(message = "NOT_BLANK")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     Date timeBeginToChange;
 }

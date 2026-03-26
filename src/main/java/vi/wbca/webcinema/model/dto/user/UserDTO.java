@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
-    @NotNull(message = "NOT_NULL", groups = {UpdateUser.class})
+    @NotNull(message = "NOT_BLANK", groups = {UpdateUser.class})
     Integer point;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
