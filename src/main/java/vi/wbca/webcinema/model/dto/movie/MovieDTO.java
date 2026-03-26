@@ -42,10 +42,6 @@ public class MovieDTO {
     String director;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Pattern(
-            regexp = "^(?:[a-zA-Z]:\\\\|/)?(?:[^\\/:*?\"<>|]+[/\\\\])*[^\\/:*?\"<>|]+\\.(jpg|jpeg|png|gif|bmp)$",
-            message = "INVALID_IMAGE_PATH", groups = {InsertMovie.class, UpdateMovie.class}
-    )
     String image;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})

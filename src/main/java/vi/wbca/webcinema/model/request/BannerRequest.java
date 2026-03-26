@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.model.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,11 @@ import vi.wbca.webcinema.validation.ValidUploadImagePath;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BannerRequest {
+    @Schema(description = "Đường dẫn đến hình ảnh banner")
     @ValidUploadImagePath
     private MultipartFile file;
 
+    @Schema(description = "Tiêu đề của banner")
     @NotBlank(message = "NOT_BLANK")
     @Size(min = 3, max = 20, message = "INVALID_NAME")
     private String title;

@@ -44,14 +44,4 @@ public class UserDTO {
             groups = {InsertUser.class, UpdateUser.class}
     )
     String password;
-
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @NotEmpty(message = "NOT_EMPTY", groups = {InsertUser.class, UpdateUser.class})
-//    List<String> listRoles;
-
-    String accessToken;
-
-    String refreshToken;
-
-    List<Role> roleNames;
 }

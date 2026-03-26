@@ -7,7 +7,7 @@ import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 
 public interface MovieService {
-    MovieDTO insertMovie(MovieDTO movieDTO);
+    void insertMovie(MovieDTO movieDTO);
 
     void updateMovie(MovieDTO movieDTO);
 

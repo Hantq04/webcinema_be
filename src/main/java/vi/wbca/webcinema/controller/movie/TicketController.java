@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.model.dto.ticket.TicketDTO;
+import vi.wbca.webcinema.model.request.BookingRequest;
 import vi.wbca.webcinema.service.TicketService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -22,7 +22,7 @@ public class TicketController {
 
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public ResponseEntity<ResponseObject> insertTicket(@Valid @RequestBody TicketDTO request) {
+    public ResponseEntity<ResponseObject> insertTicket(@Valid @RequestBody BookingRequest request) {
         logger.info("----------Web Cinema: Insert New Ticket----------");
         ticketService.insertTicket(request);
         return ResponseEntity.status(HttpStatus.OK).body(

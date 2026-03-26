@@ -38,8 +38,8 @@ public class MovieServiceImpl implements MovieService {
     private final SeatStatusRepo seatStatusRepo;
 
     @Override
-    public MovieDTO insertMovie(MovieDTO request) {
-        Movie movie = movieMapper.toMovie(request);
+    public void insertMovie(MovieDTO request) {
+        Movie movie = new Movie();
         MovieType movieType = movieTypeRepo.findByMovieTypeName(request.getMovieTypeName())
                 .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
@@ -51,7 +51,6 @@ public class MovieServiceImpl implements MovieService {
         movie.setMovieType(movieType);
         movie.setRate(setRate(request));
         movieRepo.save(movie);
-        return movieMapper.toMovieDTO(movie);
     }
 
     @Override

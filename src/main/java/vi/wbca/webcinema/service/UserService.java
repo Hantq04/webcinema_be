@@ -1,6 +1,7 @@
 package vi.wbca.webcinema.service;
 
 import vi.wbca.webcinema.model.dto.user.UserDTO;
+import vi.wbca.webcinema.model.request.LoginRequest;
 import vi.wbca.webcinema.model.response.LoginResponse;
 import vi.wbca.webcinema.model.response.UserResponse;
 
@@ -11,7 +12,7 @@ public interface UserService {
 
     void staffRegister(UserDTO userDto);
 
-    LoginResponse login(UserDTO userDTO);
+    LoginResponse login(LoginRequest request);
 
     void updateUser(UserDTO userDTO);
 

@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import vi.wbca.webcinema.enums.RoleEnum;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.setting.ConfirmEmail;
 import vi.wbca.webcinema.model.entity.token.AccessToken;
@@ -61,9 +62,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     List<RefreshToken> refreshTokens;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    @JsonManagedReference
-    List<Role> roles;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    RoleEnum role;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_customer_id")
@@ -75,10 +76,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return (roles == null) ? List.of() :
-                roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getCode()))
-                        .toList();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role));
     }
 
     @Override

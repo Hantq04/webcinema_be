@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.token.TokenDTO;
 import vi.wbca.webcinema.model.dto.user.UserDTO;
+import vi.wbca.webcinema.model.request.LoginRequest;
 import vi.wbca.webcinema.validation.groupValidate.user.DeleteUser;
 import vi.wbca.webcinema.validation.groupValidate.user.InsertUser;
 import vi.wbca.webcinema.validation.groupValidate.user.LoginUser;
@@ -58,9 +59,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseObject> login(@Validated(LoginUser.class) @RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginRequest request) {
         logger.info("----------Web Cinema: Login Page----------");
-        LoginResponse responseData = userService.login(userDTO);
+        LoginResponse responseData = userService.login(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "User login successfully.", responseData)
         );

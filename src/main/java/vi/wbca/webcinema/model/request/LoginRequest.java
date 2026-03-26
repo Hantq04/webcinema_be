@@ -1,0 +1,22 @@
+package vi.wbca.webcinema.model.request;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LoginRequest {
+    @Schema(description = "Tên người dùng")
+    @NotBlank(message = "NOT_BLANK")
+    private String userName;
+
+    @Schema(description = "Mật khẩu")
+    @NotBlank(message = "NOT_BLANK")
+    private String password;
+}

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import vi.wbca.webcinema.enums.RoleEnum;
 import vi.wbca.webcinema.model.dto.user.UserDTO;
 import vi.wbca.webcinema.enums.CustomerRankEnum;
 import vi.wbca.webcinema.enums.UserStatusEnum;
@@ -23,6 +24,7 @@ import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.model.entity.user.Role;
 import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.model.entity.user.UserStatus;
+import vi.wbca.webcinema.model.request.LoginRequest;
 import vi.wbca.webcinema.model.response.LoginResponse;
 import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
@@ -57,17 +59,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserDTO request) {
-        registerAccount(request, "USER");
+        registerAccount(request, RoleEnum.USER);
     }
 
     @Override
     public void staffRegister(UserDTO request) {
-        registerAccount(request, "STAFF");
+        registerAccount(request, RoleEnum.STAFF);
     }
 
     @Override
-    public LoginResponse login(UserDTO userDTO) {
-        User user = userRepo.findByUserName(userDTO.getUserName())
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepo.findByUserName(request.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
         if (!user.isActive()) {
             throw new AppException(ErrorCode.USER_NOT_VERIFIED);
@@ -75,7 +77,7 @@ public class UserServiceImpl implements UserService {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            userDTO.getUserName(), userDTO.getPassword()
+                            request.getUserName(), request.getPassword()
                     )
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -93,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
             return LoginResponse.builder()
                     .userName(user.getUsername())
-                    .role(user.getRoles())
+                    .role(user.getRole().toString())
                     .accessToken(jwt)
                     .expiresIn(accessToken.getExpiresIn())
                     .build();
@@ -127,7 +129,6 @@ public class UserServiceImpl implements UserService {
             User currentUser = userRepo.findByUserName(userName)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-            currentUser.getRoles().forEach(roleRepo::delete);
             currentUser.getAccessTokens().forEach(accessTokenService::deleteAccessToken);
             userRepo.delete(currentUser);
         });
@@ -177,7 +178,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void registerAccount(UserDTO request, String role) {
+    public void registerAccount(UserDTO request, RoleEnum role) {
         if (userRepo.existsByUserName(request.getUserName())) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
@@ -193,7 +194,7 @@ public class UserServiceImpl implements UserService {
 
         userRepo.save(user);
         userStatusAndRank(user);
-        addRole(role, user);
+        user.setRole(role);
 
         try {
             accountService.sendVerificationEmail(user);
