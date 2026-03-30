@@ -17,9 +17,6 @@ public class BillTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "quantity")
-    Integer quantity;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bill_id")
     Bill bill;

@@ -2,6 +2,7 @@ package vi.wbca.webcinema.service;
 
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
 import vi.wbca.webcinema.model.entity.seat.Seat;
+import vi.wbca.webcinema.model.response.SeatResponse;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface SeatService {
 
     void refreshSeat(String code);
 
-    List<Seat> getAllSeat();
+    List<SeatResponse> getAllSeat();
 }

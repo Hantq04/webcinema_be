@@ -3,6 +3,7 @@ package vi.wbca.webcinema.model.dto.bill;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -36,5 +37,6 @@ public class BillDTO {
 
     List<BillFoodDTO> foods;
 
-    List<BillTicketDTO> tickets;
+    @NotEmpty(message = "NOT_BLANK")
+    List<String> tickets;
 }

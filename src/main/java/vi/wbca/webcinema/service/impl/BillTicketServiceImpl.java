@@ -2,10 +2,10 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.model.dto.bill.BillTicketDTO;
+
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
-import vi.wbca.webcinema.mapper.BillTicketMapper;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillTicket;
 import vi.wbca.webcinema.model.entity.movie.Ticket;
@@ -13,62 +13,87 @@ import vi.wbca.webcinema.repository.bill.BillTicketRepo;
 import vi.wbca.webcinema.repository.movie.TicketRepo;
 import vi.wbca.webcinema.service.BillTicketService;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BillTicketServiceImpl implements BillTicketService {
     private final BillTicketRepo billTicketRepo;
-    private final BillTicketMapper billTicketMapper;
     private final TicketRepo ticketRepo;
 
     @Override
-    public void insertBillTicket(BillTicketDTO billTicketDTO, Bill bill) {
-        BillTicket billTicket = billTicketMapper.toBillTicket(billTicketDTO);
-        Ticket ticket = getTicket(billTicketDTO);
+    public void insertBillTicket(List<String> codes, Bill bill) {
+        for (String code : codes) {
+            Ticket ticket = ticketRepo.findByCode(code)
+                    .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+            if (!ticket.isActive()) {
+                throw new AppException(ErrorCode.TICKET_ALREADY_BOOKED);
+            }
+            ticket.setActive(false);
 
-        ticket.setActive(false);
-        ticketRepo.save(ticket);
-        billTicket.setQuantity(1);
-        billTicket.setBill(bill);
-        billTicket.setTicket(ticket);
-        billTicketRepo.save(billTicket);
+            BillTicket bt = new BillTicket();
+            bt.setBill(bill);
+            bt.setTicket(ticket);
+            billTicketRepo.save(bt);
+        }
     }
 
     @Override
-    public void updateBillTicket(List<BillTicketDTO> billTicketDTOs, Bill bill) {
-        // Retrieve existing BillTicket records from the database
-        List<BillTicket> existingBillTickets = billTicketRepo.findAllByBill(bill);
+    @Transactional
+    public void updateBillTicket(List<String> codes, Bill bill) {
+        Set<String> newCodes = new HashSet<>(codes);
+        List<BillTicket> existing = billTicketRepo.findAllByBill(bill);
 
-        // Create a list to store processed foods to keep track of updated/added tickets
-        List<Long> processedId = billTicketDTOs.stream()
-                .map(BillTicketDTO::getId)
-                .filter(Objects::nonNull)
-                .toList();
+        Map<String, BillTicket> existingMap = existing.stream()
+                .collect(Collectors.toMap(
+                        bt -> bt.getTicket().getCode(),
+                        bt -> bt
+                ));
+        Set<String> existingCodes = existingMap.keySet();
 
-        for (BillTicketDTO billTicketDTO : billTicketDTOs) {
-            Ticket ticket = getTicket(billTicketDTO);
-            BillTicket billTicket;
+        Set<String> toDelete = new HashSet<>(existingCodes);
+        toDelete.removeAll(newCodes);
 
-            if (billTicketDTO.getId() != null) {
-                billTicket = billTicketRepo.findById(billTicketDTO.getId())
-                        .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-                billTicket.setTicket(ticket);
-            } else {
-                 billTicket = billTicketMapper.toBillTicket(billTicketDTO);
-                 billTicket.setQuantity(1);
-                 billTicket.setTicket(ticket);
-                 billTicket.setBill(bill);
-            }
-            billTicketRepo.save(billTicket);
+        Set<String> toAdd = new HashSet<>(newCodes);
+        toAdd.removeAll(existingCodes);
+
+        if (!toDelete.isEmpty()) {
+            List<BillTicket> deleteList = toDelete.stream()
+                    .map(existingMap::get)
+                    .toList();
+            List<Ticket> ticketsToRelease = deleteList.stream()
+                    .map(BillTicket::getTicket)
+                    .peek(t -> t.setActive(true))
+                    .toList();
+            ticketRepo.saveAll(ticketsToRelease);
+            billTicketRepo.deleteAll(deleteList);
         }
 
-        // Delete BillTicket records from DB that are not included in the new DTO list
-        for (BillTicket oldBillTicket : existingBillTickets) {
-            if (!processedId.contains(oldBillTicket.getId())) {
-                billTicketRepo.delete(oldBillTicket);
+        if (!toAdd.isEmpty()) {
+            List<Ticket> tickets = ticketRepo.findAllByCodeIn(toAdd);
+            if (tickets.size() != toAdd.size()) {
+                throw new AppException(ErrorCode.CODE_NOT_FOUND);
             }
+            for (Ticket ticket : tickets) {
+                if (!ticket.isActive()) {
+                    throw new AppException(ErrorCode.TICKET_ALREADY_BOOKED);
+                }
+                ticket.setActive(false);
+            }
+            ticketRepo.saveAll(tickets);
+
+            List<BillTicket> newBillTickets = tickets.stream()
+                    .map(ticket -> {
+                        BillTicket bt = new BillTicket();
+                        bt.setBill(bill);
+                        bt.setTicket(ticket);
+                        return bt;
+                    }).toList();
+            billTicketRepo.saveAll(newBillTickets);
         }
     }
 
@@ -83,10 +108,5 @@ public class BillTicketServiceImpl implements BillTicketService {
         BillTicket billTicket = billTicketRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         billTicketRepo.delete(billTicket);
-    }
-
-    public Ticket getTicket(BillTicketDTO billTicketDTO) {
-        return ticketRepo.findByCode(billTicketDTO.getCode())
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
     }
 }

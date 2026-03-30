@@ -6,7 +6,9 @@ import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.entity.movie.Ticket;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long> {
@@ -17,4 +19,6 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     Ticket findBySchedule(Schedule schedule);
 
     boolean existsByScheduleAndSeat(Schedule schedule, Seat seat);
+
+    List<Ticket> findAllByCodeIn(Set<String> toAdd);
 }

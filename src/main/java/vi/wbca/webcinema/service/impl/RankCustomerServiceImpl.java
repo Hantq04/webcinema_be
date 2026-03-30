@@ -16,9 +16,9 @@ public class RankCustomerServiceImpl implements RankCustomerService {
 
     @Override
     @Transactional
-    public RankCustomer insertRank(RankCustomer rankCustomer) {
+    public void insertRank(RankCustomer rankCustomer) {
         rankCustomer.setActive(true);
-        return rankCustomerRepo.save(rankCustomer);
+        rankCustomerRepo.save(rankCustomer);
     }
 
     @Override

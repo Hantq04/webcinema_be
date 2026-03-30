@@ -28,13 +28,8 @@ public class RankCustomerController {
         logger.info("----------Web Cinema: Insert New Rank Customer----------");
         rankCustomerService.insertRank(rankCustomer);
 
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.POINT, rankCustomer.getPoint().toString());
-        responseData.put(Constants.NAME, rankCustomer.getName());
-        responseData.put(Constants.DESCRIPTION, rankCustomer.getDescription());
-
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Rank insert successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, "Rank insert successfully.", null)
         );
     }
 

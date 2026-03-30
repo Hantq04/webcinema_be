@@ -44,27 +44,22 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void insertTicket(BookingRequest request) {
-
         Room room = roomRepo.findByNameAndCode(
                 request.getRoomName(), request.getRoomCode()
         ).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-
         Schedule schedule = getSchedule(request, room);
 
         // Check schedule
         updateTicket(schedule);
 
         List<Ticket> tickets = new ArrayList<>();
-
         for (String seatStr : request.getSeats()) {
-
             Seat seat = getSeat(seatStr, room, schedule);
 
             // Check seat belong room
             if (!seat.getRoom().getId().equals(room.getId())) {
                 throw new AppException(ErrorCode.SEAT_NOT_BELONG_TO_ROOM);
             }
-
             double finalPrice = calculateFinalPrice(schedule, seat);
 
             Ticket ticket = new Ticket();

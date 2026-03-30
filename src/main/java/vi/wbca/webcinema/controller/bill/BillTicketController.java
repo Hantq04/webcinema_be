@@ -6,14 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.model.dto.bill.BillTicketDTO;
-import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.service.BillTicketService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -23,19 +19,16 @@ public class BillTicketController {
     private static final Logger logger = Logger.getLogger(BillTicketController.class.getName());
     private final BillTicketService billTicketService;
 
-    @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
-    public ResponseEntity<ResponseObject> insertBillTicket(@Valid @RequestBody BillTicketDTO request, Bill bill) {
-        logger.info("----------Web Cinema: Insert New Bill Ticket----------");
-        billTicketService.insertBillTicket(request, bill);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.QUANTITY, request.getQuantity().toString());
-        responseData.put(Constants.USER_NAME, request.getCustomerName());
-        responseData.put(Constants.TICKET, request.getCode());
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert bill ticket successfully.", responseData)
-        );
-    }
+//    @PostMapping("/insert")
+//    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+//    public ResponseEntity<ResponseObject> insertBillTicket(@Valid @RequestBody BillTicketRequest request, Bill bill) {
+//        logger.info("----------Web Cinema: Insert New Bill Ticket----------");
+//        billTicketService.insertBillTicket(request, bill);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponseObject(HttpStatus.OK, "Insert bill ticket successfully.", null)
+//        );
+//    }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('" + Constants.ADMIN + "')")

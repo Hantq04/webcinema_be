@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.model.dto.bill.BillDTO;
 import vi.wbca.webcinema.model.dto.bill.BillFoodDTO;
-import vi.wbca.webcinema.model.dto.bill.BillTicketDTO;
 import vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO;
 import vi.wbca.webcinema.enums.BillStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
@@ -107,10 +106,7 @@ public class BillServiceImpl implements BillService {
     }
 
     public void insertBillTicket(BillDTO billDTO, Bill bill) {
-        for (BillTicketDTO billTicketDTO : billDTO.getTickets()) {
-            billTicketDTO.setCustomerName(billDTO.getCustomerName());
-            billTicketService.insertBillTicket(billTicketDTO, bill);
-        }
+        billTicketService.insertBillTicket(billDTO.getTickets(), bill);
     }
 
     public void calculateTotal(Bill bill, User user) {
@@ -154,23 +150,14 @@ public class BillServiceImpl implements BillService {
     }
 
     public double calculateBillTicket(Bill bill) {
-        List<BillTicket> listBillTicket = billTicketRepo.findAllByBillId(bill.getId());
-        double total = 0;
-        for (BillTicket billTicket : listBillTicket) {
-            if (billTicket.getTicket() != null && billTicket.getTicket().getPriceTicket() != null) {
-                total += billTicket.getQuantity() * billTicket.getTicket().getPriceTicket();
-            }
-        }
-        return total;
+        return billTicketRepo.findAllByBillId(bill.getId()).stream()
+                .filter(bt -> bt.getTicket() != null && bt.getTicket().getPriceTicket() != null)
+                .mapToDouble(bt -> bt.getTicket().getPriceTicket())
+                .sum();
     }
 
     public User getCustomer(BillDTO billDTO) {
         return userRepo.findByUserName(billDTO.getCustomerName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
-    }
-
-    public BillStatus getStatus(String eBillStatus) {
-        return billStatusRepo.findByName(eBillStatus)
-                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
     }
 }

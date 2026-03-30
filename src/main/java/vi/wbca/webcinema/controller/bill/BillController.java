@@ -29,20 +29,9 @@ public class BillController {
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Insert New Bill----------");
         billService.createBill(request);
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put(Constants.USER_NAME, request.getCustomerName());
-        responseData.put(Constants.LIST_ORDER, request.getFoods());
-        responseData.put(Constants.TOTAL_MONEY, request.getTotalMoney());
 
-        // Custom ticket response
-        Map<String, Object> ticketInfo = new HashMap<>();
-        List<String> ticketCodes = request.getTickets().stream()
-                .map(BillTicketDTO::getCode).toList();
-        ticketInfo.put(Constants.CODE, ticketCodes);
-        ticketInfo.put(Constants.QUANTITY, ticketCodes.size());
-        responseData.put(Constants.LIST_TICKET, ticketInfo);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert bill successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, "Insert bill successfully.", null)
         );
     }
 
@@ -51,13 +40,9 @@ public class BillController {
     public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Update Bill----------");
         billService.updateBill(request);
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put(Constants.USER_NAME, request.getCustomerName());
-        responseData.put(Constants.LIST_ORDER, request.getFoods());
-        responseData.put(Constants.LIST_TICKET, request.getTickets());
-        responseData.put(Constants.TOTAL_MONEY, request.getTotalMoney());
+
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Updated bill successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, "Updated bill successfully.", null)
         );
     }
 

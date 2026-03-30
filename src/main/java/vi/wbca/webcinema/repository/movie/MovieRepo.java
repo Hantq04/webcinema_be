@@ -17,7 +17,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO(
-        m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate, SUM(bt.quantity)
+        m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate, COUNT(bt.id)
     )
     FROM Movie m
     JOIN m.schedules s
@@ -25,7 +25,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     JOIN t.billTickets bt
     WHERE t.isActive = false
     GROUP BY m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
-    ORDER BY SUM(bt.quantity) DESC
+    ORDER BY COUNT(bt.id) DESC
     """)
     Page<MovieStatisticDTO> getTicketStatistics(Pageable pageable);
 

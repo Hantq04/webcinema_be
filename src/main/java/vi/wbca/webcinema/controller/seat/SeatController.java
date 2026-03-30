@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
+import vi.wbca.webcinema.model.response.SeatResponse;
 import vi.wbca.webcinema.validation.groupValidate.seat.InsertSeat;
 import vi.wbca.webcinema.validation.groupValidate.seat.UpdateSeat;
 import vi.wbca.webcinema.model.entity.seat.Seat;
@@ -31,9 +32,10 @@ public class SeatController {
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertSeat(@Validated(InsertSeat.class) @RequestBody SeatDTO request) {
         logger.info("----------Web Cinema: Insert New Seat----------");
-        SeatDTO responseData = seatService.insertSeat(request);
+        seatService.insertSeat(request);
+
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert seat successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, "Insert seat successfully.", null)
         );
     }
 
@@ -42,11 +44,9 @@ public class SeatController {
     public ResponseEntity<ResponseObject> updateSeat(@Validated(UpdateSeat.class) @RequestBody SeatDTO request) {
         logger.info("----------Web Cinema: Update Seat----------");
         seatService.updateSeat(request);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.LINE, request.getLine());
-        responseData.put(Constants.NUMBER, request.getNumber().toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Updated seat successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, "Updated seat successfully.", null)
         );
     }
 
@@ -74,7 +74,7 @@ public class SeatController {
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> getAllSeat() {
         logger.info("----------Web Cinema: Get All Seat----------");
-        List<Seat> responseData = seatService.getAllSeat();
+        List<SeatResponse> responseData = seatService.getAllSeat();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Get all seat successfully.", responseData)
         );
