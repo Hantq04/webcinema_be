@@ -37,6 +37,10 @@ public class GlobalExceptionHandler {
             log.info("Error Throw Location :: {}", Arrays.toString(Arrays.copyOfRange(appException.getStackTrace(), 0, 3)));
 
             LoggingUtils.loggingError(exception);
+            log.error("Full stack trace:", exception);
+            if (exception.getCause() != null) {
+                log.error("Caused by:", exception.getCause());
+            }
             return ResponseEntity.status(appException.getErrorCode().getStatusCode()).body(
                     new ResponseObject(appException.getErrorCode().getCode(), errorMessages, "")
             );
@@ -66,6 +70,10 @@ public class GlobalExceptionHandler {
             log.info("Error Fields :: {}", e.getFieldErrors());
 
             LoggingUtils.loggingError(exception);
+            log.error("Full stack trace:", exception);
+            if (exception.getCause() != null) {
+                log.error("Caused by:", exception.getCause());
+            }
             return ResponseEntity.status(e.getStatusCode()).body(
                     new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), fieldErrors)
             );
@@ -95,6 +103,10 @@ public class GlobalExceptionHandler {
 
         log.info("Error Location: {}", Arrays.toString(Arrays.copyOfRange(exception.getStackTrace(), 0, 3)));
         LoggingUtils.loggingError(exception);
+        log.error("Full stack trace:", exception);
+        if (exception.getCause() != null) {
+            log.error("Caused by:", exception.getCause());
+        }
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), "")
         );

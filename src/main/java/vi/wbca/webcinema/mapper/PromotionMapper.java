@@ -11,6 +11,7 @@ public interface PromotionMapper {
     @Mapping(target = "bills", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "rankCustomer", ignore = true)
+    @Mapping(target = "code", ignore = true)
     Promotion toPromotion(PromotionDTO promotionDTO);
 
     @Mapping(target = "nameRankCustomer", ignore = true)

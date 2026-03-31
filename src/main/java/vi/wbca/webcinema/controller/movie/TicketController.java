@@ -7,10 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.request.BookingRequest;
+import vi.wbca.webcinema.model.response.BookingResponse;
+import vi.wbca.webcinema.model.response.TicketResponse;
 import vi.wbca.webcinema.service.TicketService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -24,9 +27,9 @@ public class TicketController {
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertTicket(@Valid @RequestBody BookingRequest request) {
         logger.info("----------Web Cinema: Insert New Ticket----------");
-        ticketService.insertTicket(request);
+        BookingResponse responseData = ticketService.insertTicket(request);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert ticket successfully.", request)
+                new ResponseObject(HttpStatus.OK, "Insert ticket successfully.", responseData)
         );
     }
 
@@ -36,7 +39,17 @@ public class TicketController {
         logger.info("----------Web Cinema: Delete Ticket----------");
         ticketService.deleteTicket(code);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Deleted ticket successfully.", "")
+                new ResponseObject(HttpStatus.OK, "Deleted ticket successfully.", null)
+        );
+    }
+
+    @GetMapping("/get-all-ticket")
+    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    public ResponseEntity<ResponseObject> getAllTicket() {
+        logger.info("----------Web Cinema: Get All Ticket----------");
+        List<TicketResponse> responseData = ticketService.getAllTicket();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, "Get all ticket successfully.", responseData)
         );
     }
 }

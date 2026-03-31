@@ -27,7 +27,6 @@ public class BannerController {
     @PostMapping("/insert")
     public ResponseEntity<ResponseObject> insertBanner(@Valid @ModelAttribute BannerRequest request) throws IOException {
         bannerService.insertBanner(request);
-
         return ResponseEntity.ok(
                 new ResponseObject(HttpStatus.OK, "Insert banner successfully.", null)
         );

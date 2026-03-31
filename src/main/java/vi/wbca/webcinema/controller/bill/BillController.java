@@ -29,7 +29,6 @@ public class BillController {
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Insert New Bill----------");
         billService.createBill(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert bill successfully.", null)
         );
@@ -40,7 +39,6 @@ public class BillController {
     public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Update Bill----------");
         billService.updateBill(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated bill successfully.", null)
         );

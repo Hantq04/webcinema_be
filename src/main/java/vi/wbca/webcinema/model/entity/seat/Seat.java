@@ -26,6 +26,9 @@ public class Seat {
     @Column(name = "line")
     String line;
 
+    @Column(name = "pair_index")
+    Integer pairIndex;
+
     @Column(name = "is_active")
     boolean isActive;
 

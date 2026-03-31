@@ -33,7 +33,6 @@ public class SeatController {
     public ResponseEntity<ResponseObject> insertSeat(@Validated(InsertSeat.class) @RequestBody SeatDTO request) {
         logger.info("----------Web Cinema: Insert New Seat----------");
         seatService.insertSeat(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Insert seat successfully.", null)
         );
@@ -44,7 +43,6 @@ public class SeatController {
     public ResponseEntity<ResponseObject> updateSeat(@Validated(UpdateSeat.class) @RequestBody SeatDTO request) {
         logger.info("----------Web Cinema: Update Seat----------");
         seatService.updateSeat(request);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Updated seat successfully.", null)
         );

@@ -10,6 +10,7 @@ import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,4 +28,6 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
     boolean existsByRoomAndLineAndNumber(Room room, String line, Integer number);
 
     boolean existsByRoom(Room room);
+
+    List<Seat> findByRoom(Room room);
 }

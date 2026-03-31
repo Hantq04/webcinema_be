@@ -27,7 +27,6 @@ public class RankCustomerController {
     public ResponseEntity<ResponseObject> insertRank(@RequestBody RankCustomer rankCustomer) {
         logger.info("----------Web Cinema: Insert New Rank Customer----------");
         rankCustomerService.insertRank(rankCustomer);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, "Rank insert successfully.", null)
         );

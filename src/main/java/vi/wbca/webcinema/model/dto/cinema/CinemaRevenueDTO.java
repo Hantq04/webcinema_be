@@ -3,6 +3,8 @@ package vi.wbca.webcinema.model.dto.cinema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,5 +15,5 @@ public class CinemaRevenueDTO {
 
     String code;
 
-    Double totalRevenue;
+    BigDecimal totalRevenue;
 }

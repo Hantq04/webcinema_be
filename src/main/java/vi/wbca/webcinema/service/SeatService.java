@@ -7,7 +7,7 @@ import vi.wbca.webcinema.model.response.SeatResponse;
 import java.util.List;
 
 public interface SeatService {
-    SeatDTO insertSeat(SeatDTO seatDTO);
+    void insertSeat(SeatDTO seatDTO);
 
     void updateSeat(SeatDTO seatDTO);
 
@@ -18,4 +18,6 @@ public interface SeatService {
     void refreshSeat(String code);
 
     List<SeatResponse> getAllSeat();
+
+    void validateSeatSelection(List<Seat> seats);
 }

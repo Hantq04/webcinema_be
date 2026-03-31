@@ -24,7 +24,7 @@ public class Ticket {
     String code;
 
     @Column(name = "price_ticket")
-    Double priceTicket;
+    Long priceTicket;
 
     @Column(name = "is_active")
     boolean isActive;

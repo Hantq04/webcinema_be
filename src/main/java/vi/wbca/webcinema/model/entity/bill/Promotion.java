@@ -22,6 +22,9 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Column(name = "code")
+    String code;
+
     @Column(name = "percent")
     Integer percent;
 

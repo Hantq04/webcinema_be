@@ -20,6 +20,7 @@ import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.util.EmailUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -47,6 +48,7 @@ public class VNPayService {
         String vnp_IpAddr = "127.0.0.1";
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
+        BigDecimal vnp_Amount = bill.getTotalMoney().multiply(BigDecimal.valueOf(100));
 
         if (bill.getBillStatus().equals(getStatus(BillStatusEnum.PENDING.toString()))) {
             Map<String, String> vnp_Params = new HashMap<>();
@@ -54,7 +56,7 @@ public class VNPayService {
             vnp_Params.put("vnp_Version", vnp_Version);
             vnp_Params.put("vnp_Command", vnp_Command);
             vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-            vnp_Params.put("vnp_Amount", String.valueOf((long) (bill.getTotalMoney() * 100)));
+            vnp_Params.put("vnp_Amount", vnp_Amount.longValue() + "");
             vnp_Params.put("vnp_CurrCode", "VND");
 
             vnp_Params.put("vnp_BankCode", bankCode); // Remove to choose another payment method

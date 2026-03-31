@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.model.entity.user.User;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class Bill {
     Long id;
 
     @Column(name = "total_money")
-    Double totalMoney;
+    BigDecimal totalMoney;
 
     @Column(name = "trading_code")
     String tradingCode;

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class BillDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
-    Double totalMoney;
+    BigDecimal totalMoney;
 
     String tradingCode;
 
@@ -35,8 +36,11 @@ public class BillDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String customerName;
 
+    @NotEmpty(message = "NOT_BLANK")
     List<BillFoodDTO> foods;
 
     @NotEmpty(message = "NOT_BLANK")
     List<String> tickets;
+
+    String promotionCode;
 }

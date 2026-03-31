@@ -25,10 +25,13 @@ import vi.wbca.webcinema.service.SeatService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SeatServiceImpl implements SeatService {
+
     private final SeatRepo seatRepo;
     private final SeatStatusRepo seatStatusRepo;
     private final RoomRepo roomRepo;
@@ -37,20 +40,18 @@ public class SeatServiceImpl implements SeatService {
     private final BillTicketRepo billTicketRepo;
 
     @Override
-    public SeatDTO insertSeat(SeatDTO request) {
+    public void insertSeat(SeatDTO request) {
         Room room = roomRepo.findByNameAndCode(request.getRoomName(), request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        // Check if the room already created seat
-        boolean hasSeats  = seatRepo.existsByRoom(room);
-        if (hasSeats) {
+
+        if (seatRepo.existsByRoom(room)) {
             throw new AppException(ErrorCode.SEAT_EXISTED);
         }
-        // Generate seats for the room if not already exists
+
         generateSeatsForRoom(room);
         request.setTotalSeats(room.getCapacity());
         request.setRoomName(room.getName());
         request.setRoomCode(room.getCode());
-        return request;
     }
 
     @Override
@@ -63,8 +64,7 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public void deleteSeat(Long id) {
-        Seat seat = findById(id);
-        seatRepo.delete(seat);
+        seatRepo.delete(findById(id));
     }
 
     @Override
@@ -78,13 +78,13 @@ public class SeatServiceImpl implements SeatService {
     public void refreshSeat(String code) {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-        Long statusCode = bill.getBillStatus().getId();
-        if (statusCode == 2) return;
-
-        SeatStatus seatStatus = getSeatStatus();
+        if (bill.getBillStatus().getId() == 2) return;
         List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-        if (billTickets.isEmpty()) throw new AppException(ErrorCode.CODE_NOT_FOUND);
-        seatRepo.updateSeatStatusByBill(bill, seatStatus);
+        if (billTickets.isEmpty()) {
+            throw new AppException(ErrorCode.CODE_NOT_FOUND);
+        }
+
+        seatRepo.updateSeatStatusByBill(bill, getSeatStatus());
     }
 
     @Override
@@ -99,51 +99,109 @@ public class SeatServiceImpl implements SeatService {
         )).toList();
     }
 
+    @Override
+    public void validateSeatSelection(List<Seat> seats) {
+        if (seats == null || seats.isEmpty()) {
+            throw new AppException(ErrorCode.SEAT_EMPTY);
+        }
+        Set<String> types = seats.stream()
+                .map(s -> s.getSeatType().getNameType())
+                .collect(Collectors.toSet());
+        if (types.size() > 1) {
+            throw new AppException(ErrorCode.SEAT_TYPE_NOT_MATCH);
+        }
+
+        SeatTypeEnum type = SeatTypeEnum.getByName(types.iterator().next());
+        if (type == SeatTypeEnum.SWEET_BOX) {
+            Seat s1 = seats.get(0);
+            Seat s2 = seats.get(1);
+
+            if (seats.size() != 2) {
+                throw new AppException(ErrorCode.SWEET_BOX_MUST_BE_PAIR);
+            }
+            if (!s1.getLine().equals(s2.getLine())) {
+                throw new AppException(ErrorCode.SEAT_NOT_SAME_ROW);
+            }
+            if (Math.abs(s1.getNumber() - s2.getNumber()) != 1) {
+                throw new AppException(ErrorCode.SEAT_NOT_ADJACENT);
+            }
+            if (!s1.getPairIndex().equals(s2.getPairIndex())) {
+                throw new AppException(ErrorCode.INVALID_SWEET_BOX_PAIR);
+            }
+        }
+    }
+
+    @Transactional
     public void generateSeatsForRoom(Room room) {
         int capacity = room.getCapacity();
-        int roomLine = (int) Math.ceil(Math.sqrt(capacity));
-        int seatsPerRow = (int) Math.ceil((double) capacity / roomLine);
-        List<Seat> seats = new ArrayList<>();
+        int totalRows = Math.max(5, (int) Math.ceil(capacity / 12.0));
+        int baseSeatsPerRow = capacity / totalRows;
+        int extraSeats = capacity % totalRows;
+        SeatType standard = getSeatType(SeatTypeEnum.STANDARD);
+        SeatType vip = getSeatType(SeatTypeEnum.VIP);
+        SeatType sweetBox = getSeatType(SeatTypeEnum.SWEET_BOX);
+        SeatStatus status = getSeatStatus();
+        int standardRows = Math.max(1, (int) Math.ceil(totalRows * 0.3));
 
-        for (int i = 0; i < roomLine; i++) {
+        Set<String> existingSeatSet = seatRepo.findByRoom(room).stream()
+                .map(seat -> seat.getLine() + "-" + seat.getNumber())
+                .collect(Collectors.toSet());
+
+        int lastRowSeats = baseSeatsPerRow + (extraSeats > 0 ? 1 : 0);
+        if (lastRowSeats % 2 != 0) {
+            lastRowSeats++;
+            if (extraSeats > 0) extraSeats--;
+            else baseSeatsPerRow--;
+        }
+
+        List<Seat> seats = new ArrayList<>();
+        for (int i = 0; i < totalRows; i++) {
             char rowLabel = (char) ('A' + i);
-            for (int j = 1; j <= seatsPerRow && seats.size() < capacity; j++) {
-                // Check if the seat already exists
-                if (seatRepo.existsByRoomAndLineAndNumber(room, String.valueOf(rowLabel), j)) {
-                    continue;// Skip if it already exists
-                }
+            int seatsInRow = (i == totalRows - 1) ? lastRowSeats
+                    : baseSeatsPerRow + ((totalRows - 2 - i) < extraSeats ? 1 : 0);
+            int pairIndex = 1;
+
+            for (int j = 1; j <= seatsInRow; j++) {
+                String key = rowLabel + "-" + j;
+                if (existingSeatSet.contains(key)) continue;
+
                 Seat seat = new Seat();
                 seat.setLine(String.valueOf(rowLabel));
                 seat.setNumber(j);
                 seat.setRoom(room);
-                seat.setSeatStatus(getSeatStatus());
-                setSeatType(seat, String.valueOf(rowLabel));
+                seat.setSeatStatus(status);
                 seat.setActive(true);
+
+                setSeatType(seat, i, totalRows, standardRows, standard, vip, sweetBox);
+
+                if (i == totalRows - 1) {
+                    seat.setPairIndex(pairIndex);
+                    if (j % 2 == 0) pairIndex++;
+                }
                 seats.add(seat);
             }
         }
+
         if (!seats.isEmpty()) {
-            // Save only if new seats are available
             seatRepo.saveAll(seats);
         }
     }
 
-    public void setSeatType(Seat seat, String line) {
-        int rowNumber = line.charAt(0) - 'A' + 1;
-        if (rowNumber >= 1 && rowNumber <= 4) {
-            SeatType seatType = seatTypeRepo.findByNameType(SeatTypeEnum.STANDARD.toString())
-                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-            seat.setSeatType(seatType);
-        } else if (rowNumber >= 5 && rowNumber < 17) {
-            SeatType seatType = seatTypeRepo.findByNameType(SeatTypeEnum.VIP.toString())
-                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-            seat.setSeatType(seatType);
+    private void setSeatType(Seat seat, int rowIndex, int totalRows, int standardRows,
+                             SeatType standard, SeatType vip, SeatType sweetBox) {
+
+        if (rowIndex == totalRows - 1) {
+            seat.setSeatType(sweetBox);
+        } else if (rowIndex < standardRows) {
+            seat.setSeatType(standard);
         } else {
-            SeatType seatType = seatTypeRepo.findByNameType(SeatTypeEnum.DELUXE.toString())
-                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-            seat.setSeatType(seatType);
+            seat.setSeatType(vip);
         }
-        seatRepo.save(seat);
+    }
+
+    private SeatType getSeatType(SeatTypeEnum type) {
+        return seatTypeRepo.findByNameType(type.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
     public SeatStatus getSeatStatus() {

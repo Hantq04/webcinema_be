@@ -19,5 +19,6 @@ public interface BillMapper {
     @Mapping(target = "customerName", ignore = true)
     @Mapping(target = "foods", ignore = true)
     @Mapping(target = "tickets", ignore = true)
+    @Mapping(target = "promotionCode", ignore = true)
     BillDTO toBillDTO(Bill bill);
 }

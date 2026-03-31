@@ -68,6 +68,7 @@ public enum ErrorCode {
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),
     VALIDATE_ERROR(1301, "error.1301", HttpStatus.BAD_REQUEST),
+    NOT_EMPTY(1302, "error.1302", HttpStatus.BAD_REQUEST),
     INVALID_USERNAME(1303, "error.1303", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1304, "error.1304", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1305, "error.1305", HttpStatus.BAD_REQUEST),
@@ -92,6 +93,12 @@ public enum ErrorCode {
     INVALID_SHOW_TIME(1324, "error.1324", HttpStatus.BAD_REQUEST),
     INVALID_SEAT(1325, "error.1325", HttpStatus.BAD_REQUEST),
     INVALID_START_TIME(1326, "error.1326", HttpStatus.BAD_REQUEST),
+    SEAT_EMPTY(1327, "error.1327", HttpStatus.BAD_REQUEST),
+    SEAT_TYPE_NOT_MATCH(1328, "error.1328", HttpStatus.BAD_REQUEST),
+    SWEET_BOX_MUST_BE_PAIR(1329, "error.1329", HttpStatus.BAD_REQUEST),
+    SEAT_NOT_SAME_ROW(1330, "error.1330", HttpStatus.BAD_REQUEST),
+    SEAT_NOT_ADJACENT(1331, "error.1331", HttpStatus.BAD_REQUEST),
+    INVALID_SWEET_BOX_PAIR(1332, "error.1332", HttpStatus.BAD_REQUEST),
 
     // Payment, code 70***
     PAYMENT_SUCCESS(70010, "error.70010", HttpStatus.BAD_REQUEST),

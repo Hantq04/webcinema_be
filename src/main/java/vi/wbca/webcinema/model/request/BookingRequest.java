@@ -32,6 +32,6 @@ public class BookingRequest {
     private Date startTime;
 
     @Schema(description = "Danh sách ghế được đặt")
-    @NotEmpty(message = "NOT_BLANK")
+    @NotEmpty(message = "NOT_EMPTY")
     private List<String> seats;
 }
