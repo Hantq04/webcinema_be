@@ -99,6 +99,8 @@ public enum ErrorCode {
     SEAT_NOT_SAME_ROW(1330, "error.1330", HttpStatus.BAD_REQUEST),
     SEAT_NOT_ADJACENT(1331, "error.1331", HttpStatus.BAD_REQUEST),
     INVALID_SWEET_BOX_PAIR(1332, "error.1332", HttpStatus.BAD_REQUEST),
+    CAPTCHA_REFRESH(1333, "error.1333", HttpStatus.BAD_REQUEST),
+    INVALID_CAPTCHA(1334, "error.1334", HttpStatus.BAD_REQUEST),
 
     // Payment, code 70***
     PAYMENT_SUCCESS(70010, "error.70010", HttpStatus.BAD_REQUEST),

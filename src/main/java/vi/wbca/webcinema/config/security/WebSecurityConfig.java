@@ -48,7 +48,8 @@ public class WebSecurityConfig {
             "/api/v1/banner/**",
             "/api/v1/setting/**",
             "/api/v1/ticket/**",
-            "uploads/**"
+            "uploads/**",
+            "/api/v1/captcha/**"
     };
 
     @Bean

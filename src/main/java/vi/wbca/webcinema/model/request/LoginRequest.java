@@ -19,4 +19,12 @@ public class LoginRequest {
     @Schema(description = "Mật khẩu")
     @NotBlank(message = "NOT_BLANK")
     private String passWord;
+
+    @Schema(description = "ID của captcha")
+    @NotBlank(message = "NOT_BLANK")
+    private String captchaId;
+
+    @Schema(description = "Mã xác thực của captcha")
+    @NotBlank(message = "NOT_BLANK")
+    private String captchaValue;
 }

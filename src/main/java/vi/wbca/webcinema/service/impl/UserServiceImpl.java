@@ -31,10 +31,7 @@ import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.RoleRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.repository.user.UserStatusRepo;
-import vi.wbca.webcinema.service.UserService;
-import vi.wbca.webcinema.service.AccessTokenService;
-import vi.wbca.webcinema.service.AccountService;
-import vi.wbca.webcinema.service.RefreshTokenService;
+import vi.wbca.webcinema.service.*;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
@@ -55,6 +52,7 @@ public class UserServiceImpl implements UserService {
     AccountService accountService;
     RankCustomerRepo rankCustomerRepo;
     AccessTokenService accessTokenService;
+    CaptchaService captchaService;
     RefreshTokenService refreshTokenService;
 
     @Override
@@ -69,6 +67,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
+        // Validate the CAPTCHA
+        captchaService.validateCaptcha(request.getCaptchaId(), request.getCaptchaValue());
+
         User user = userRepo.findByUserName(request.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
         if (!user.isActive()) {

@@ -2,6 +2,8 @@ package vi.wbca.webcinema.controller.cinema;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +14,7 @@ import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -21,14 +24,17 @@ import java.util.logging.Logger;
 public class RoomController {
     private static final Logger logger = Logger.getLogger(RoomController.class.getName());
     private final RoomService roomService;
+    private final MessageSource messageSource;
 
     @PostMapping("/insert")
     @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
     public ResponseEntity<ResponseObject> insertRoom(@Valid @RequestBody RoomDTO request) {
         logger.info("----------Web Cinema: Insert New Room----------");
         RoomDTO responseData = roomService.insertRoom(request);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.insert_room", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert room successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 
@@ -37,6 +43,8 @@ public class RoomController {
     public ResponseEntity<ResponseObject> updateRoom(@Valid @RequestBody RoomDTO request) {
         logger.info("----------Web Cinema: Update Room----------");
         roomService.updateRoom(request);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.update", null, locale);
         Map<String, String> responseData = new HashMap<>();
         responseData.put(Constants.CODE, request.getCode());
         responseData.put(Constants.NAME, request.getName());
@@ -44,7 +52,7 @@ public class RoomController {
         responseData.put(Constants.CAPACITY, request.getCapacity().toString());
         responseData.put(Constants.TYPE, request.getType().toString());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Updated room successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 
@@ -53,8 +61,10 @@ public class RoomController {
     public ResponseEntity<ResponseObject> deleteRoom(@Valid @RequestParam String code) {
         logger.info("----------Web Cinema: Delete Room----------");
         roomService.deleteRoom(code);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Deleted room successfully.", "")
+                new ResponseObject(HttpStatus.OK, message, "")
         );
     }
 }
