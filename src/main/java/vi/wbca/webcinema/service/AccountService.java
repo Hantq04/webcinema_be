@@ -3,6 +3,8 @@ package vi.wbca.webcinema.service;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.config.EmailService;
@@ -21,6 +23,7 @@ import vi.wbca.webcinema.util.generate.GenerateOTP;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class AccountService {
     private final UserRepo userRepo;
     private final UserStatusRepo userStatusRepo;
     private final PasswordEncoder passwordEncoder;
+    private final MessageSource messageSource;
     private final String generateOTP = GenerateOTP.generateOTP();
 
     @Value("${application.email.verify-expiration}")
@@ -72,7 +76,8 @@ public class AccountService {
 
         userRepo.save(user);
         confirmEmailRepo.save(code);
-        return "Now you can login to your account.";
+        Locale locale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("account.can_login", null, locale);
     }
 
     public String resendVerificationEmail(String email) throws MessagingException, UnsupportedEncodingException {
@@ -83,7 +88,9 @@ public class AccountService {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
         createConfirmEmail(user);
-        return "Please verify your account within 5 minutes.";
+        userRepo.save(user);
+        Locale locale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("account.verify_within_5_min", null, locale);
     }
 
     public String changePassword(String otp, String newPassword, String confirmPassword) {
@@ -101,7 +108,8 @@ public class AccountService {
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
-        return "Password change successfully. You can now log in with your new password.";
+        Locale locale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("account.password_change_success", null, locale);
     }
 
     public String sendChangePassword(String email) throws MessagingException, UnsupportedEncodingException {
@@ -112,6 +120,7 @@ public class AccountService {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
         createConfirmEmail(user);
-        return "Check your email for the password change OTP.";
+        Locale locale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("account.check_email_change_password", null, locale);
     }
 }

@@ -6,9 +6,6 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.validation.groupValidate.user.InsertUser;
 import vi.wbca.webcinema.validation.groupValidate.user.LoginUser;
 import vi.wbca.webcinema.validation.groupValidate.user.UpdateUser;
-import vi.wbca.webcinema.model.entity.user.Role;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +18,7 @@ public class UserDTO {
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
     @Size(min = 3, max = 20, message = "INVALID_USERNAME", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
-    @Pattern(regexp = "^[A-Za-z0-9]{3,20}$", message = "INVALID_USERNAME_FORM", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
+//    @Pattern(regexp = "^[A-Za-z0-9]{3,20}$", message = "INVALID_USERNAME_FORM", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
     String userName;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})

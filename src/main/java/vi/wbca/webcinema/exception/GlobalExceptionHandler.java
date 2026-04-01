@@ -49,22 +49,43 @@ public class GlobalExceptionHandler {
         if (exception instanceof MethodArgumentNotValidException e) {
             errorCode = ErrorCode.VALIDATE_ERROR;
 
-            List<FieldValidationError> fieldErrors = e.getFieldErrors().stream().map(fieldError -> {
-                String enumKey = fieldError.getDefaultMessage();
-                ErrorCode fieldErrorCode = errorCode;
-                try {
-                    fieldErrorCode = ErrorCode.valueOf(enumKey);
-                } catch (IllegalArgumentException ex) {
-                    log.info("Exception: {}", ex.getMessage());
+            // First, check for all NOT_BLANK errors (required fields)
+            List<FieldValidationError> blankErrors = e.getFieldErrors().stream()
+                    .filter(fieldError -> "NOT_BLANK".equals(fieldError.getDefaultMessage()))
+                    .map(fieldError -> {
+                        String msg = messageUtils.getMessage(ErrorCode.NOT_BLANK.getMessage(), fieldError.getField());
+                        return new FieldValidationError(fieldError.getField(), msg);
+                    }).toList();
+
+            // If there are blank errors, return all of them
+            if (!blankErrors.isEmpty()) {
+                log.info("Error :: Validation Exception - Blank Fields");
+                log.info("Error Fields :: {}", e.getFieldErrors());
+                LoggingUtils.loggingError(exception);
+                log.error("Full stack trace:", exception);
+                if (exception.getCause() != null) {
+                    log.error("Caused by:", exception.getCause());
                 }
-                String msg;
-                if (fieldErrorCode == ErrorCode.NOT_BLANK) {
-                    msg = messageUtils.getMessage(fieldErrorCode.getMessage(), fieldError.getField());
-                } else {
-                    msg = messageUtils.getMessage(fieldErrorCode.getMessage());
-                }
-                return new FieldValidationError(fieldError.getField(), msg);
-            }).toList();
+                return ResponseEntity.status(e.getStatusCode()).body(
+                        new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), blankErrors)
+                );
+            }
+
+            // If no blank errors, return first format/validation error
+            List<FieldValidationError> fieldErrors = e.getFieldErrors().stream()
+                    .filter(fieldError -> !"NOT_BLANK".equals(fieldError.getDefaultMessage()))
+                    .limit(1)
+                    .map(fieldError -> {
+                        String enumKey = fieldError.getDefaultMessage();
+                        ErrorCode fieldErrorCode = errorCode;
+                        try {
+                            fieldErrorCode = ErrorCode.valueOf(enumKey);
+                        } catch (IllegalArgumentException ex) {
+                            log.info("Exception: {}", ex.getMessage());
+                        }
+                        String msg = messageUtils.getMessage(fieldErrorCode.getMessage());
+                        return new FieldValidationError(fieldError.getField(), msg);
+                    }).toList();
 
             log.info("Error :: Validation Exception");
             log.info("Error Fields :: {}", e.getFieldErrors());

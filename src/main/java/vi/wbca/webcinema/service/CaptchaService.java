@@ -35,10 +35,7 @@ public class CaptchaService {
 
         String base64 = toBase64(image);
 
-        return new CaptchaResponse(
-                captchaId,
-                "data:image/jpeg;base64," + base64
-        );
+        return new CaptchaResponse(captchaId, "data:image/jpeg;base64," + base64);
     }
 
     public void validateCaptcha(String captchaId, String input) {
