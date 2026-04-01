@@ -20,7 +20,7 @@ public class PaymentController {
     private final VNPayService vnPayService;
 
     @PostMapping("/submit-payment")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     public String submitPayment(@Valid @RequestParam String code, HttpServletRequest request) {
         logger.info("----------Web Cinema: Submit Payment----------");
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();

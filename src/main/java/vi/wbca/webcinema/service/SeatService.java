@@ -5,6 +5,7 @@ import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.response.SeatResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SeatService {
     void insertSeat(SeatDTO seatDTO);
@@ -20,4 +21,6 @@ public interface SeatService {
     List<SeatResponse> getAllSeat();
 
     void validateSeatSelection(List<Seat> seats);
+
+    Map<String, Object> getSeatBySchedule(String scheduleCode);
 }

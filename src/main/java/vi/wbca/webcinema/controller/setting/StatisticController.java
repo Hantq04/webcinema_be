@@ -35,7 +35,7 @@ public class StatisticController {
     private final MessageSource messageSource;
 
     @GetMapping("/cinema-revenue-statistic")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> getRevenueByCinema(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -51,7 +51,7 @@ public class StatisticController {
     }
 
     @GetMapping("/food-revenue-statistic")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> getFoodRevenueSevenDays() {
         logger.info("----------Web Cinema: Food Revenue Statistic");
         Locale locale = LocaleContextHolder.getLocale();

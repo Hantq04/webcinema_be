@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.request.BannerRequest;
 import vi.wbca.webcinema.service.BannerService;
@@ -29,6 +28,7 @@ public class BannerController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertBanner(@Valid @ModelAttribute BannerRequest request) throws IOException {
         bannerService.insertBanner(request);
         Locale locale = LocaleContextHolder.getLocale();
@@ -39,7 +39,7 @@ public class BannerController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteBanner(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Banner----------");
         bannerService.deleteBanner(id);
@@ -51,7 +51,7 @@ public class BannerController {
     }
 
     @GetMapping("/get-all-banner")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllBanner() {
         logger.info("----------Web Cinema: Get All Banner----------");
         Locale locale = LocaleContextHolder.getLocale();

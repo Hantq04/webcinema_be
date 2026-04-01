@@ -26,7 +26,7 @@ public class SeatStatusController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertSeatStatus(@Valid @RequestBody SeatStatus seatStatus) {
         logger.info("----------Web Cinema: Insert New Seat Status----------");
         SeatStatus response = seatStatusService.insertSeatStatus(seatStatus);
@@ -38,7 +38,7 @@ public class SeatStatusController {
     }
 
     @GetMapping("/get-all-status")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All Seat Status----------");
         Locale locale = LocaleContextHolder.getLocale();

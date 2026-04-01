@@ -33,7 +33,7 @@ public class MovieController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertMovie(@Validated(InsertMovie.class) @RequestBody MovieDTO request) {
         logger.info("----------Web Cinema: Insert New Movie----------");
         movieService.insertMovie(request);
@@ -45,7 +45,7 @@ public class MovieController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> updateMovie(@Validated(UpdateMovie.class) @RequestBody MovieDTO request) {
         logger.info("----------Web Cinema: Update Movie----------");
         movieService.updateMovie(request);
@@ -57,7 +57,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteMovie(@Valid @RequestParam String name) {
         logger.info("----------Web Cinema: Delete Movie----------");
         movieService.deleteMovie(name);

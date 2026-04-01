@@ -24,7 +24,7 @@ import vi.wbca.webcinema.repository.movie.RateRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.service.MovieService;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -43,10 +43,8 @@ public class MovieServiceImpl implements MovieService {
         MovieType movieType = movieTypeRepo.findByMovieTypeName(request.getMovieTypeName())
                 .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(movie.getPremiereDate());
-        calendar.add(Calendar.DAY_OF_MONTH, 30);
-        movie.setEndDate(calendar.getTime());
+        LocalDateTime premiereDate = movie.getPremiereDate();
+        movie.setEndDate(premiereDate.plusDays(30));
         movie.setActive(true);
         movie.setMovieType(movieType);
         movie.setRate(setRate(request));

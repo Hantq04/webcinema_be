@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.URL;
 import vi.wbca.webcinema.validation.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.validation.groupValidate.movie.UpdateMovie;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,11 +27,11 @@ public class MovieDTO {
     Integer movieDuration;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endDate;
+    LocalDateTime endDate;
 
     @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date premiereDate;
+    LocalDateTime premiereDate;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @Size(min = 6, max = 50, message = "INVALID_DESCRIPTION", groups = {InsertMovie.class, UpdateMovie.class})

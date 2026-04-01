@@ -9,15 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.bill.BillDTO;
-import vi.wbca.webcinema.model.dto.bill.BillTicketDTO;
 import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -28,8 +24,8 @@ public class BillController {
     private final BillService billService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PostMapping("/create")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Insert New Bill----------");
         billService.createBill(request);
@@ -41,7 +37,7 @@ public class BillController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Update Bill----------");
         billService.updateBill(request);
@@ -53,7 +49,7 @@ public class BillController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String tradingCode) {
         logger.info("----------Web Cinema: Delete Bill----------");
         billService.deleteBill(tradingCode);

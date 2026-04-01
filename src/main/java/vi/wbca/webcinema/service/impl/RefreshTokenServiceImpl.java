@@ -15,7 +15,8 @@ import vi.wbca.webcinema.repository.token.RefreshTokenRepo;
 import vi.wbca.webcinema.service.RefreshTokenService;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -38,7 +39,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .orElse(new RefreshToken());
 
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setExpiredTime(new Date(System.currentTimeMillis() + refTokenExpiredTime));
+        refreshToken.setExpiredTime(LocalDateTime.now().plus(Duration.ofMillis(refTokenExpiredTime)));
         refreshToken.setUser(user);
         refreshTokenRepo.save(refreshToken);
     }
@@ -56,20 +57,20 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         AccessToken accessToken = accessTokenRepo.findLatestByUser(refreshToken.getUser().getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if (refreshToken.getExpiredTime().before(new Date())) {
+        if (refreshToken.getExpiredTime().isBefore(LocalDateTime.now())) {
             throw new AppException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
         TokenDTO response = new TokenDTO();
         response.setAccessToken(accessToken.getAccessToken());
         response.setRefreshToken(refreshToken.getToken());
 
-        boolean isExpired = accessToken.getExpiredAt().before(new Date());
+        boolean isExpired = accessToken.getExpiredAt().isBefore(LocalDateTime.now());
         if (isExpired) {
             String newAccessToken = jwtTokenProvider.generateToken(accessToken.getUser());
 
             accessToken.setTokenStatus(TokenStatusEnum.ACTIVE);
             accessToken.setAccessToken(newAccessToken);
-            accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
+            accessToken.setExpiredAt(LocalDateTime.now().plus(Duration.ofMillis(expiredTime)));
             accessTokenRepo.save(accessToken);
             response.setAccessToken(newAccessToken);
         }

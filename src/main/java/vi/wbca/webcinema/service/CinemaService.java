@@ -4,6 +4,8 @@ import vi.wbca.webcinema.model.dto.cinema.CinemaDTO;
 
 public interface CinemaService {
     CinemaDTO insertCinema(CinemaDTO cinemaDTO);
+
     void updateCinema(CinemaDTO cinemaDTO);
+
     void deleteCinema(String code);
 }

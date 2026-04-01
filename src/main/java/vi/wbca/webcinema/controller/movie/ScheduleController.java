@@ -2,6 +2,8 @@ package vi.wbca.webcinema.controller.movie;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,8 +16,7 @@ import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 @RestController
@@ -24,49 +25,53 @@ import java.util.logging.Logger;
 public class ScheduleController {
     private static final Logger logger = Logger.getLogger(ScheduleController.class.getName());
     private final ScheduleService scheduleService;
+    private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertSchedule(@Validated(InsertSchedule.class) @RequestBody ScheduleDTO request) {
         logger.info("----------Web Cinema: Insert New Schedule----------");
         ScheduleDTO responseData = scheduleService.insertSchedule(request);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.insert_schedule", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Insert schedule successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> updateSchedule(@Validated(UpdateSchedule.class) @RequestBody ScheduleDTO request) {
         logger.info("----------Web Cinema: Update Schedule----------");
         scheduleService.updateSchedule(request);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.START_TIME, request.getStartAt().toString());
-        responseData.put(Constants.END_TIME, request.getEndAt().toString());
-        responseData.put(Constants.CODE, request.getCode());
-        responseData.put(Constants.NAME, request.getName());
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.update", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Updated schedule successfully.", responseData)
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteSchedule(@Valid @RequestParam String code, Long movieId) {
         logger.info("----------Web Cinema: Delete Schedule----------");
         scheduleService.deleteSchedule(code, movieId);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Deleted schedule successfully.", "")
+                new ResponseObject(HttpStatus.OK, message, "")
         );
     }
 
     @PutMapping("/deactivate-expired")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> deactivateExpiredSchedule() {
         logger.info("----------Web Cinema: Deactivate Expired Schedule----------");
         scheduleService.deactivateExpiredSchedule();
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.deactivate_expired_schedule", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, "Deactivate expired schedule successfully.", "")
+                new ResponseObject(HttpStatus.OK, message, "")
         );
     }
 }

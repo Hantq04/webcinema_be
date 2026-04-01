@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -22,7 +22,7 @@ public class LoggingUtils {
     private static FileHandler createLoggingFolder() {
         try {
             if (!Files.exists(DIRECTORY)) Files.createDirectories(DIRECTORY);
-            String fileName = DIRECTORY + "/log-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".txt";
+            String fileName = DIRECTORY + "/log-" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ".txt";
             FileHandler fileHandler = new FileHandler(fileName, MAX_FILE_SIZE, FILE_COUNT, true);
             fileHandler.setFormatter(new SimpleFormatter());
             return fileHandler;

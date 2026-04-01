@@ -24,9 +24,9 @@ import vi.wbca.webcinema.service.TicketService;
 import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -120,11 +120,8 @@ public class TicketServiceImpl implements TicketService {
             default -> throw new AppException(ErrorCode.INVALID_SHOW_TIME);
         };
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(schedule.getStartAt());
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
-        boolean isWeekend = (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY);
+        DayOfWeek dayOfWeek = schedule.getStartAt().getDayOfWeek();
+        boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
 
         double finalPrice = basePrice * (isWeekend ? (1 + setting.getPercentWeekend() / 100.0) : 1);
         finalPrice *= (1 - discount);
@@ -149,7 +146,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     public void updateTicket(Schedule schedule) {
-        if (schedule.getEndAt().before(new Date())) {
+        if (schedule.getEndAt().isBefore(LocalDateTime.now())) {
             Ticket ticket = ticketRepo.findBySchedule(schedule);
             ticket.setActive(false);
             scheduleService.deactivateExpiredSchedule();

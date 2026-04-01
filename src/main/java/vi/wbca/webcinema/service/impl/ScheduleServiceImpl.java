@@ -18,8 +18,7 @@ import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,9 +38,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         Movie movie = movieRepo.findByName(scheduleDTO.getMovieName())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
-        Date startAt = scheduleDTO.getStartAt();
+        LocalDateTime startAt = scheduleDTO.getStartAt();
         startAt = checkLastEndAt(room.getId(), startAt);
-        Date endAt = setEndTime(startAt, movie.getMovieDuration());
+        LocalDateTime endAt = setEndTime(startAt, movie.getMovieDuration());
 
         if (scheduleRepo.countByRoomAndTimeOverlap(room, startAt, endAt) > 0) {
             throw new AppException(ErrorCode.DUPLICATE_SHOWTIME);
@@ -69,7 +68,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public void deactivateExpiredSchedule() {
-        List<Schedule> expiredSchedule = scheduleRepo.findAllByEndAtBeforeAndIsActiveTrue(new Date());
+        List<Schedule> expiredSchedule = scheduleRepo.findAllByEndAtBeforeAndIsActiveTrue(LocalDateTime.now());
         for (Schedule schedule: expiredSchedule) {
             schedule.setActive(false);
         }
@@ -83,47 +82,36 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduleRepo.delete(schedule);
     }
 
-    public Date setEndTime(Date startAt, int duration) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startAt);
-        calendar.add(Calendar.MINUTE, duration);
-        roundUpToNearestFiveMinutes(calendar);
-        return calendar.getTime();
+    public LocalDateTime setEndTime(LocalDateTime startAt, int duration) {
+        LocalDateTime endTime = startAt.plusMinutes(duration);
+        return roundUpToNearestFiveMinutes(endTime);
     }
 
-    public Date checkLastEndAt(Long roomId, Date startAt) {
-        Date lastEndAt = scheduleRepo.findLastEndAt(roomId, startAt);
+    public LocalDateTime checkLastEndAt(Long roomId, LocalDateTime startAt) {
+        LocalDateTime lastEndAt = scheduleRepo.findLastEndAt(roomId, startAt);
 
         if (lastEndAt != null) {
-            long diffMinutes = (startAt.getTime() - lastEndAt.getTime()) / (60 * 1000);
+            long diffMinutes = java.time.temporal.ChronoUnit.MINUTES.between(lastEndAt, startAt);
 
             // Adjust startAt to start 20 minutes later
             if (diffMinutes < 20) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(lastEndAt);
-                calendar.add(Calendar.MINUTE, 20);
-
-                roundUpToNearestFiveMinutes(calendar);
-                return calendar.getTime();
+                LocalDateTime newStartAt = lastEndAt.plusMinutes(20);
+                return roundUpToNearestFiveMinutes(newStartAt);
             }
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startAt);
-
-        roundUpToNearestFiveMinutes(calendar);
-        return calendar.getTime();
+        return roundUpToNearestFiveMinutes(startAt);
     }
 
-    public void roundUpToNearestFiveMinutes(Calendar calendar) {
-        int minutes = calendar.get(Calendar.MINUTE);
+    public LocalDateTime roundUpToNearestFiveMinutes(LocalDateTime dateTime) {
+        int minutes = dateTime.getMinute();
         // Round up time to the nearest 5 minutes
         int roundedMinutes = ((minutes + 4) / 5) * 5;
-        calendar.set(Calendar.MINUTE, roundedMinutes);
-        calendar.set(Calendar.SECOND, 0);
+        int addedMinutes = roundedMinutes - minutes;
+        return dateTime.plusMinutes(addedMinutes).withSecond(0).withNano(0);
     }
 
     public void setName(Schedule schedule, Movie movie) {
-        Date startAt = schedule.getStartAt();
+        LocalDateTime startAt = schedule.getStartAt();
         int startHour = getHour(startAt);
         int endHour = getHour(setEndTime(startAt, movie.getMovieDuration()));
 
@@ -131,7 +119,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
 
         // Only apply if startAt greater than timeBeginToChange
-        if (schedule.getStartAt().after(setting.getTimeBeginToChange())) {
+        if (schedule.getStartAt().isAfter(setting.getTimeBeginToChange())) {
             validateScheduleTime(startHour, endHour, setting);
         }
 
@@ -140,10 +128,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setName(getShowTimeName(startHour));
     }
 
-    public int getHour(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.HOUR_OF_DAY);
+    public int getHour(LocalDateTime dateTime) {
+        return dateTime.getHour();
     }
 
     public void validateScheduleTime(int startHour, int endHour, GeneralSetting setting) {
@@ -174,10 +160,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public void breakTime(Schedule schedule, GeneralSetting setting) {
-        Date startAt = schedule.getStartAt();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startAt);
-        int startHour = calendar.get(Calendar.HOUR_OF_DAY);
+        LocalDateTime startAt = schedule.getStartAt();
+        int startHour = startAt.getHour();
 
         int breakTime = setting.getBreakTime().getHour();
         if (startHour == breakTime) {

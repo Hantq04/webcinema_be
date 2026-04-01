@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.model.entity.user.User;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -30,14 +30,14 @@ public class Bill {
 
     @Column(name = "create_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date createTime;
+    LocalDateTime createTime;
 
     @Column(name = "name")
     String name;
 
     @Column(name = "update_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date updateTime;
+    LocalDateTime updateTime;
 
     @Column(name = "is_active")
     boolean isActive;

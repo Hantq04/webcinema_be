@@ -13,9 +13,7 @@ import vi.wbca.webcinema.service.RoomService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -27,7 +25,7 @@ public class RoomController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertRoom(@Valid @RequestBody RoomDTO request) {
         logger.info("----------Web Cinema: Insert New Room----------");
         RoomDTO responseData = roomService.insertRoom(request);
@@ -39,25 +37,19 @@ public class RoomController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> updateRoom(@Valid @RequestBody RoomDTO request) {
         logger.info("----------Web Cinema: Update Room----------");
         roomService.updateRoom(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.update", null, locale);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.CODE, request.getCode());
-        responseData.put(Constants.NAME, request.getName());
-        responseData.put(Constants.DESCRIPTION, request.getDescription());
-        responseData.put(Constants.CAPACITY, request.getCapacity().toString());
-        responseData.put(Constants.TYPE, request.getType().toString());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteRoom(@Valid @RequestParam String code) {
         logger.info("----------Web Cinema: Delete Room----------");
         roomService.deleteRoom(code);

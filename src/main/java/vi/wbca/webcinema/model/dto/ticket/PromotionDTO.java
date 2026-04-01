@@ -11,7 +11,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.enums.PromotionTypeEnum;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,10 +32,10 @@ public class PromotionDTO {
     PromotionTypeEnum promotionType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date startTime;
+    LocalDateTime startTime;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endTime;
+    LocalDateTime endTime;
 
     @NotBlank(message = "NOT_BLANK")
     @Size(min = 6, max = 50, message = "INVALID_DESCRIPTION")

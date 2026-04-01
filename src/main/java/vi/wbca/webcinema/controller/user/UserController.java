@@ -95,24 +95,24 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Update User----------");
         userService.updateUser(request);
         Locale locale = LocaleContextHolder.getLocale();
-        String message = messageSource.getMessage("success.update_user", null, locale);
+        String message = messageSource.getMessage("success.update", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> deleteUser(@Validated(DeleteUser.class) @RequestParam List<String> userName) {
         logger.info("----------Web Cinema: Delete User----------");
         userService.deleteUser(userName);
         Locale locale = LocaleContextHolder.getLocale();
-        String message = messageSource.getMessage("success.delete_user", null, locale);
+        String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, "")
         );
@@ -154,14 +154,14 @@ public class UserController {
     }
 
     @GetMapping("/get-all")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public List<UserResponse> getAllUser() {
         logger.info("----------Web Cinema: List User----------");
         return userService.getAllUser();
     }
 
     @GetMapping("/find-by-id")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> findById(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Get User----------");
         UserDTO responseData = userService.findById(id);

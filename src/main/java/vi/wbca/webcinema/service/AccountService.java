@@ -21,8 +21,8 @@ import vi.wbca.webcinema.util.EmailUtils;
 import vi.wbca.webcinema.util.generate.GenerateOTP;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 @Service
@@ -49,8 +49,8 @@ public class AccountService {
     public void createConfirmEmail(User user) {
         ConfirmEmail confirmEmail = new ConfirmEmail();
         confirmEmail.setUser(user);
-        confirmEmail.setRequiredTime(new Date());
-        confirmEmail.setExpiredTime(new Date(System.currentTimeMillis() + expiredTime));
+        confirmEmail.setRequiredTime(LocalDateTime.now());
+        confirmEmail.setExpiredTime(LocalDateTime.now().plus(Duration.ofMillis(expiredTime)));
         confirmEmail.setConfirmCode(generateOTP);
         confirmEmailRepo.save(confirmEmail);
     }
@@ -64,8 +64,8 @@ public class AccountService {
         if (user.isActive()) {
             throw new AppException(ErrorCode.USER_ACTIVE);
         }
-        Calendar calendar = Calendar.getInstance();
-        if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
+        LocalDateTime now = LocalDateTime.now();
+        if (code.getExpiredTime().isBefore(now) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
@@ -99,8 +99,8 @@ public class AccountService {
         }
         ConfirmEmail code = confirmEmailRepo.findByConfirmCode(otp)
                 .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
-        Calendar calendar = Calendar.getInstance();
-        if (code.getExpiredTime().before(calendar.getTime()) && !code.isConfirm()) {
+        LocalDateTime now = LocalDateTime.now();
+        if (code.getExpiredTime().isBefore(now) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }

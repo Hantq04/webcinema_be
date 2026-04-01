@@ -3,6 +3,7 @@ package vi.wbca.webcinema.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vi.wbca.webcinema.model.dto.room.SeatByScheduleDTO;
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
 import vi.wbca.webcinema.enums.SeatStatusEnum;
 import vi.wbca.webcinema.enums.SeatTypeEnum;
@@ -11,6 +12,7 @@ import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillTicket;
 import vi.wbca.webcinema.model.entity.cinema.Room;
+import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
 import vi.wbca.webcinema.model.entity.seat.SeatType;
@@ -18,13 +20,17 @@ import vi.wbca.webcinema.model.response.SeatResponse;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillTicketRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
+import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.repository.seat.SeatRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.repository.seat.SeatTypeRepo;
 import vi.wbca.webcinema.service.SeatService;
+import vi.wbca.webcinema.util.Constants;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +44,7 @@ public class SeatServiceImpl implements SeatService {
     private final SeatTypeRepo seatTypeRepo;
     private final BillRepo billRepo;
     private final BillTicketRepo billTicketRepo;
+    private final ScheduleRepo scheduleRepo;
 
     @Override
     public void insertSeat(SeatDTO request) {
@@ -129,6 +136,29 @@ public class SeatServiceImpl implements SeatService {
                 throw new AppException(ErrorCode.INVALID_SWEET_BOX_PAIR);
             }
         }
+    }
+
+    @Override
+    public Map<String, Object> getSeatBySchedule(String scheduleCode) {
+        Schedule schedule = scheduleRepo.findByCode(scheduleCode)
+                .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
+        
+        Room room = schedule.getRoom();
+        List<SeatByScheduleDTO> seatsDto = seatRepo.getSeatsWithStatusBySchedule(scheduleCode);
+        Integer bookedSeats = seatRepo.countBookedSeatsBySchedule(scheduleCode);
+        Integer capacity = room.getCapacity();
+        Integer remainSeats = capacity - (bookedSeats != null ? bookedSeats : 0);
+        
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("cinema", room.getName());
+        response.put("room", room.getCode());
+        response.put("remainSeats", remainSeats);
+        response.put("capacity", capacity);
+        response.put("startAt", schedule.getStartAt().format(Constants.DATE_TIME_FORMATTER));
+        response.put("endAt", schedule.getEndAt().format(Constants.DATE_TIME_FORMATTER));
+        response.put("seats", seatsDto);
+        
+        return response;
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import vi.wbca.webcinema.model.dto.room.SeatByScheduleDTO;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.seat.Seat;
@@ -17,17 +18,35 @@ import java.util.Optional;
 public interface SeatRepo extends JpaRepository<Seat, Long> {
     Optional<Seat> findByLineAndNumberAndRoom(String line, Integer number, Room room);
 
-    Integer countByRoom(Room room);
-
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Seat s SET s.seatStatus = :status WHERE s.id IN (" +
             "SELECT t.seat.id FROM Ticket t WHERE t.id IN (" +
             "SELECT bt.ticket.id FROM BillTicket bt WHERE bt.bill = :bill))")
     void updateSeatStatusByBill(@Param("bill") Bill bill, @Param("status") SeatStatus status);
 
-    boolean existsByRoomAndLineAndNumber(Room room, String line, Integer number);
-
     boolean existsByRoom(Room room);
 
     List<Seat> findByRoom(Room room);
+
+    @Query("""
+    SELECT new vi.wbca.webcinema.model.dto.room.SeatByScheduleDTO(
+        s.id, s.line, s.number,
+        CASE WHEN t.id IS NOT NULL THEN 'OCCUPIED' ELSE 'AVAILABLE' END,
+        s.seatType.nameType
+    )
+    FROM Seat s
+    JOIN s.room r
+    JOIN r.schedules sch
+    LEFT JOIN Ticket t ON t.schedule.id = sch.id AND t.seat = s
+    WHERE sch.code = :scheduleCode
+    ORDER BY s.line, s.number
+    """)
+    List<SeatByScheduleDTO> getSeatsWithStatusBySchedule(@Param("scheduleCode") String scheduleCode);
+
+    @Query("""
+    SELECT COUNT(DISTINCT t.id)
+    FROM Ticket t
+    WHERE t.schedule.code = :scheduleCode
+    """)
+    Integer countBookedSeatsBySchedule(@Param("scheduleCode") String scheduleCode);
 }

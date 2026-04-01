@@ -27,7 +27,7 @@ public class RankCustomerController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertRank(@RequestBody RankCustomer rankCustomer) {
         logger.info("----------Web Cinema: Insert New Rank Customer----------");
         rankCustomerService.insertRank(rankCustomer);
@@ -39,7 +39,7 @@ public class RankCustomerController {
     }
 
     @GetMapping("/get-all-rank")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllRank() {
         logger.info("----------Web Cinema: Get All Rank Customer----------");
         Locale locale = LocaleContextHolder.getLocale();

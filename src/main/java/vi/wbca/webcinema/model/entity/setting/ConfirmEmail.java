@@ -6,7 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.model.entity.user.User;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,11 +22,11 @@ public class ConfirmEmail {
 
     @Column(name = "required_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date requiredTime;
+    LocalDateTime requiredTime;
 
     @Column(name = "expired_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date expiredTime;
+    LocalDateTime expiredTime;
 
     @Column(name = "confirm_code")
     String confirmCode;

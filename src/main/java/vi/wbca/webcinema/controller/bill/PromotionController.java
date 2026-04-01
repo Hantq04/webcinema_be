@@ -14,10 +14,8 @@ import vi.wbca.webcinema.service.PromotionService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -29,37 +27,31 @@ public class PromotionController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertPromotion(@Valid @RequestBody PromotionDTO request) {
         logger.info("----------Web Cinema: Insert New Promotion----------");
         promotionService.insertPromotion(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_promotion", null, locale);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.PERCENT, request.getPercent().toString());
-        responseData.put(Constants.QUANTITY, request.getQuantity().toString());
-        responseData.put(Constants.TYPE, request.getPromotionType().toString());
-        responseData.put(Constants.DESCRIPTION, request.getDescription());
-        responseData.put(Constants.NAME, request.getName());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestParam String name) {
         logger.info("----------Web Cinema: Delete Promotion----------");
         promotionService.deletePromotion(name);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, "")
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @GetMapping("/get-all-promotion")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllPromotion() {
         logger.info("----------Web Cinema: Get All Promotion----------");
         Locale locale = LocaleContextHolder.getLocale();

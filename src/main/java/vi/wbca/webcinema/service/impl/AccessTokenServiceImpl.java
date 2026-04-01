@@ -11,7 +11,8 @@ import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.repository.token.AccessTokenRepo;
 import vi.wbca.webcinema.service.AccessTokenService;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         accessToken.setAccessToken(token);
         accessToken.setExpiresIn(expiredTime);
         accessToken.setUser(user);
-        accessToken.setExpiredAt(new Date(System.currentTimeMillis() + expiredTime));
+        accessToken.setExpiredAt(LocalDateTime.now().plus(Duration.ofMillis(expiredTime)));
         accessTokenRepo.save(accessToken);
     }
 

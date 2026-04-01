@@ -8,7 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,12 +25,12 @@ public class BillDTO {
     String tradingCode;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date createTime;
+    LocalDateTime createTime;
 
     String name;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date updateTime;
+    LocalDateTime updateTime;
 
     @NotBlank(message = "NOT_BLANK")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -7,7 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalTime;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -37,5 +37,5 @@ public class GeneralSettingDTO {
 
     @NotNull(message = "NOT_BLANK")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date timeBeginToChange;
+    LocalDateTime timeBeginToChange;
 }

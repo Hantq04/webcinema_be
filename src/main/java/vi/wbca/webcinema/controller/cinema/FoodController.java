@@ -9,11 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.cinema.FoodDTO;
+import vi.wbca.webcinema.model.entity.cinema.Food;
 import vi.wbca.webcinema.service.FoodService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -27,7 +29,7 @@ public class FoodController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertFood(@Valid @RequestBody FoodDTO request) {
         logger.info("----------Web Cinema: Insert New Food----------");
         FoodDTO responseData = foodService.insertFood(request);
@@ -39,24 +41,19 @@ public class FoodController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> updateFood(@Valid @RequestBody FoodDTO request) {
         logger.info("----------Web Cinema: Update Food----------");
         foodService.updateFood(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.update", null, locale);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.PRICE, request.getPrice().toString());
-        responseData.put(Constants.DESCRIPTION, request.getDescription());
-        responseData.put(Constants.IMAGE, request.getImage());
-        responseData.put(Constants.NAME, request.getNameOfFood());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteFood(@Valid @RequestParam String name) {
         logger.info("----------Web Cinema: Delete Food----------");
         foodService.deleteFood(name);
@@ -64,6 +61,18 @@ public class FoodController {
         String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, "")
+        );
+    }
+
+    @GetMapping("/get-all")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    public ResponseEntity<ResponseObject> getAllFood() {
+        logger.info("----------Web Cinema: Get All Food Active----------");
+        List<Food> responseData = foodService.getAllFoodActive();
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_all_food", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 }

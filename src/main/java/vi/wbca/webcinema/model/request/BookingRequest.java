@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -29,7 +29,7 @@ public class BookingRequest {
     @Schema(description = "Thời gian bắt đầu chiếu phim")
     @NotNull(message = "NOT_BLANK")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    private Date startTime;
+    private LocalDateTime startTime;
 
     @Schema(description = "Danh sách ghế được đặt")
     @NotEmpty(message = "NOT_EMPTY")

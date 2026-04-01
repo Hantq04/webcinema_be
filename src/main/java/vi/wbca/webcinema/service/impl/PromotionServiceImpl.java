@@ -12,8 +12,7 @@ import vi.wbca.webcinema.repository.bill.PromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.service.PromotionService;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,14 +30,11 @@ public class PromotionServiceImpl implements PromotionService {
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         if (promotionDTO.getStartTime() == null) {
-            promotion.setStartTime(new Date());
+            promotion.setStartTime(LocalDateTime.now());
         } else {
             promotion.setStartTime(promotionDTO.getStartTime());
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(promotion.getStartTime());
-        calendar.add(Calendar.HOUR, 24);
-        promotion.setEndTime(calendar.getTime());
+        promotion.setEndTime(promotion.getStartTime().plusHours(24));
         promotion.setActive(true);
         promotion.setRankCustomer(rankCustomer);
         promotionRepo.save(promotion);

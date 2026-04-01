@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.enums.PromotionTypeEnum;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -37,11 +37,11 @@ public class Promotion {
 
     @Column(name = "start_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date startTime;
+    LocalDateTime startTime;
 
     @Column(name = "end_time", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endTime;
+    LocalDateTime endTime;
 
     @Column(name = "description")
     String description;

@@ -22,7 +22,6 @@ import vi.wbca.webcinema.util.generate.GenerateCode;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,10 +47,10 @@ public class BillServiceImpl implements BillService {
             throw new AppException(ErrorCode.BILL_EXISTED);
         }
         Bill bill = billMapper.toBill(request);
-        bill.setCreateTime(new Date());
+        bill.setCreateTime(LocalDateTime.now());
         bill.setTradingCode(GenerateCode.generateTradingCode());
         bill.setName("Bill - " + user.getUsername());
-        bill.setUpdateTime(new Date());
+        bill.setUpdateTime(LocalDateTime.now());
         bill.setActive(true);
         bill.setBillStatus(pendingStatus);
         bill.setUser(user);
@@ -76,7 +75,7 @@ public class BillServiceImpl implements BillService {
         billTicketService.updateBillTicket(billDTO.getTickets(), bill);
 
         calculateTotal(bill, billDTO.getPromotionCode());
-        bill.setUpdateTime(new Date());
+        bill.setUpdateTime(LocalDateTime.now());
 
         billDTO.setTotalMoney(bill.getTotalMoney());
         billRepo.save(bill);
@@ -144,9 +143,9 @@ public class BillServiceImpl implements BillService {
         }
         Promotion promotion = promotionRepo.findByCode(promotionCode).orElse(null);
         if (promotion == null) return null;
-        Date now = new Date();
-        boolean isExpired = promotion.getEndTime().before(now);
-        boolean isNotStarted = promotion.getStartTime().after(now);
+        LocalDateTime now = LocalDateTime.now();
+        boolean isExpired = promotion.getEndTime().isBefore(now);
+        boolean isNotStarted = promotion.getStartTime().isAfter(now);
         boolean isOutOfStock = promotion.getQuantity() <= 0;
 
         if (isExpired || isNotStarted || isOutOfStock || !promotion.isActive()) {

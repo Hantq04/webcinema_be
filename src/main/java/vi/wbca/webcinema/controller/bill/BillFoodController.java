@@ -14,9 +14,7 @@ import vi.wbca.webcinema.service.BillFoodService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -28,23 +26,19 @@ public class BillFoodController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertBillFood(@Valid @RequestBody BillFoodDTO request, Bill bill) {
         logger.info("----------Web Cinema: Insert New Bill Food----------");
         billFoodService.insertBillFood(request, bill);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_bill_food", null, locale);
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put(Constants.QUANTITY, request.getQuantity().toString());
-        responseData.put(Constants.USER_NAME, request.getCustomerName());
-        responseData.put(Constants.NAME, request.getName());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteBillFood(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Bill Food----------");
         billFoodService.deleteFood(id);

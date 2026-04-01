@@ -26,7 +26,7 @@ public class SeatTypeController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertSeatType(@Valid @RequestBody SeatType seatType) {
         logger.info("----------Web Cinema: Insert New Seat Type----------");
         SeatType responseData = seatTypeService.insertSeatType(seatType);
@@ -38,7 +38,7 @@ public class SeatTypeController {
     }
 
     @GetMapping("/get-all-type")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllType() {
         logger.info("----------Web Cinema: Get All Seat Type----------");
         Locale locale = LocaleContextHolder.getLocale();

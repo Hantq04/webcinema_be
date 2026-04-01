@@ -35,7 +35,7 @@ public class BillTicketController {
 //    }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteBillTicket(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Bill Ticket----------");
         billTicketService.deleteTicket(id);

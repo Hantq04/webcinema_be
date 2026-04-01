@@ -27,7 +27,7 @@ public class GeneralSettingController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> insertSetting(@Valid @RequestBody GeneralSettingDTO request) {
         logger.info("----------Web Cinema: Insert New General Setting----------");
         GeneralSettingDTO responseData = generalSettingService.insertSetting(request);
@@ -39,7 +39,7 @@ public class GeneralSettingController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     public ResponseEntity<ResponseObject> deleteSetting(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete General Setting----------");
         generalSettingService.deleteSetting(id);
@@ -51,7 +51,7 @@ public class GeneralSettingController {
     }
 
     @GetMapping("/get-all-setting")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllSetting() {
         logger.info("----------Web Cinema: Get All General Setting----------");
         Locale locale = LocaleContextHolder.getLocale();

@@ -6,7 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.model.entity.cinema.Room;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -26,11 +26,11 @@ public class Schedule {
 
     @Column(name = "start_at", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date startAt;
+    LocalDateTime startAt;
 
     @Column(name = "end_at", columnDefinition = "DATETIME")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endAt;
+    LocalDateTime endAt;
 
     @Column(name = "code")
     String code;

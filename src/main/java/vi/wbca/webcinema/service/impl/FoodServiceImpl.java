@@ -10,6 +10,8 @@ import vi.wbca.webcinema.model.entity.cinema.Food;
 import vi.wbca.webcinema.repository.cinema.FoodRepo;
 import vi.wbca.webcinema.service.FoodService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FoodServiceImpl implements FoodService {
@@ -40,5 +42,10 @@ public class FoodServiceImpl implements FoodService {
         Food food = foodRepo.findByNameOfFood(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         foodRepo.delete(food);
+    }
+
+    @Override
+    public List<Food> getAllFoodActive() {
+        return foodRepo.findByIsActiveTrue();
     }
 }

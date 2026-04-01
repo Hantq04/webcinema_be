@@ -26,7 +26,7 @@ public class BillStatusController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertBillStatus(@Valid @RequestBody BillStatus billStatus) {
         logger.info("----------Web Cinema: Insert New Bill Status----------");
         BillStatus responseData = billStatusService.insertBillStatus(billStatus);
@@ -38,7 +38,7 @@ public class BillStatusController {
     }
 
     @GetMapping("/get-all-status")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All Bill Status----------");
         Locale locale = LocaleContextHolder.getLocale();

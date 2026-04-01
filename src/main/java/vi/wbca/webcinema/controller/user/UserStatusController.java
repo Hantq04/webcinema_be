@@ -25,7 +25,7 @@ public class UserStatusController {
     private final MessageSource messageSource;
 
     @PostMapping("/insert")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> insertUserStatus(@RequestBody UserStatus userStatus) {
         logger.info("----------Web Cinema: Insert New User Status----------");
         UserStatus responseData = userStatusService.insertUserStatus(userStatus);
@@ -37,7 +37,7 @@ public class UserStatusController {
     }
 
     @GetMapping("/get-all-status")
-    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All User Status----------");
         Locale locale = LocaleContextHolder.getLocale();

@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.validation.groupValidate.schedule.InsertSchedule;
 import vi.wbca.webcinema.validation.groupValidate.schedule.UpdateSchedule;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,10 +26,10 @@ public class ScheduleDTO {
 
     @NotNull(message = "NOT_BLANK", groups = {InsertSchedule.class, UpdateSchedule.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date startAt;
+    LocalDateTime startAt;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    Date endAt;
+    LocalDateTime endAt;
 
     String code;
 
