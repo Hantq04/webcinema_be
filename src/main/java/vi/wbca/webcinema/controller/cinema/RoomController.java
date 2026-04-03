@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.cinema;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -24,8 +25,9 @@ public class RoomController {
     private final RoomService roomService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm phòng chiếu mới")
     public ResponseEntity<ResponseObject> insertRoom(@Valid @RequestBody RoomDTO request) {
         logger.info("----------Web Cinema: Insert New Room----------");
         RoomDTO responseData = roomService.insertRoom(request);
@@ -38,6 +40,7 @@ public class RoomController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật phòng chiếu")
     public ResponseEntity<ResponseObject> updateRoom(@Valid @RequestBody RoomDTO request) {
         logger.info("----------Web Cinema: Update Room----------");
         roomService.updateRoom(request);
@@ -50,6 +53,7 @@ public class RoomController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa phòng chiếu theo mã")
     public ResponseEntity<ResponseObject> deleteRoom(@Valid @RequestParam String code) {
         logger.info("----------Web Cinema: Delete Room----------");
         roomService.deleteRoom(code);

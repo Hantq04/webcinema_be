@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.user;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,8 +25,9 @@ public class UserStatusController {
     private final UserStatusService userStatusService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm trạng thái người dùng mới")
     public ResponseEntity<ResponseObject> insertUserStatus(@RequestBody UserStatus userStatus) {
         logger.info("----------Web Cinema: Insert New User Status----------");
         UserStatus responseData = userStatusService.insertUserStatus(userStatus);
@@ -38,6 +40,7 @@ public class UserStatusController {
 
     @GetMapping("/get-all-status")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả trạng thái người dùng")
     public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All User Status----------");
         Locale locale = LocaleContextHolder.getLocale();

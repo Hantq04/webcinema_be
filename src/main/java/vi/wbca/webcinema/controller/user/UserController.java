@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.user;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class UserController {
     private final MessageSource messageSource;
 
     @PostMapping("/register")
+    @Operation(summary = "Đăng ký tài khoản người dùng mới")
     public ResponseEntity<ResponseObject> register(@Validated(InsertUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Register New User----------");
         userService.register(request);
@@ -51,6 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/staff-register")
+    @Operation(summary = "Đăng ký tài khoản nhân viên mới")
     public ResponseEntity<ResponseObject> staffRegister(@Validated(InsertUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Register New Staff Account----------");
         userService.staffRegister(request);
@@ -62,6 +65,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Đăng nhập tài khoản người dùng")
     public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginRequest request) {
         logger.info("----------Web Cinema: Login Page----------");
         LoginResponse responseData = userService.login(request);
@@ -73,6 +77,7 @@ public class UserController {
     }
 
     @GetMapping("/verify-email")
+    @Operation(summary = "Xác minh email người dùng")
     public ResponseEntity<ResponseObject> verifyEmail(@Valid @RequestParam("token") String token) {
         logger.info("----------Web Cinema: Verify Email----------");
         String result = accountService.validateToken(token);
@@ -84,6 +89,7 @@ public class UserController {
     }
 
     @GetMapping("/resend-verify-email")
+    @Operation(summary = "Gửi lại liên kết xác minh email")
     public ResponseEntity<ResponseObject> resendVerifyEmail(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
         logger.info("----------Web Cinema: Resend Verify Email----------");
         String result = accountService.resendVerificationEmail(email);
@@ -96,6 +102,7 @@ public class UserController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật tài khoản người dùng")
     public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Update User----------");
         userService.updateUser(request);
@@ -107,7 +114,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa tài khoản người dùng")
     public ResponseEntity<ResponseObject> deleteUser(@Validated(DeleteUser.class) @RequestParam List<String> userName) {
         logger.info("----------Web Cinema: Delete User----------");
         userService.deleteUser(userName);
@@ -119,6 +127,7 @@ public class UserController {
     }
 
     @GetMapping("/forgot-password")
+    @Operation(summary = "Gửi email đặt lại mật khẩu")
     public ResponseEntity<ResponseObject> forgotPassword(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
         logger.info("----------Web Cinema: Forgot Password----------");
         String result = accountService.sendChangePassword(email);
@@ -130,6 +139,7 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
+    @Operation(summary = "Đổi mật khẩu mới")
     public ResponseEntity<ResponseObject> changePassword(@Valid @RequestParam String token, String newPassword, String confirmPassword) {
         logger.info("----------Web Cinema: Change Password----------");
         String responseData = accountService.changePassword(token, newPassword, confirmPassword);
@@ -141,6 +151,7 @@ public class UserController {
     }
 
     @PostMapping("/refresh-token")
+    @Operation(summary = "Làm mới token xác thực")
     public ResponseEntity<ResponseObject> refreshToken(@Valid @RequestParam String refreshToken) {
         logger.info("----------Web Cinema: Refresh Token----------");
         TokenDTO responseData = refreshTokenService.refreshToken(refreshToken);
@@ -155,6 +166,7 @@ public class UserController {
 
     @GetMapping("/get-all")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy danh sách tất cả người dùng")
     public List<UserResponse> getAllUser() {
         logger.info("----------Web Cinema: List User----------");
         return userService.getAllUser();
@@ -162,6 +174,7 @@ public class UserController {
 
     @GetMapping("/find-by-id")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Tìm người dùng theo ID")
     public ResponseEntity<ResponseObject> findById(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Get User----------");
         UserDTO responseData = userService.findById(id);

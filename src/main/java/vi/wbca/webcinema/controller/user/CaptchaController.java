@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.user;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ public class CaptchaController {
     private final CaptchaService captchaService;
 
     @GetMapping
+    @Operation(summary = "Tạo ảnh captcha")
     public CaptchaResponse getCaptcha() {
         return captchaService.generateCaptcha();
     }

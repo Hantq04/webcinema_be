@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.movie;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -25,8 +26,9 @@ public class MovieTypeController {
     private final MovieTypeService movieTypeService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm thể loại phim mới")
     public ResponseEntity<ResponseObject> insertMovieType(@Valid @RequestBody MovieType request) {
         logger.info("----------Web Cinema: Insert New Movie Type----------");
         MovieType responseData = movieTypeService.insertMovieType(request);
@@ -39,6 +41,7 @@ public class MovieTypeController {
 
     @GetMapping("/get-all-type")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả thể loại phim")
     public ResponseEntity<ResponseObject> getAllType() {
         logger.info("----------Web Cinema: Get All Movie Type----------");
         List<MovieType> responseData = movieTypeService.getAllType();

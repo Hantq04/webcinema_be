@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.movie;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -29,6 +30,7 @@ public class TicketController {
 
     @PostMapping("/create")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Tạo vé mới")
     public ResponseEntity<ResponseObject> insertTicket(@Valid @RequestBody BookingRequest request) {
         logger.info("----------Web Cinema: Insert New Ticket----------");
         BookingResponse responseData = ticketService.insertTicket(request);
@@ -41,6 +43,7 @@ public class TicketController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa vé theo mã")
     public ResponseEntity<ResponseObject> deleteTicket(@Valid @RequestParam String code) {
         logger.info("----------Web Cinema: Delete Ticket----------");
         ticketService.deleteTicket(code);
@@ -53,6 +56,7 @@ public class TicketController {
 
     @GetMapping("/get-all-ticket")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả vé")
     public ResponseEntity<ResponseObject> getAllTicket() {
         logger.info("----------Web Cinema: Get All Ticket----------");
         List<TicketResponse> responseData = ticketService.getAllTicket();

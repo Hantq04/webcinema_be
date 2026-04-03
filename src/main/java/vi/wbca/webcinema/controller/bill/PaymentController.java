@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.bill;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ public class PaymentController {
 
     @PostMapping("/submit-payment")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Tạo URL thanh toán VNPay")
     public String submitPayment(@Valid @RequestParam String code, HttpServletRequest request) {
         logger.info("----------Web Cinema: Submit Payment----------");
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
@@ -28,6 +30,7 @@ public class PaymentController {
     }
 
     @GetMapping("/vnPay-payment")
+    @Operation(summary = "Xác nhận kết quả thanh toán VNPay")
     public String confirmPayment(@Valid HttpServletRequest request) throws
             MessagingException, UnsupportedEncodingException {
         logger.info("----------Web Cinema: Confirm Payment----------");

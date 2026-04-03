@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.bill;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -25,8 +26,9 @@ public class BillStatusController {
     private final BillStatusService billStatusService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm trạng thái hóa đơn mới")
     public ResponseEntity<ResponseObject> insertBillStatus(@Valid @RequestBody BillStatus billStatus) {
         logger.info("----------Web Cinema: Insert New Bill Status----------");
         BillStatus responseData = billStatusService.insertBillStatus(billStatus);
@@ -39,6 +41,7 @@ public class BillStatusController {
 
     @GetMapping("/get-all-status")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả trạng thái hóa đơn")
     public ResponseEntity<ResponseObject> getAllStatus() {
         logger.info("----------Web Cinema: Get All Bill Status----------");
         Locale locale = LocaleContextHolder.getLocale();

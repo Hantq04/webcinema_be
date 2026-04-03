@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.setting;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -36,6 +37,7 @@ public class StatisticController {
 
     @GetMapping("/cinema-revenue-statistic")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Lấy thống kê doanh thu rạp theo khoảng thời gian")
     public ResponseEntity<ResponseObject> getRevenueByCinema(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -52,6 +54,7 @@ public class StatisticController {
 
     @GetMapping("/food-revenue-statistic")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Lấy thống kê doanh thu đồ ăn trong 7 ngày gần nhất")
     public ResponseEntity<ResponseObject> getFoodRevenueSevenDays() {
         logger.info("----------Web Cinema: Food Revenue Statistic");
         Locale locale = LocaleContextHolder.getLocale();

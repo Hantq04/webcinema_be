@@ -1,6 +1,7 @@
 package vi.wbca.webcinema.controller.bill;
 
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -23,7 +24,7 @@ public class BillTicketController {
     private final BillTicketService billTicketService;
     private final MessageSource messageSource;
 
-//    @PostMapping("/insert")
+//    @PostMapping("/save")
 //    @PreAuthorize("hasRole('" + Constants.USER + "') or hasRole('" + Constants.ADMIN + "')")
 //    public ResponseEntity<ResponseObject> insertBillTicket(@Valid @RequestBody BillTicketRequest request, Bill bill) {
 //        logger.info("----------Web Cinema: Insert New Bill Ticket----------");
@@ -36,6 +37,7 @@ public class BillTicketController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa chi tiết hóa đơn vé theo ID")
     public ResponseEntity<ResponseObject> deleteBillTicket(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Bill Ticket----------");
         billTicketService.deleteTicket(id);

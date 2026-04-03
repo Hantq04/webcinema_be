@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.seat;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -30,8 +31,9 @@ public class SeatController {
     private final SeatService seatService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm ghế mới")
     public ResponseEntity<ResponseObject> insertSeat(@Validated(InsertSeat.class) @RequestBody SeatDTO request) {
         logger.info("----------Web Cinema: Insert New Seat----------");
         seatService.insertSeat(request);
@@ -44,6 +46,7 @@ public class SeatController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật ghế")
     public ResponseEntity<ResponseObject> updateSeat(@Validated(UpdateSeat.class) @RequestBody SeatDTO request) {
         logger.info("----------Web Cinema: Update Seat----------");
         seatService.updateSeat(request);
@@ -56,6 +59,7 @@ public class SeatController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa ghế theo ID")
     public ResponseEntity<ResponseObject> deleteSeat(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Seat----------");
         seatService.deleteSeat(id);
@@ -68,6 +72,7 @@ public class SeatController {
 
     @PutMapping("/refresh")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Làm mới trạng thái ghế")
     public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String code) {
         logger.info("----------Web Cinema: Update Seat Status----------");
         seatService.refreshSeat(code);
@@ -80,6 +85,7 @@ public class SeatController {
 
     @GetMapping("/get-all-seat")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả ghế")
     public ResponseEntity<ResponseObject> getAllSeat() {
         logger.info("----------Web Cinema: Get All Seat----------");
         Locale locale = LocaleContextHolder.getLocale();
@@ -92,6 +98,7 @@ public class SeatController {
 
     @GetMapping("/get-by-schedule")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Lấy ghế theo lịch chiếu")
     public ResponseEntity<ResponseObject> getSeatBySchedule(@RequestParam String scheduleCode) {
         logger.info("----------Web Cinema: Get Seat By Schedule: " + scheduleCode + "----------");
         Map<String, Object> responseData = seatService.getSeatBySchedule(scheduleCode);

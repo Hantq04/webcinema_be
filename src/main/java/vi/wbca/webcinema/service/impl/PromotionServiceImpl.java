@@ -11,6 +11,7 @@ import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.repository.bill.PromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.service.PromotionService;
+import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public void insertPromotion(PromotionDTO promotionDTO) {
         Promotion promotion = promotionMapper.toPromotion(promotionDTO);
+        promotion.setCode(GenerateCode.generateCode());
         promotion.setPromotionType(promotionDTO.getPromotionType());
         RankCustomer rankCustomer = rankCustomerRepo.findByName(promotionDTO.getNameRankCustomer())
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));

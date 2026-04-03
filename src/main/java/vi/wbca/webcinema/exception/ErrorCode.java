@@ -64,6 +64,7 @@ public enum ErrorCode {
     DATE_TIME_EXCEPTION(1243, "error.1243", HttpStatus.BAD_REQUEST),
     DATE_FORMAT(1244, "error.1244", HttpStatus.BAD_REQUEST),
     TICKET_ALREADY_BOOKED(1245, "error.1245", HttpStatus.BAD_REQUEST),
+    DUPLICATE_PROMOTION(1246, "error.1246", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),

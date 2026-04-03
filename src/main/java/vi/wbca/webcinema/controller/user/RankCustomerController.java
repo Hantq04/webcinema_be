@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.user;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -26,8 +27,9 @@ public class RankCustomerController {
     private final RankCustomerService rankCustomerService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm hạng khách hàng mới")
     public ResponseEntity<ResponseObject> insertRank(@RequestBody RankCustomer rankCustomer) {
         logger.info("----------Web Cinema: Insert New Rank Customer----------");
         rankCustomerService.insertRank(rankCustomer);
@@ -40,6 +42,7 @@ public class RankCustomerController {
 
     @GetMapping("/get-all-rank")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả hạng khách hàng")
     public ResponseEntity<ResponseObject> getAllRank() {
         logger.info("----------Web Cinema: Get All Rank Customer----------");
         Locale locale = LocaleContextHolder.getLocale();

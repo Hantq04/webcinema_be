@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.bill;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -25,8 +26,9 @@ public class BillFoodController {
     private final BillFoodService billFoodService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm chi tiết hóa đơn đồ ăn")
     public ResponseEntity<ResponseObject> insertBillFood(@Valid @RequestBody BillFoodDTO request, Bill bill) {
         logger.info("----------Web Cinema: Insert New Bill Food----------");
         billFoodService.insertBillFood(request, bill);
@@ -39,6 +41,7 @@ public class BillFoodController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa chi tiết hóa đơn đồ ăn theo ID")
     public ResponseEntity<ResponseObject> deleteBillFood(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Bill Food----------");
         billFoodService.deleteFood(id);

@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.bill;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -26,8 +27,9 @@ public class PromotionController {
     private final PromotionService promotionService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm khuyến mãi mới")
     public ResponseEntity<ResponseObject> insertPromotion(@Valid @RequestBody PromotionDTO request) {
         logger.info("----------Web Cinema: Insert New Promotion----------");
         promotionService.insertPromotion(request);
@@ -40,6 +42,7 @@ public class PromotionController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa khuyến mãi theo tên")
     public ResponseEntity<ResponseObject> deletePromotion(@Valid @RequestParam String name) {
         logger.info("----------Web Cinema: Delete Promotion----------");
         promotionService.deletePromotion(name);
@@ -52,6 +55,7 @@ public class PromotionController {
 
     @GetMapping("/get-all-promotion")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả khuyến mãi")
     public ResponseEntity<ResponseObject> getAllPromotion() {
         logger.info("----------Web Cinema: Get All Promotion----------");
         Locale locale = LocaleContextHolder.getLocale();

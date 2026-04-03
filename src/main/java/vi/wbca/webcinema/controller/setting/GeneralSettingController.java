@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.setting;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -26,8 +27,9 @@ public class GeneralSettingController {
     private final GeneralSettingService generalSettingService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Thêm cài đặt chung mới")
     public ResponseEntity<ResponseObject> insertSetting(@Valid @RequestBody GeneralSettingDTO request) {
         logger.info("----------Web Cinema: Insert New General Setting----------");
         GeneralSettingDTO responseData = generalSettingService.insertSetting(request);
@@ -40,6 +42,7 @@ public class GeneralSettingController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa cài đặt chung theo ID")
     public ResponseEntity<ResponseObject> deleteSetting(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete General Setting----------");
         generalSettingService.deleteSetting(id);
@@ -52,6 +55,7 @@ public class GeneralSettingController {
 
     @GetMapping("/get-all-setting")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả cài đặt chung")
     public ResponseEntity<ResponseObject> getAllSetting() {
         logger.info("----------Web Cinema: Get All General Setting----------");
         Locale locale = LocaleContextHolder.getLocale();

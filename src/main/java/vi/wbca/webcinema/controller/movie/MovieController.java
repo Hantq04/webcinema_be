@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.movie;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -32,8 +33,9 @@ public class MovieController {
     private final MovieService movieService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm phim mới")
     public ResponseEntity<ResponseObject> insertMovie(@Validated(InsertMovie.class) @RequestBody MovieDTO request) {
         logger.info("----------Web Cinema: Insert New Movie----------");
         movieService.insertMovie(request);
@@ -46,6 +48,7 @@ public class MovieController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật phim")
     public ResponseEntity<ResponseObject> updateMovie(@Validated(UpdateMovie.class) @RequestBody MovieDTO request) {
         logger.info("----------Web Cinema: Update Movie----------");
         movieService.updateMovie(request);
@@ -58,6 +61,7 @@ public class MovieController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa phim theo tên")
     public ResponseEntity<ResponseObject> deleteMovie(@Valid @RequestParam String name) {
         logger.info("----------Web Cinema: Delete Movie----------");
         movieService.deleteMovie(name);
@@ -69,6 +73,7 @@ public class MovieController {
     }
 
     @GetMapping("/get-movie-page")
+    @Operation(summary = "Lấy danh sách phim theo phân trang")
     public ResponseEntity<ResponseObject> getMoviePage(@RequestParam int page, @RequestParam int size) {
         logger.info("----------Web Cinema: Movie Page----------");
         Locale locale = LocaleContextHolder.getLocale();
@@ -81,6 +86,7 @@ public class MovieController {
     }
 
     @GetMapping("/sort-movie")
+    @Operation(summary = "Lấy danh sách phim theo số vé bán")
     public ResponseEntity<ResponseObject> sortMovieByTicketOrder(@RequestParam int page, @RequestParam int size) {
         logger.info("----------Web Cinema: Sort Movie Page----------");
         Locale locale = LocaleContextHolder.getLocale();
@@ -93,6 +99,7 @@ public class MovieController {
     }
 
     @GetMapping("/get-movie-with-cinema")
+    @Operation(summary = "Lấy danh sách phim theo mã rạp")
     public ResponseEntity<ResponseObject> getMovieWithCinema(@RequestParam String code, @RequestParam int page, @RequestParam int size) {
         logger.info("----------Web Cinema: Movie With Cinema Page----------");
         Locale locale = LocaleContextHolder.getLocale();
@@ -105,6 +112,7 @@ public class MovieController {
     }
 
     @GetMapping("/get-movie-with-room")
+    @Operation(summary = "Lấy danh sách phim theo mã rạp và phòng")
     public ResponseEntity<ResponseObject> getMovieWithRoom(@RequestParam String cinemaCode,@RequestParam String roomCode, @RequestParam int page, @RequestParam int size) {
         logger.info("----------Web Cinema: Movie With Room Page----------");
         Locale locale = LocaleContextHolder.getLocale();
@@ -117,6 +125,7 @@ public class MovieController {
     }
 
     @GetMapping("/get-movie-with-seat-status")
+    @Operation(summary = "Lấy danh sách phim theo trạng thái ghế")
     public ResponseEntity<ResponseObject> getMovieWithSeaStatus(@RequestParam String seatStatus, @RequestParam int page, @RequestParam int size) {
         logger.info("----------Web Cinema: Movie With Seat Status Page----------");
         Locale locale = LocaleContextHolder.getLocale();

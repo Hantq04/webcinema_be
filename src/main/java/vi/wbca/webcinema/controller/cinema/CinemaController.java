@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.cinema;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -27,8 +28,9 @@ public class CinemaController {
     private final CinemaService cinemaService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm rạp chiếu mới")
     public ResponseEntity<ResponseObject> insertCinema(@Validated(InsertCinema.class) @RequestBody CinemaDTO request) {
         logger.info("----------Web Cinema: Insert New Cinema----------");
         CinemaDTO responseData = cinemaService.insertCinema(request);
@@ -41,6 +43,7 @@ public class CinemaController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật rạp chiếu")
     public ResponseEntity<ResponseObject> updateCinema(@Validated(UpdateCinema.class) @RequestBody CinemaDTO request) {
         logger.info("----------Web Cinema: Update Cinema----------");
         cinemaService.updateCinema(request);
@@ -53,6 +56,7 @@ public class CinemaController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa rạp chiếu theo mã")
     public ResponseEntity<ResponseObject> deleteCinema(@Validated(DeleteCinema.class) @RequestParam String code) {
         logger.info("----------Web Cinema: Delete Cinema----------");
         cinemaService.deleteCinema(code);

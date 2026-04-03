@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.bill;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -26,6 +27,7 @@ public class BillController {
 
     @PostMapping("/create")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Tạo hóa đơn mới")
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Insert New Bill----------");
         billService.createBill(request);
@@ -38,6 +40,7 @@ public class BillController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật hóa đơn")
     public ResponseEntity<ResponseObject> updateBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Update Bill----------");
         billService.updateBill(request);
@@ -50,6 +53,7 @@ public class BillController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa hóa đơn theo mã giao dịch")
     public ResponseEntity<ResponseObject> deleteBill(@Valid @RequestParam String tradingCode) {
         logger.info("----------Web Cinema: Delete Bill----------");
         billService.deleteBill(tradingCode);

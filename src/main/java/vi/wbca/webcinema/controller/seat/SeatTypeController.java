@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.seat;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -25,8 +26,9 @@ public class SeatTypeController {
     private final SeatTypeService seatTypeService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm loại ghế mới")
     public ResponseEntity<ResponseObject> insertSeatType(@Valid @RequestBody SeatType seatType) {
         logger.info("----------Web Cinema: Insert New Seat Type----------");
         SeatType responseData = seatTypeService.insertSeatType(seatType);
@@ -39,6 +41,7 @@ public class SeatTypeController {
 
     @GetMapping("/get-all-type")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả loại ghế")
     public ResponseEntity<ResponseObject> getAllType() {
         logger.info("----------Web Cinema: Get All Seat Type----------");
         Locale locale = LocaleContextHolder.getLocale();

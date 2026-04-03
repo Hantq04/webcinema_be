@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.movie;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -25,8 +26,9 @@ public class RateController {
     private final RateService rateService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm mức giá mới")
     public ResponseEntity<ResponseObject> insertRate(@Valid @RequestBody Rate rate) {
         logger.info("----------Web Cinema: Insert New Rate----------");
         Rate responseData = rateService.insertRate(rate);
@@ -39,6 +41,7 @@ public class RateController {
 
     @GetMapping("/get-all-rate")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả mức giá")
     public ResponseEntity<ResponseObject> getAllRate() {
         logger.info("----------Web Cinema: Get All Rate----------");
         List<Rate> responseData = rateService.getAllRate();

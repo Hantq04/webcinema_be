@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.cinema;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -28,8 +29,9 @@ public class FoodController {
     private final FoodService foodService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm món ăn mới")
     public ResponseEntity<ResponseObject> insertFood(@Valid @RequestBody FoodDTO request) {
         logger.info("----------Web Cinema: Insert New Food----------");
         FoodDTO responseData = foodService.insertFood(request);
@@ -42,6 +44,7 @@ public class FoodController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật món ăn")
     public ResponseEntity<ResponseObject> updateFood(@Valid @RequestBody FoodDTO request) {
         logger.info("----------Web Cinema: Update Food----------");
         foodService.updateFood(request);
@@ -54,6 +57,7 @@ public class FoodController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa món ăn theo tên")
     public ResponseEntity<ResponseObject> deleteFood(@Valid @RequestParam String name) {
         logger.info("----------Web Cinema: Delete Food----------");
         foodService.deleteFood(name);
@@ -66,6 +70,7 @@ public class FoodController {
 
     @GetMapping("/get-all")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Lấy danh sách tất cả món ăn đang hoạt động")
     public ResponseEntity<ResponseObject> getAllFood() {
         logger.info("----------Web Cinema: Get All Food Active----------");
         List<Food> responseData = foodService.getAllFoodActive();

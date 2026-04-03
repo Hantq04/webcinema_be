@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.movie;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -27,8 +28,9 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm lịch chiếu mới")
     public ResponseEntity<ResponseObject> insertSchedule(@Validated(InsertSchedule.class) @RequestBody ScheduleDTO request) {
         logger.info("----------Web Cinema: Insert New Schedule----------");
         ScheduleDTO responseData = scheduleService.insertSchedule(request);
@@ -41,6 +43,7 @@ public class ScheduleController {
 
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Cập nhật lịch chiếu")
     public ResponseEntity<ResponseObject> updateSchedule(@Validated(UpdateSchedule.class) @RequestBody ScheduleDTO request) {
         logger.info("----------Web Cinema: Update Schedule----------");
         scheduleService.updateSchedule(request);
@@ -53,6 +56,7 @@ public class ScheduleController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa lịch chiếu theo mã và ID phim")
     public ResponseEntity<ResponseObject> deleteSchedule(@Valid @RequestParam String code, Long movieId) {
         logger.info("----------Web Cinema: Delete Schedule----------");
         scheduleService.deleteSchedule(code, movieId);
@@ -65,6 +69,7 @@ public class ScheduleController {
 
     @PutMapping("/deactivate-expired")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Vô hiệu hóa các lịch chiếu đã hết hạn")
     public ResponseEntity<ResponseObject> deactivateExpiredSchedule() {
         logger.info("----------Web Cinema: Deactivate Expired Schedule----------");
         scheduleService.deactivateExpiredSchedule();

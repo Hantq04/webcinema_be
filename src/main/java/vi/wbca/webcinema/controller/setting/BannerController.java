@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.controller.setting;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -27,8 +28,9 @@ public class BannerController {
     private final BannerService bannerService;
     private final MessageSource messageSource;
 
-    @PostMapping("/insert")
+    @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Thêm banner mới")
     public ResponseEntity<ResponseObject> insertBanner(@Valid @ModelAttribute BannerRequest request) throws IOException {
         bannerService.insertBanner(request);
         Locale locale = LocaleContextHolder.getLocale();
@@ -40,6 +42,7 @@ public class BannerController {
 
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Xóa banner theo ID")
     public ResponseEntity<ResponseObject> deleteBanner(@Valid @RequestParam Long id) {
         logger.info("----------Web Cinema: Delete Banner----------");
         bannerService.deleteBanner(id);
@@ -52,6 +55,7 @@ public class BannerController {
 
     @GetMapping("/get-all-banner")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy danh sách tất cả banner")
     public ResponseEntity<ResponseObject> getAllBanner() {
         logger.info("----------Web Cinema: Get All Banner----------");
         Locale locale = LocaleContextHolder.getLocale();
