@@ -8,6 +8,7 @@ import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.mapper.PromotionMapper;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
+import vi.wbca.webcinema.model.response.PromotionResponse;
 import vi.wbca.webcinema.repository.bill.PromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.service.PromotionService;
@@ -15,6 +16,7 @@ import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +52,9 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<Promotion> getAllPromotion() {
-        return promotionRepo.findAll();
+    public List<PromotionResponse> getAllPromotion() {
+        return promotionRepo.findAll().stream()
+                .map(promotionMapper::toPromotionResponse)
+                .collect(Collectors.toList());
     }
 }

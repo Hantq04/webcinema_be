@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.ticket.PromotionDTO;
-import vi.wbca.webcinema.model.entity.bill.Promotion;
+import vi.wbca.webcinema.model.response.PromotionResponse;
 import vi.wbca.webcinema.service.PromotionService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -60,7 +60,7 @@ public class PromotionController {
         logger.info("----------Web Cinema: Get All Promotion----------");
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_all_promotion", null, locale);
-        List<Promotion> responseData = promotionService.getAllPromotion();
+        List<PromotionResponse> responseData = promotionService.getAllPromotion();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );

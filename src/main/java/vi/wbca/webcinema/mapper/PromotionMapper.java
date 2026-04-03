@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import vi.wbca.webcinema.model.dto.ticket.PromotionDTO;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
+import vi.wbca.webcinema.model.response.PromotionResponse;
 
 @Mapper(componentModel = "spring")
 public interface PromotionMapper {
@@ -16,4 +17,7 @@ public interface PromotionMapper {
 
     @Mapping(target = "nameRankCustomer", ignore = true)
     PromotionDTO toPromotionDTO(Promotion promotion);
+
+    @Mapping(target = "rankCustomerName", source = "rankCustomer.name")
+    PromotionResponse toPromotionResponse(Promotion promotion);
 }

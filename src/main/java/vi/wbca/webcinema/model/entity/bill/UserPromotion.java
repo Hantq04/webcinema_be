@@ -35,8 +35,13 @@ public class UserPromotion {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime usedAt;
 
+    @Column(name = "created_at", columnDefinition = "DATETIME")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    LocalDateTime createdAt;
+
     @PrePersist
     protected void onCreate() {
+        createdAt = LocalDateTime.now();
         isUsed = false;
     }
 }
