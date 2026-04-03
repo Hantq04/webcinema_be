@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.config.EmailService;
 import vi.wbca.webcinema.enums.CustomerRankEnum;
 import vi.wbca.webcinema.enums.BillStatusEnum;
@@ -11,10 +12,12 @@ import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillStatus;
+import vi.wbca.webcinema.model.entity.bill.UserPromotion;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillStatusRepo;
+import vi.wbca.webcinema.repository.bill.UserPromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.util.EmailUtils;
@@ -26,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -34,6 +38,7 @@ public class VNPayService {
     private final BillRepo billRepo;
     private final EmailService emailService;
     private final BillStatusRepo billStatusRepo;
+    private final UserPromotionRepo userPromotionRepo;
     private final UserRepo userRepo;
     private final RankCustomerRepo rankCustomerRepo;
 
@@ -119,6 +124,7 @@ public class VNPayService {
         }
     }
 
+    @Transactional
     public int paymentReturn(HttpServletRequest request) throws MessagingException,
             UnsupportedEncodingException {
 
@@ -203,6 +209,25 @@ public class VNPayService {
                 bill.setBillStatus(getStatus(BillStatusEnum.SUCCESS.toString()));
                 user.setPoint(calculatePoint(bill, user));
 
+                if (bill.getPromotion() != null) {
+                    UserPromotion userPromotion = userPromotionRepo.findByUserIdAndPromotionId(
+                            bill.getUser().getId(),
+                            bill.getPromotion().getId())
+                        .orElse(null);
+
+                    if (userPromotion != null) {
+                        userPromotion.setUsed(true);
+                        try {
+                            userPromotion.setUsedAt(new SimpleDateFormat("yyyyMMddHHmmss").parse(paymentTime)
+                                    .toInstant()
+                                    .atZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh").toZoneId())
+                                    .toLocalDateTime());
+                        } catch (ParseException e) {
+                            userPromotion.setUsedAt(LocalDateTime.now());
+                        }
+                        userPromotionRepo.save(userPromotion);
+                    }
+                }
                 if (user.getPoint() >= rankCustomer.getPoint()) {
                     user.setRankCustomer(rankCustomer);
                 }
