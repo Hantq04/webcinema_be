@@ -44,7 +44,7 @@ public class UserPromotionMapper {
             return null;
         }
         if (userPromotion.isUsed()) {
-            return null;
+            return VoucherStatusEnum.USED;
         }
         return userPromotion.getPromotion().getEndTime() != null && userPromotion.getPromotion().getEndTime().isBefore(now)
                 ? VoucherStatusEnum.EXPIRED

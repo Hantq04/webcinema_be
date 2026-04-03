@@ -66,10 +66,12 @@ public class UserPromotionServiceImpl implements UserPromotionService {
                         || userPromotion.getPromotion().getPromotionType() == promotionType)
                 .filter(userPromotion -> {
                     if (voucherStatus == null) return true;
+                    if (voucherStatus == VoucherStatusEnum.USED) return true;
                     if (userPromotion.isUsed()) return false;
                     boolean expired = userPromotion.getPromotion().getEndTime() != null
                             && userPromotion.getPromotion().getEndTime().isBefore(now);
                     return switch (voucherStatus) {
+                        case USED -> true;
                         case UNUSED -> !expired;
                         case EXPIRED -> expired;
                     };
