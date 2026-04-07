@@ -93,5 +93,6 @@ INSERT INTO bill_status (name) VALUES
     ('Pending'),
     ('Failure'),
     ('Cancelled'),
-    ('Refunded');
+    ('Refunded'),
+    ('Expired');
 

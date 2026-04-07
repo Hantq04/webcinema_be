@@ -2,6 +2,7 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import vi.wbca.webcinema.enums.RoomTypeEnum;
 import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
@@ -108,6 +109,7 @@ public class TicketServiceImpl implements TicketService {
     public Long calculateFinalPrice(Schedule schedule, Seat seat) {
         GeneralSetting setting = generalSetting();
         double basePrice = getSeatPrice(seat);
+        double roomMultiplier = getRoomPriceMultiplier(schedule);
 
         String showTimeName = schedule.getName();
         double discount = switch (showTimeName) {
@@ -123,10 +125,20 @@ public class TicketServiceImpl implements TicketService {
         DayOfWeek dayOfWeek = schedule.getStartAt().getDayOfWeek();
         boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
 
-        double finalPrice = basePrice * (isWeekend ? (1 + setting.getPercentWeekend() / 100.0) : 1);
+        double finalPrice = basePrice * roomMultiplier;
+        finalPrice *= (isWeekend ? (1 + setting.getPercentWeekend() / 100.0) : 1);
         finalPrice *= (1 - discount);
 
         return Math.round(finalPrice);
+    }
+
+    public double getRoomPriceMultiplier(Schedule schedule) {
+        Room room = schedule.getRoom();
+        if (room == null || room.getType() == null) {
+            throw new AppException(ErrorCode.TYPE_NOT_FOUND);
+        }
+        RoomTypeEnum roomType = room.getType();
+        return roomType.getPriceMultiplier();
     }
 
     public Double getSeatPrice(Seat seat) {

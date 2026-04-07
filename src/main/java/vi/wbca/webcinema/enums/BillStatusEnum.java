@@ -5,5 +5,6 @@ public enum BillStatusEnum {
     PENDING,
     FAILURE,
     CANCELLED,
-    REFUNDED
+    REFUNDED,
+    EXPIRED
 }

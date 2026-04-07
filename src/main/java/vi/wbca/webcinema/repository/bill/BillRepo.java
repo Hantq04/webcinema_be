@@ -20,6 +20,8 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
 
     boolean existsByUserAndBillStatus(User user, BillStatus billStatus);
 
+    List<Bill> findAllByBillStatusAndCreateTimeBeforeAndIsActiveTrue(BillStatus billStatus, LocalDateTime createTime);
+
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO(
         c.nameOfCinema, c.code, SUM(b.totalMoney)

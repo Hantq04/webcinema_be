@@ -20,6 +20,7 @@ import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.bill.UserPromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
+import vi.wbca.webcinema.service.impl.TicketHoldCleanupService;
 import vi.wbca.webcinema.util.EmailUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -41,10 +42,16 @@ public class VNPayService {
     private final UserPromotionRepo userPromotionRepo;
     private final UserRepo userRepo;
     private final RankCustomerRepo rankCustomerRepo;
+    private final TicketHoldCleanupService ticketHoldCleanupService;
 
     public String createPayment(String code, String returnUrl) {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+
+        if (isTicketHoldExpired(bill)) {
+            ticketHoldCleanupService.expireBill(bill);
+            throw new AppException(ErrorCode.PAYMENT_EXCEPTION);
+        }
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -55,7 +62,7 @@ public class VNPayService {
         String orderType = "order-type";
         BigDecimal vnp_Amount = bill.getTotalMoney().multiply(BigDecimal.valueOf(100));
 
-        if (bill.getBillStatus().equals(getStatus(BillStatusEnum.PENDING.toString()))) {
+        if (isBillStatus(bill, BillStatusEnum.PENDING.toString())) {
             Map<String, String> vnp_Params = new HashMap<>();
 
             vnp_Params.put("vnp_Version", vnp_Version);
@@ -154,6 +161,11 @@ public class VNPayService {
         Bill bill = billRepo.findByTradingCode(tradingCode)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
+        if (isTicketHoldExpired(bill)) {
+            ticketHoldCleanupService.expireBill(bill);
+            return 0;
+        }
+
         User user = userRepo.findByUserName(bill.getUser().getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
 
@@ -237,6 +249,8 @@ public class VNPayService {
                 return 1;
             } else {
                 bill.setBillStatus(getStatus(BillStatusEnum.CANCELLED.toString()));
+                bill.setActive(false);
+                bill.setUpdateTime(LocalDateTime.now());
                 billRepo.save(bill);
 
                 return 0;
@@ -254,6 +268,22 @@ public class VNPayService {
     public BillStatus getStatus(String eBillStatus) {
         return billStatusRepo.findByName(eBillStatus)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+    }
+
+    private boolean isBillStatus(Bill bill, String statusName) {
+        return bill.getBillStatus() != null
+                && bill.getBillStatus().getName() != null
+                && bill.getBillStatus().getName().equalsIgnoreCase(statusName);
+    }
+
+    private boolean isTicketHoldExpired(Bill bill) {
+        if (bill.getBillStatus() == null || bill.getCreateTime() == null) {
+            return false;
+        }
+        if (!isBillStatus(bill, BillStatusEnum.PENDING.toString())) {
+            return false;
+        }
+        return !bill.getCreateTime().plusMinutes(5).isAfter(LocalDateTime.now());
     }
 
     public int calculatePoint(Bill bill, User user) {

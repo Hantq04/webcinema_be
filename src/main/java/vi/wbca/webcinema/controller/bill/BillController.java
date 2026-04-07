@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.bill.BillDTO;
+import vi.wbca.webcinema.model.response.BillHoldResponse;
 import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -30,11 +31,11 @@ public class BillController {
     @Operation(summary = "Tạo hóa đơn mới")
     public ResponseEntity<ResponseObject> createBill(@Valid @RequestBody BillDTO request) {
         logger.info("----------Web Cinema: Insert New Bill----------");
-        billService.createBill(request);
+        BillHoldResponse responseData = billService.createBill(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_bill", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, null)
+            new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 
@@ -48,6 +49,19 @@ public class BillController {
         String message = messageSource.getMessage("success.update", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, null)
+        );
+    }
+
+    @DeleteMapping("/cancel")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Hủy giữ chỗ hóa đơn")
+    public ResponseEntity<ResponseObject> cancelBill(@Valid @RequestParam String tradingCode) {
+        logger.info("----------Web Cinema: Cancel Bill Hold----------");
+        billService.cancelBill(tradingCode);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.delete", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, "")
         );
     }
 

@@ -17,11 +17,14 @@ import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.service.BillFoodService;
 import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.service.BillTicketService;
+import vi.wbca.webcinema.service.impl.TicketHoldCleanupService;
+import vi.wbca.webcinema.model.response.BillHoldResponse;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -36,12 +39,15 @@ public class BillServiceImpl implements BillService {
     private final BillFoodService billFoodService;
     private final BillTicketRepo billTicketRepo;
     private final BillTicketService billTicketService;
+    private final TicketHoldCleanupService ticketHoldCleanupService;
 
     @Override
-    public void createBill(BillDTO request) {
+    public BillHoldResponse createBill(BillDTO request) {
         User user = getCustomer(request);
         BillStatus pendingStatus = billStatusRepo.findByName(BillStatusEnum.PENDING.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
+
+        ticketHoldCleanupService.cleanupExpiredTicketHolds();
 
         if (billRepo.existsByUserAndBillStatus(user, pendingStatus)) {
             throw new AppException(ErrorCode.BILL_EXISTED);
@@ -63,6 +69,16 @@ public class BillServiceImpl implements BillService {
 
         billRepo.save(bill);
         billMapper.toBillDTO(bill);
+
+        LocalDateTime holdExpiresAt = bill.getCreateTime().plusMinutes(5);
+        long remainingSeconds = Math.max(0, Duration.between(LocalDateTime.now(), holdExpiresAt).getSeconds());
+
+        return BillHoldResponse.builder()
+            .tradingCode(bill.getTradingCode())
+            .createTime(bill.getCreateTime())
+            .holdExpiresAt(holdExpiresAt)
+            .remainingSeconds(remainingSeconds)
+            .build();
     }
 
     @Override
@@ -82,13 +98,19 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public void cancelBill(String code) {
+        Bill bill = billRepo.findByTradingCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+        ticketHoldCleanupService.cancelBill(bill);
+    }
+
+    @Override
     public void deleteBill(String code) {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
+        ticketHoldCleanupService.expireBill(bill);
         billFoodService.deleteBillFood(bill);
-        billTicketService.deleteBillTicket(bill);
-
         billRepo.delete(bill);
     }
 
