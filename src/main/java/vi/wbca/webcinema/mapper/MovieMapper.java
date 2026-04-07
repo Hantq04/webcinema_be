@@ -7,11 +7,13 @@ import vi.wbca.webcinema.model.entity.movie.Movie;
 
 @Mapper(componentModel = "spring")
 public interface MovieMapper {
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "schedules", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "movieType", ignore = true)
     @Mapping(target = "rate", ignore = true)
+    @Mapping(target = "endDate", ignore = true)
     Movie toMovie(MovieDTO movieDTO);
 
     @Mapping(target = "movieTypeName", source = "movieType.movieTypeName")

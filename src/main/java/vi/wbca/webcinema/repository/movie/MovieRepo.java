@@ -3,17 +3,27 @@ package vi.wbca.webcinema.repository.movie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.model.entity.movie.Movie;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface MovieRepo extends JpaRepository<Movie, Long> {
     Optional<Movie> findByName(String name);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Movie m SET m.isActive = false WHERE m.isActive = true AND m.endDate < :now")
+    void updateExpiredMovies(@Param("now") LocalDateTime now);
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO(
@@ -67,4 +77,27 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     GROUP BY m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     """)
     Page<MovieResponseDTO> getMovieWithSeatStatus(Long seatStatusId, Pageable pageable);
+
+    @Query("""
+    SELECT m FROM Movie m
+    WHERE m.isActive = true
+    AND (
+        (:nowShowing = false OR
+            (m.premiereDate <= :now AND (m.endDate IS NULL OR m.endDate >= :now))
+        )
+    )
+    AND (
+        (:comingSoon = false OR m.premiereDate > :now)
+    )
+    AND (
+        (:genre IS NULL OR m.movieType.movieTypeName = :genre)
+    )
+    ORDER BY m.premiereDate DESC
+    """)
+    List<Movie> filterMovies(
+            @Param("now") LocalDateTime now,
+            @Param("nowShowing") boolean nowShowing,
+            @Param("comingSoon") boolean comingSoon,
+            @Param("genre") String genre
+    );
 }

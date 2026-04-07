@@ -39,15 +39,16 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void insertMovie(MovieDTO request) {
-        Movie movie = new Movie();
+        Movie movie = movieMapper.toMovie(request);
         MovieType movieType = movieTypeRepo.findByMovieTypeName(request.getMovieTypeName())
                 .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
-        LocalDateTime premiereDate = movie.getPremiereDate();
-        movie.setEndDate(premiereDate.plusDays(30));
-        movie.setActive(true);
+        LocalDateTime premiereDate = request.getPremiereDate();
         movie.setMovieType(movieType);
         movie.setRate(setRate(request));
+        movie.setPremiereDate(premiereDate);
+        movie.setEndDate(premiereDate.plusDays(30));
+        movie.setActive(true);
         movieRepo.save(movie);
     }
 
