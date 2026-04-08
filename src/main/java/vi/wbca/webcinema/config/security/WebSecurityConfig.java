@@ -50,7 +50,8 @@ public class WebSecurityConfig {
             "/api/v1/ticket/**",
             "uploads/**",
             "/api/v1/captcha/**",
-            "/api/v1/chat-bot/**"
+            "/api/v1/chat-bot/**",
+            "/api/v1/print-ticket/**"
     };
 
     @Bean

@@ -1,4 +1,4 @@
-package vi.wbca.webcinema.service.impl;
+package vi.wbca.webcinema.service;
 
 import org.springframework.beans.factory.ObjectProvider;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +72,7 @@ public class TicketHoldCleanupService {
         List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
         List<Ticket> tickets = billTickets.stream()
                 .map(BillTicket::getTicket)
-                .filter(ticket -> ticket != null)
+                .filter(Objects::nonNull)
                 .toList();
 
         if (!billTickets.isEmpty()) {

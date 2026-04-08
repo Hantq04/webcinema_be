@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_SIGNATURE(1103, "error.1103", HttpStatus.FORBIDDEN),
     EXPIRED_TOKEN(1104, "error.1104", HttpStatus.FORBIDDEN),
     EXPIRED_REFRESH_TOKEN(1105, "error.1105", HttpStatus.FORBIDDEN),
+    SYSTEM_ERROR(1106, "error.1106", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Throw Exception, code 12**
     USERNAME_EXISTED(1200, "error.1200", HttpStatus.BAD_REQUEST),
@@ -65,6 +66,7 @@ public enum ErrorCode {
     DATE_FORMAT(1244, "error.1244", HttpStatus.BAD_REQUEST),
     TICKET_ALREADY_BOOKED(1245, "error.1245", HttpStatus.BAD_REQUEST),
     DUPLICATE_PROMOTION(1246, "error.1246", HttpStatus.BAD_REQUEST),
+    PRINT_TICKET_NOT_ALLOWED(1247, "error.1247", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),

@@ -20,7 +20,7 @@ import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.bill.UserPromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
-import vi.wbca.webcinema.service.impl.TicketHoldCleanupService;
+import vi.wbca.webcinema.service.TicketHoldCleanupService;
 import vi.wbca.webcinema.util.EmailUtils;
 
 import java.io.UnsupportedEncodingException;

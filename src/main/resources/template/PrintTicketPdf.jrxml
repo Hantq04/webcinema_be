@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PrintTicketPdf" pageWidth="320" pageHeight="520" whenNoDataType="AllSectionsNoDetail" columnWidth="292" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" uuid="73a5f67d-81ae-4596-bcf6-b8f0e791988e">
+	<style name="Base" fontName="SansSerif" fontSize="11"/>
+	<style name="Title" style="Base" fontSize="20" isBold="true"/>
+	<style name="Venue" style="Base" fontSize="11" isBold="true"/>
+	<style name="Muted" style="Base" fontSize="9"/>
+	<style name="Label" style="Base" fontSize="11" isBold="true"/>
+	<style name="Value" style="Base" fontSize="11"/>
+	<style name="MoneyValue" style="Base" fontSize="12" isBold="true"/>
+	<parameter name="TRADING_CODE" class="java.lang.String"/>
+	<parameter name="CUSTOMER_NAME" class="java.lang.String"/>
+	<parameter name="CINEMA_NAME" class="java.lang.String"/>
+	<parameter name="CINEMA_ADDRESS" class="java.lang.String"/>
+	<parameter name="ROOM_INFO" class="java.lang.String"/>
+	<parameter name="ROOM_TYPE" class="java.lang.String"/>
+	<parameter name="MOVIE_NAME" class="java.lang.String"/>
+	<parameter name="DATETIME_RANGE" class="java.lang.String"/>
+	<parameter name="SHOW_TIME_NAME" class="java.lang.String"/>
+	<parameter name="BILL_STATUS" class="java.lang.String"/>
+	<parameter name="SEAT_AND_LABEL" class="java.lang.String"/>
+	<parameter name="SALES_NO_TEXT" class="java.lang.String"/>
+	<field name="ticketCode" class="java.lang.String"/>
+	<field name="seatCode" class="java.lang.String"/>
+	<field name="seatType" class="java.lang.String"/>
+	<field name="ticketPrice" class="java.math.BigDecimal"/>
+	<field name="vatAmount" class="java.math.BigDecimal"/>
+	<field name="totalAmount" class="java.math.BigDecimal"/>
+	<detail>
+		<band height="450">
+			<frame>
+				<reportElement x="-1" y="4" width="292" height="446" uuid="2e99aee9-eadd-445b-9089-0ff2f5c61e92"/>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textField>
+					<reportElement style="Title" x="13" y="11" width="268" height="28" uuid="5246993e-e824-4b2f-9a0d-cbc5fe04ae39"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["VE XEM PHIM"]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="12" y="58" width="268" height="1" uuid="0a9c3e15-8581-4a89-a4d8-568a82472cdc"/>
+				</line>
+				<textField>
+					<reportElement style="Label" x="12" y="66" width="70" height="15" uuid="b6fb135a-86f0-4ea9-beec-99717b6c25df"/>
+					<textFieldExpression><![CDATA["Customer"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="66" width="196" height="15" uuid="53b63935-2e9b-4334-a458-54a3896c2d17"/>
+					<textFieldExpression><![CDATA[$P{CUSTOMER_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="84" width="70" height="15" uuid="21385364-3eef-4d2d-886a-a7763abe41bf"/>
+					<textFieldExpression><![CDATA["Trading code"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="84" width="196" height="15" uuid="b8f9ea09-b6d1-4d23-885c-cfcbcb21dbf2"/>
+					<textFieldExpression><![CDATA[$P{TRADING_CODE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="102" width="70" height="15" uuid="310b2e6c-a287-4914-b55c-63a6311a72a1"/>
+					<textFieldExpression><![CDATA["Movie"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="102" width="196" height="15" uuid="ad3233d5-af4b-4020-ad6e-2f07871dd96b"/>
+					<textFieldExpression><![CDATA[$P{MOVIE_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="120" width="70" height="15" uuid="f8b4619a-2954-46e9-bad3-3914cb8856aa"/>
+					<textFieldExpression><![CDATA["Show time"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="120" width="196" height="15" uuid="73b0dd5c-d312-432a-80eb-bcd4292655e7"/>
+					<textFieldExpression><![CDATA[$P{SHOW_TIME_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="138" width="70" height="15" uuid="cffefad8-e6a0-4f6c-87c0-1452d87fcd70"/>
+					<textFieldExpression><![CDATA["Start / End"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="138" width="196" height="15" uuid="02c36087-3ca3-437d-89e4-5ee158764137"/>
+					<textFieldExpression><![CDATA[$P{DATETIME_RANGE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="156" width="70" height="15" uuid="483a943b-76ff-4f86-8d5b-138956920a54"/>
+					<textFieldExpression><![CDATA["Room"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="156" width="196" height="15" uuid="c98ae4a4-f965-4a54-982a-18e58f22994f"/>
+					<textFieldExpression><![CDATA[$P{ROOM_INFO}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="174" width="70" height="15" uuid="2cfb3cc5-9227-4d46-91d3-51d1aae6d207"/>
+					<textFieldExpression><![CDATA["Room type"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="174" width="196" height="15" uuid="797ba97c-684e-48dd-a127-0dbf343134a8"/>
+					<textFieldExpression><![CDATA[$P{ROOM_TYPE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="192" width="70" height="15" uuid="ceffeff2-83d5-48b2-9716-e9edaef97451"/>
+					<textFieldExpression><![CDATA["Bill status"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="192" width="196" height="15" uuid="652bcabf-d94f-4a6d-bfd5-9908ef4d75ca"/>
+					<textFieldExpression><![CDATA[$P{BILL_STATUS}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="12" y="210" width="268" height="1" uuid="2c790a00-4a25-4cb5-b503-1e2a3602b6c5"/>
+				</line>
+				<textField>
+					<reportElement style="Label" x="12" y="220" width="70" height="15" uuid="04ffcc7e-dbe1-414b-b430-d78b3ea28c6d"/>
+					<textFieldExpression><![CDATA["Ticket code"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="220" width="196" height="15" uuid="8ce08e8f-81b4-4e5c-a971-579b86bc8c27"/>
+					<textFieldExpression><![CDATA[$F{ticketCode}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="238" width="70" height="15" uuid="6bf4796e-7574-4a2c-90fb-3fa3b9dd111d"/>
+					<textFieldExpression><![CDATA["Seat"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="238" width="196" height="15" uuid="050b2a63-bc8a-4e43-b79c-6239aca64bfe"/>
+					<textFieldExpression><![CDATA[$F{seatCode}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="256" width="70" height="15" uuid="f4324b9a-c9c6-4a38-8fea-d8731f7369a0"/>
+					<textFieldExpression><![CDATA["Seat type"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Value" x="87" y="256" width="196" height="15" uuid="21472645-5c2c-48e9-8f99-36972050e1ad"/>
+					<textFieldExpression><![CDATA[$F{seatType}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="276" width="70" height="15" uuid="639bc4a3-6d5f-46d6-a7fa-8f5f65e3aeaa"/>
+					<textFieldExpression><![CDATA["Ticket price"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="MoneyValue" x="84" y="275" width="196" height="16" uuid="4edb0243-6c91-4ecd-b8c7-db7144b443f9"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[String.format("%d VND", $F{ticketPrice}.longValue())]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Label" x="12" y="296" width="70" height="15" uuid="8db26345-9dcd-4fe8-9c98-031720adc852"/>
+					<textFieldExpression><![CDATA["VAT (5%)"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="MoneyValue" x="84" y="295" width="196" height="16" uuid="168f546b-bb86-4887-8dca-4628dfc12f7d"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[String.format("%d VND", $F{vatAmount}.longValue())]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="13" y="321" width="268" height="1" uuid="a2991bae-9f21-48d6-8189-43147f24f737"/>
+				</line>
+				<textField>
+					<reportElement style="Label" x="13" y="328" width="88" height="16" uuid="6b801cc5-837e-441c-94c6-fc8c772002d2"/>
+					<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="MoneyValue" x="103" y="327" width="178" height="18" uuid="56b830fe-f027-473d-b88a-47ede17c2f55"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[String.format("%d VND", $F{totalAmount}.longValue())]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="13" y="351" width="268" height="1" uuid="b5590af7-56be-4540-9e80-6ea6168edd83"/>
+				</line>
+				<textField>
+					<reportElement style="Muted" x="11" y="361" width="268" height="12" uuid="10ed6194-e1cc-47b6-a579-5b9e91c7b48c"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$P{SALES_NO_TEXT}]]></textFieldExpression>
+				</textField>
+				<componentElement>
+					<reportElement x="11" y="381" width="269" height="49" uuid="7dc59877-8f71-4c9d-9691-a4095d36d316"/>
+					<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false">
+						<jr:codeExpression><![CDATA[$P{TRADING_CODE}]]></jr:codeExpression>
+					</jr:barbecue>
+				</componentElement>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

@@ -17,7 +17,7 @@ import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.service.BillFoodService;
 import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.service.BillTicketService;
-import vi.wbca.webcinema.service.impl.TicketHoldCleanupService;
+import vi.wbca.webcinema.service.TicketHoldCleanupService;
 import vi.wbca.webcinema.model.response.BillHoldResponse;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
@@ -30,6 +30,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BillServiceImpl implements BillService {
+    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.05);
     private final BillRepo billRepo;
     private final BillMapper billMapper;
     private final UserRepo userRepo;
@@ -137,7 +138,8 @@ public class BillServiceImpl implements BillService {
     public void calculateTotal(Bill bill, String promotionCode) {
         BigDecimal totalFood = calculateBillFood(bill);
         BigDecimal totalTicket = calculateBillTicket(bill);
-        BigDecimal totalMoney = totalFood.add(totalTicket);
+        BigDecimal totalVat = calculateBillVat(bill);
+        BigDecimal totalMoney = totalFood.add(totalTicket).add(totalVat);
         Promotion promotion = getValidPromotion(promotionCode);
         BigDecimal finalTotal = totalMoney;
 
@@ -195,6 +197,15 @@ public class BillServiceImpl implements BillService {
                 .filter(bt -> bt.getTicket() != null && bt.getTicket().getPriceTicket() != null)
                 .map(bt -> BigDecimal.valueOf(bt.getTicket().getPriceTicket()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal calculateBillVat(Bill bill) {
+        return billTicketRepo.findAllByBillId(bill.getId()).stream()
+            .filter(bt -> bt.getTicket() != null && bt.getTicket().getPriceTicket() != null)
+            .map(bt -> BigDecimal.valueOf(bt.getTicket().getPriceTicket())
+                .multiply(VAT_RATE)
+                .setScale(0, RoundingMode.HALF_UP))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public User getCustomer(BillDTO billDTO) {

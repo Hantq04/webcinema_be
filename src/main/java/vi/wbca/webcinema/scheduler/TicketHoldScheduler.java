@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import vi.wbca.webcinema.service.impl.TicketHoldCleanupService;
+import vi.wbca.webcinema.service.TicketHoldCleanupService;
 
 @Component
 @RequiredArgsConstructor

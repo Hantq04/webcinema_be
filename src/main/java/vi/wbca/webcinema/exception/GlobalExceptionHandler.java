@@ -20,11 +20,14 @@ import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private static final Set<String> REQUIRED_FIELD_MESSAGES = Set.of("NOT_BLANK", "NOT_EMPTY");
+
     private final MessageUtils messageUtils;
 
     @ExceptionHandler(Exception.class)
@@ -51,9 +54,10 @@ public class GlobalExceptionHandler {
 
             // First, check for all NOT_BLANK errors (required fields)
             List<FieldValidationError> blankErrors = e.getFieldErrors().stream()
-                    .filter(fieldError -> "NOT_BLANK".equals(fieldError.getDefaultMessage()))
+                    .filter(fieldError -> REQUIRED_FIELD_MESSAGES.contains(fieldError.getDefaultMessage()))
                     .map(fieldError -> {
-                        String msg = messageUtils.getMessage(ErrorCode.NOT_BLANK.getMessage(), fieldError.getField());
+                        String fieldLabel = resolveFieldLabel(fieldError.getField());
+                        String msg = messageUtils.getMessage(ErrorCode.NOT_BLANK.getMessage(), fieldLabel);
                         return new FieldValidationError(fieldError.getField(), msg);
                     }).toList();
 
@@ -73,7 +77,7 @@ public class GlobalExceptionHandler {
 
             // If no blank errors, return first format/validation error
             List<FieldValidationError> fieldErrors = e.getFieldErrors().stream()
-                    .filter(fieldError -> !"NOT_BLANK".equals(fieldError.getDefaultMessage()))
+                    .filter(fieldError -> !REQUIRED_FIELD_MESSAGES.contains(fieldError.getDefaultMessage()))
                     .limit(1)
                     .map(fieldError -> {
                         String enumKey = fieldError.getDefaultMessage();
@@ -131,5 +135,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), "")
         );
+    }
+
+    private String resolveFieldLabel(String fieldPath) {
+        String defaultLabel = humanizeFieldPath(fieldPath);
+        return messageUtils.getMessageOrDefault("path." + fieldPath, defaultLabel);
+    }
+
+    private String humanizeFieldPath(String fieldPath) {
+        if (fieldPath == null || fieldPath.isBlank()) {
+            return "Field";
+        }
+
+        String lastSegment = fieldPath.contains(".")
+                ? fieldPath.substring(fieldPath.lastIndexOf('.') + 1)
+                : fieldPath;
+
+        String normalized = lastSegment
+                .replace('_', ' ')
+                .replace('-', ' ')
+                .replaceAll("([a-z])([A-Z])", "$1 $2")
+                .trim();
+
+        if (normalized.isEmpty()) {
+            return "Field";
+        }
+
+        return Character.toUpperCase(normalized.charAt(0)) + normalized.substring(1);
     }
 }

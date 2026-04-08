@@ -18,4 +18,8 @@ public class MessageUtils {
         return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }
 
+    public String getMessageOrDefault(String code, String defaultMessage, Object... args) {
+        return messageSource.getMessage(code, args, defaultMessage, LocaleContextHolder.getLocale());
+    }
+
 }
