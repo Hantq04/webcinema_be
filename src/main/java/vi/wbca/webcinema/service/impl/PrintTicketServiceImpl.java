@@ -175,12 +175,7 @@ public class PrintTicketServiceImpl implements PrintTicketService {
             roomInfo += " (" + responseData.getRoomCode() + ")";
         }
         parameters.put("ROOM_INFO", roomInfo);
-        
-        // Pre-compute footer text - remove string concatenation from JRXML
-        String seatAndLabel = "Seat " + (responseData.getTickets() != null && !responseData.getTickets().isEmpty() 
-                ? responseData.getTickets().get(0).getSeatCode() : "");
-        parameters.put("SEAT_AND_LABEL", seatAndLabel);
-        
+
         String salesNoText = "Sales No. " + responseData.getTradingCode();
         parameters.put("SALES_NO_TEXT", salesNoText);
         
