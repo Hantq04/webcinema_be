@@ -104,6 +104,8 @@ public enum ErrorCode {
     INVALID_SWEET_BOX_PAIR(1332, "error.1332", HttpStatus.BAD_REQUEST),
     CAPTCHA_REFRESH(1333, "error.1333", HttpStatus.BAD_REQUEST),
     INVALID_CAPTCHA(1334, "error.1334", HttpStatus.BAD_REQUEST),
+    INVALID_DATE(1335, "error.1335", HttpStatus.BAD_REQUEST),
+    MOVIE_EXPIRED(1336, "error.1336", HttpStatus.BAD_REQUEST),
 
     // Payment, code 70***
     PAYMENT_SUCCESS(70010, "error.70010", HttpStatus.BAD_REQUEST),

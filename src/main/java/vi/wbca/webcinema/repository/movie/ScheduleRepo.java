@@ -33,4 +33,6 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT MAX(s.endAt) FROM Schedule s WHERE s.room.id = :roomId AND s.endAt <= :newStartAt")
     LocalDateTime findLastEndAt(@Param("roomId") Long roomId, @Param("newStartAt") LocalDateTime newStartAt);
+
+    List<Schedule> findByMovieId(Long movieId);
 }

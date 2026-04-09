@@ -17,6 +17,7 @@ import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
 import vi.wbca.webcinema.model.entity.seat.SeatType;
 import vi.wbca.webcinema.model.response.SeatResponse;
+import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillTicketRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
@@ -37,7 +38,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SeatServiceImpl implements SeatService {
-
     private final SeatRepo seatRepo;
     private final SeatStatusRepo seatStatusRepo;
     private final RoomRepo roomRepo;
@@ -45,6 +45,7 @@ public class SeatServiceImpl implements SeatService {
     private final BillRepo billRepo;
     private final BillTicketRepo billTicketRepo;
     private final ScheduleRepo scheduleRepo;
+    private final SeatMapper seatMapper;
 
     @Override
     public void insertSeat(SeatDTO request) {
@@ -96,14 +97,9 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public List<SeatResponse> getAllSeat() {
-        return seatRepo.findAll().stream().map(seat -> new SeatResponse(
-                seat.getId(),
-                seat.getLine(),
-                seat.getNumber(),
-                seat.getSeatStatus().getNameStatus(),
-                seat.getRoom().getCode(),
-                seat.getSeatType().getNameType()
-        )).toList();
+        return seatRepo.findAll().stream()
+                .map(seatMapper::toSeatResponse)
+                .toList();
     }
 
     @Override

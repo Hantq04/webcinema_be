@@ -19,6 +19,7 @@ import vi.wbca.webcinema.service.BillService;
 import vi.wbca.webcinema.service.BillTicketService;
 import vi.wbca.webcinema.service.TicketHoldCleanupService;
 import vi.wbca.webcinema.model.response.BillHoldResponse;
+import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.math.BigDecimal;
@@ -40,8 +41,6 @@ public class BillServiceImpl implements BillService {
     private final BillTicketRepo billTicketRepo;
     private final BillTicketService billTicketService;
     private final TicketHoldCleanupService ticketHoldCleanupService;
-
-    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.05);
 
     @Override
     public BillHoldResponse createBill(BillDTO request) {
@@ -204,7 +203,7 @@ public class BillServiceImpl implements BillService {
         return billTicketRepo.findAllByBillId(bill.getId()).stream()
             .filter(bt -> bt.getTicket() != null && bt.getTicket().getPriceTicket() != null)
             .map(bt -> BigDecimal.valueOf(bt.getTicket().getPriceTicket())
-                .multiply(VAT_RATE)
+                .multiply(Constants.VAT_RATE)
                 .setScale(0, RoundingMode.HALF_UP))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

@@ -54,7 +54,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void updateMovie(MovieDTO movieDTO) {
-        Movie movie = movieRepo.findByName(movieDTO.getName())
+        Movie movie = movieRepo.findByNameAndIsActive(movieDTO.getName(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         movie.setMovieDuration(movieDTO.getMovieDuration());
@@ -69,9 +69,10 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void deleteMovie(String name) {
-        Movie movie = movieRepo.findByName(name)
+        Movie movie = movieRepo.findByNameAndIsActive(name, true)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-        movieRepo.delete(movie);
+        movie.setActive(false);
+        movieRepo.save(movie);
     }
 
     @Override

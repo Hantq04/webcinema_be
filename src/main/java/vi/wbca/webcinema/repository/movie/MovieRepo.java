@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Repository
 public interface MovieRepo extends JpaRepository<Movie, Long> {
-    Optional<Movie> findByName(String name);
+    Optional<Movie> findByNameAndIsActive(String name, boolean isActive);
 
     @Modifying
     @Transactional

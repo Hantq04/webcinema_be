@@ -11,6 +11,9 @@ import vi.wbca.webcinema.model.entity.setting.GeneralSetting;
 import vi.wbca.webcinema.model.entity.movie.Movie;
 import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
+import vi.wbca.webcinema.model.response.ScheduleResponse;
+import vi.wbca.webcinema.model.response.ScheduleGroupByDateResponse;
+import vi.wbca.webcinema.model.response.CinemaScheduleResponse;
 import vi.wbca.webcinema.repository.setting.GeneralSettingRepo;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
@@ -20,6 +23,9 @@ import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +41,18 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleMapper.toSchedule(scheduleDTO);
         Room room = roomRepo.findByNameAndCode(scheduleDTO.getRoomName(), scheduleDTO.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        Movie movie = movieRepo.findByName(scheduleDTO.getMovieName())
+        Movie movie = movieRepo.findByNameAndIsActive(scheduleDTO.getMovieName(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
 
         LocalDateTime startAt = scheduleDTO.getStartAt();
+
+        if (startAt.isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.INVALID_DATE);
+        }
+        if (movie.getEndDate() != null && movie.getEndDate().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.MOVIE_EXPIRED);
+        }
+        
         startAt = checkLastEndAt(room.getId(), startAt);
         LocalDateTime endAt = setEndTime(startAt, movie.getMovieDuration());
 
@@ -80,6 +94,54 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepo.findByCodeAndMovieId(code, movieId)
                 .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
         scheduleRepo.delete(schedule);
+    }
+
+    @Override
+    public List<ScheduleResponse> getAllSchedule() {
+        return scheduleRepo.findAll().stream()
+                .map(scheduleMapper::toScheduleResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ScheduleGroupByDateResponse> getSchedulesByMovieGroupedByDate(Long movieId) {
+        List<Schedule> schedules = scheduleRepo.findByMovieId(movieId);
+        
+        // Group by date, then by cinema
+        Map<String, Map<Long, List<Schedule>>> groupedByDateAndCinema = schedules.stream()
+                .filter(Schedule::isActive)
+                .collect(Collectors.groupingBy(
+                        s -> s.getStartAt().toLocalDate().toString(),
+                        LinkedHashMap::new,
+                        Collectors.groupingBy(s -> s.getRoom().getCinema().getId())
+                ));
+        
+        // Convert to response format
+        return groupedByDateAndCinema.entrySet().stream()
+                .map(dateEntry -> {
+                    String date = dateEntry.getKey();
+                    List<CinemaScheduleResponse> cinemaSchedules = dateEntry.getValue().entrySet().stream().map(cinemaEntry -> {
+                        Long cinemaId = cinemaEntry.getKey();
+                        List<Schedule> cinemaSchedulesList = cinemaEntry.getValue();
+                                
+                        String cinemaName = cinemaSchedulesList.get(0).getRoom().getCinema().getNameOfCinema();
+                        List<String> showtimeList = cinemaSchedulesList.stream()
+                                .map(s -> s.getStartAt().toLocalTime().toString())
+                                .distinct()
+                                .sorted().toList();
+                                
+                        return CinemaScheduleResponse.builder()
+                                .cinemaId(cinemaId)
+                                .cinemaName(cinemaName)
+                                .showtimes(showtimeList)
+                                .build();
+                        }).toList();
+                    
+                    return ScheduleGroupByDateResponse.builder()
+                            .date(date)
+                            .cinemas(cinemaSchedules)
+                            .build();
+                }).toList();
     }
 
     public LocalDateTime setEndTime(LocalDateTime startAt, int duration) {

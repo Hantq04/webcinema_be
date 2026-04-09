@@ -14,6 +14,7 @@ import vi.wbca.webcinema.model.entity.setting.GeneralSetting;
 import vi.wbca.webcinema.model.request.BookingRequest;
 import vi.wbca.webcinema.model.response.BookingResponse;
 import vi.wbca.webcinema.model.response.TicketResponse;
+import vi.wbca.webcinema.mapper.TicketMapper;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.repository.movie.TicketRepo;
@@ -40,6 +41,7 @@ public class TicketServiceImpl implements TicketService {
     private final GeneralSettingRepo generalSettingRepo;
     private final ScheduleService scheduleService;
     private final SeatService seatService;
+    private final TicketMapper ticketMapper;
 
     @Override
     public BookingResponse insertTicket(BookingRequest request) {
@@ -93,12 +95,9 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketResponse> getAllTicket() {
-        return ticketRepo.findAll().stream().map(ticket -> new TicketResponse(
-                ticket.getId(),
-                ticket.getCode(),
-                ticket.isActive(),
-                ticket.getPriceTicket()
-        )).toList();
+        return ticketRepo.findAll().stream()
+                .map(ticketMapper::toTicketResponse)
+                .toList();
     }
 
     public Schedule getSchedule(BookingRequest request, Room room) {

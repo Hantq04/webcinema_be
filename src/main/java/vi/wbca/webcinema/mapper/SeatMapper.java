@@ -2,21 +2,16 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vi.wbca.webcinema.model.dto.room.SeatDTO;
 import vi.wbca.webcinema.model.entity.seat.Seat;
+import vi.wbca.webcinema.model.response.SeatResponse;
 
 @Mapper(componentModel = "spring")
 public interface SeatMapper {
-//    @Mapping(target = "id", ignore = true)
-//    @Mapping(target = "tickets", ignore = true)
-//    @Mapping(target = "active", ignore = true)
-//    @Mapping(target = "seatStatus", ignore = true)
-//    @Mapping(target = "room", ignore = true)
-//    @Mapping(target = "seatType", ignore = true)
-//    Seat toSeat(SeatDTO seatDTO);
-//
-//    @Mapping(target = "totalSeats", ignore = true)
-//    @Mapping(target = "roomName", ignore = true)
-//    @Mapping(target = "roomCode", ignore = true)
-//    SeatDTO toSeatDTO(Seat seat);
+    @Mapping(source = "seat.id", target = "id")
+    @Mapping(source = "seat.line", target = "line")
+    @Mapping(source = "seat.number", target = "number")
+    @Mapping(source = "seat.seatStatus.nameStatus", target = "status")
+    @Mapping(source = "seat.room.code", target = "room")
+    @Mapping(source = "seat.seatType.nameType", target = "seatType")
+    SeatResponse toSeatResponse(Seat seat);
 }

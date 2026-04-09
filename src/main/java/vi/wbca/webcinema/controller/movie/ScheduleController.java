@@ -11,12 +11,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
+import vi.wbca.webcinema.model.response.ScheduleResponse;
+import vi.wbca.webcinema.model.response.ScheduleGroupByDateResponse;
 import vi.wbca.webcinema.validation.groupValidate.schedule.InsertSchedule;
 import vi.wbca.webcinema.validation.groupValidate.schedule.UpdateSchedule;
 import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -77,6 +80,31 @@ public class ScheduleController {
         String message = messageSource.getMessage("success.deactivate_expired_schedule", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, "")
+        );
+    }
+
+    @GetMapping("/get-all-schedule")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy tất cả lich chiếu")
+    public ResponseEntity<ResponseObject> getAllTicket() {
+        logger.info("----------Web Cinema: Get All Schedule----------");
+        List<ScheduleResponse> responseData = scheduleService.getAllSchedule();
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_all_schedule", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/movie")
+    @Operation(summary = "Lấy lịch chiếu theo phim")
+    public ResponseEntity<ResponseObject> getSchedulesByMovieGroupedByDate(@RequestParam Long movieId) {
+        logger.info("----------Web Cinema: Get Schedules For Movie----------");
+        List<ScheduleGroupByDateResponse> responseData = scheduleService.getSchedulesByMovieGroupedByDate(movieId);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_schedule_grouped", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 }

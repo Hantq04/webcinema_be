@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
+import vi.wbca.webcinema.model.response.ScheduleResponse;
 
 @Mapper(componentModel = "spring")
 public interface ScheduleMapper {
@@ -18,4 +19,13 @@ public interface ScheduleMapper {
     @Mapping(target = "roomName", ignore = true)
     @Mapping(target = "roomCode", ignore = true)
     ScheduleDTO toScheduleDTO(Schedule schedule);
+
+    @Mapping(source = "schedule.id", target = "id")
+    @Mapping(source = "schedule.room.name", target = "cinema")
+    @Mapping(source = "schedule.movie.name", target = "movie")
+    @Mapping(source = "schedule.startAt", target = "startAt")
+    @Mapping(source = "schedule.endAt", target = "endAt")
+    @Mapping(source = "schedule.code", target = "code")
+    @Mapping(source = "schedule.name", target = "name")
+    ScheduleResponse toScheduleResponse(Schedule schedule);
 }

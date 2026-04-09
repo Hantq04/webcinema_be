@@ -22,6 +22,7 @@ import vi.wbca.webcinema.model.response.PrintTicketItemResponse;
 import vi.wbca.webcinema.model.response.PrintTicketResponse;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.service.PrintTicketService;
+import vi.wbca.webcinema.util.Constants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class PrintTicketServiceImpl implements PrintTicketService {
-    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.05);
     private final BillRepo billRepo;
 
     @Override
@@ -173,6 +173,6 @@ public class PrintTicketServiceImpl implements PrintTicketService {
     }
 
     private BigDecimal calculateVatAmount(BigDecimal ticketPrice) {
-        return ticketPrice.multiply(VAT_RATE).setScale(0, java.math.RoundingMode.HALF_UP);
+        return ticketPrice.multiply(Constants.VAT_RATE).setScale(0, java.math.RoundingMode.HALF_UP);
     }
 }

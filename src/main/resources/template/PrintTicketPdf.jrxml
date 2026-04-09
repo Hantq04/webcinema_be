@@ -143,7 +143,7 @@
 				</textField>
 				<textField>
 					<reportElement style="Label" x="12" y="296" width="70" height="15" uuid="8db26345-9dcd-4fe8-9c98-031720adc852"/>
-					<textFieldExpression><![CDATA["VAT (5%)"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["VAT (10%)"]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement style="MoneyValue" x="84" y="295" width="196" height="16" uuid="168f546b-bb86-4887-8dca-4628dfc12f7d"/>

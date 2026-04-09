@@ -190,9 +190,14 @@ public class UserController {
     @GetMapping("/get-all")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     @Operation(summary = "Lấy danh sách tất cả người dùng")
-    public List<UserResponse> getAllUser() {
-        logger.info("----------Web Cinema: List User----------");
-        return userService.getAllUser();
+    public ResponseEntity<ResponseObject> getAllUser() {
+        logger.info("----------Web Cinema: Get All User----------");
+        List<UserResponse> responseData = userService.getAllUser();
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_all_user", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
     }
 
     @GetMapping("/find-by-id")

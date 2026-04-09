@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import vi.wbca.webcinema.model.dto.ticket.TicketDTO;
 import vi.wbca.webcinema.model.entity.movie.Ticket;
+import vi.wbca.webcinema.model.response.TicketResponse;
 
 @Mapper(componentModel = "spring")
 public interface TicketMapper {
@@ -19,4 +20,10 @@ public interface TicketMapper {
     @Mapping(target = "startTime", ignore = true)
     @Mapping(target = "selectSeat", ignore = true)
     TicketDTO toTicketDTO(Ticket ticket);
+
+    @Mapping(source = "ticket.id", target = "id")
+    @Mapping(source = "ticket.code", target = "code")
+    @Mapping(source = "ticket.active", target = "isActive")
+    @Mapping(source = "ticket.priceTicket", target = "priceTicket")
+    TicketResponse toTicketResponse(Ticket ticket);
 }
