@@ -25,15 +25,18 @@ public class ScheduleResponse {
 
     @Schema(description = "Thời gian bắt đầu chiếu phim")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    LocalDateTime startAt;
+    private LocalDateTime startAt;
 
     @Schema(description = "Thời gian kết thúc chiếu phim")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    LocalDateTime endAt;
+    private LocalDateTime endAt;
 
     @Schema(description = "Mã lịch chiếu")
-    String code;
+    private String code;
 
     @Schema(description = "Tên lịch chiếu")
-    String name;
+    private String name;
+
+    @Schema(description = "Trạng thái hoạt động của lịch chiếu")
+    private boolean isActive;
 }

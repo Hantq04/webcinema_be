@@ -27,5 +27,6 @@ public interface ScheduleMapper {
     @Mapping(source = "schedule.endAt", target = "endAt")
     @Mapping(source = "schedule.code", target = "code")
     @Mapping(source = "schedule.name", target = "name")
+    @Mapping(source = "schedule.active", target = "isActive")
     ScheduleResponse toScheduleResponse(Schedule schedule);
 }

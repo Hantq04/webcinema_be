@@ -19,7 +19,6 @@ import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.repository.movie.TicketRepo;
 import vi.wbca.webcinema.repository.seat.SeatRepo;
-import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.repository.setting.GeneralSettingRepo;
 import vi.wbca.webcinema.service.SeatService;
 import vi.wbca.webcinema.service.TicketService;
