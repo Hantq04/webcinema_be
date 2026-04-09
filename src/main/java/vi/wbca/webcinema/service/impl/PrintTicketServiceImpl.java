@@ -81,20 +81,12 @@ public class PrintTicketServiceImpl implements PrintTicketService {
                 printTickets.add(PrintTicketItemResponse.builder()
                         .ticketCode(ticket.getCode())
                         .seatCode(ticket.getSeat().getLine() + ticket.getSeat().getNumber())
-                        .seatType(ticket.getSeat().getSeatType() != null
-                                ? ticket.getSeat().getSeatType().getNameType()
-                                : null)
-                    .ticketPrice(ticket.getPriceTicket() != null
-                        ? BigDecimal.valueOf(ticket.getPriceTicket())
-                        : null)
-                    .vatAmount(ticket.getPriceTicket() != null
-                        ? calculateVatAmount(BigDecimal.valueOf(ticket.getPriceTicket()))
-                        : null)
-                    .totalAmount(ticket.getPriceTicket() != null
-                        ? BigDecimal.valueOf(ticket.getPriceTicket())
+                        .seatType(ticket.getSeat().getSeatType() != null ? ticket.getSeat().getSeatType().getNameType() : null)
+                    .ticketPrice(ticket.getPriceTicket() != null ? BigDecimal.valueOf(ticket.getPriceTicket()) : null)
+                    .vatAmount(ticket.getPriceTicket() != null ? calculateVatAmount(BigDecimal.valueOf(ticket.getPriceTicket())) : null)
+                    .totalAmount(ticket.getPriceTicket() != null ? BigDecimal.valueOf(ticket.getPriceTicket())
                             .add(calculateVatAmount(BigDecimal.valueOf(ticket.getPriceTicket())))
-                            .setScale(0, java.math.RoundingMode.HALF_UP)
-                        : null)
+                            .setScale(0, java.math.RoundingMode.HALF_UP) : null)
                         .build());
             }
         }
@@ -119,9 +111,7 @@ public class PrintTicketServiceImpl implements PrintTicketService {
                 if (ticket.getSchedule().getRoom() != null) {
                     roomName = ticket.getSchedule().getRoom().getName();
                     roomCode = ticket.getSchedule().getRoom().getCode();
-                    roomType = ticket.getSchedule().getRoom().getType() != null
-                            ? ticket.getSchedule().getRoom().getType().name()
-                            : null;
+                    roomType = ticket.getSchedule().getRoom().getType() != null ? ticket.getSchedule().getRoom().getType().name() : null;
                     if (ticket.getSchedule().getRoom().getCinema() != null) {
                         cinemaName = ticket.getSchedule().getRoom().getCinema().getNameOfCinema();
                         cinemaAddress = ticket.getSchedule().getRoom().getCinema().getAddress();

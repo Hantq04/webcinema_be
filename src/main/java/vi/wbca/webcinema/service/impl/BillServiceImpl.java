@@ -30,7 +30,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BillServiceImpl implements BillService {
-    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.05);
     private final BillRepo billRepo;
     private final BillMapper billMapper;
     private final UserRepo userRepo;
@@ -41,6 +40,8 @@ public class BillServiceImpl implements BillService {
     private final BillTicketRepo billTicketRepo;
     private final BillTicketService billTicketService;
     private final TicketHoldCleanupService ticketHoldCleanupService;
+
+    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.05);
 
     @Override
     public BillHoldResponse createBill(BillDTO request) {

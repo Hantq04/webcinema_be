@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.token.TokenDTO;
 import vi.wbca.webcinema.model.dto.user.UserDTO;
 import vi.wbca.webcinema.model.request.LoginRequest;
+import vi.wbca.webcinema.model.request.ChangePasswordRequest;
+import vi.wbca.webcinema.model.request.ResetPasswordRequest;
 import vi.wbca.webcinema.validation.groupValidate.user.DeleteUser;
 import vi.wbca.webcinema.validation.groupValidate.user.InsertUser;
 import vi.wbca.webcinema.validation.groupValidate.user.UpdateUser;
@@ -127,9 +129,9 @@ public class UserController {
     }
 
     @GetMapping("/forgot-password")
-    @Operation(summary = "Gửi email đặt lại mật khẩu")
+    @Operation(summary = "Gửi email đặt lại mật khẩu (Quên mật khẩu)")
     public ResponseEntity<ResponseObject> forgotPassword(@Valid @RequestParam String email) throws MessagingException, UnsupportedEncodingException {
-        logger.info("----------Web Cinema: Forgot Password----------");
+        logger.info("----------Web Cinema: Forgot Password - Request Token----------");
         String result = accountService.sendChangePassword(email);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.forgot_password", null, locale);
@@ -139,10 +141,31 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    @Operation(summary = "Đổi mật khẩu mới")
-    public ResponseEntity<ResponseObject> changePassword(@Valid @RequestParam String token, String newPassword, String confirmPassword) {
-        logger.info("----------Web Cinema: Change Password----------");
-        String responseData = accountService.changePassword(token, newPassword, confirmPassword);
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Đổi mật khẩu (Người dùng đã đăng nhập)")
+    public ResponseEntity<ResponseObject> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        logger.info("----------Web Cinema: Change Password - Logged In User----------");
+        String responseData = accountService.changePasswordForLoggedInUser(
+                request.getOldPassword(),
+                request.getNewPassword(),
+                request.getConfirmPassword()
+        );
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.change_password", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @PutMapping("/reset-password")
+    @Operation(summary = "Đặt lại mật khẩu (OTP)")
+    public ResponseEntity<ResponseObject> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        logger.info("----------Web Cinema: Reset Password - With Token----------");
+        String responseData = accountService.resetPasswordWithToken(
+                request.getToken(),
+                request.getNewPassword(),
+                request.getConfirmPassword()
+        );
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.change_password", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

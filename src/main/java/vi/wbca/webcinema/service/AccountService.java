@@ -24,6 +24,8 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 @RequiredArgsConstructor
@@ -93,23 +95,55 @@ public class AccountService {
         return messageSource.getMessage("account.verify_within_5_min", null, locale);
     }
 
-    public String changePassword(String otp, String newPassword, String confirmPassword) {
+    public String changePasswordForLoggedInUser(String oldPassword, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new AppException(ErrorCode.PASSWORD_MISMATCH);
         }
-        ConfirmEmail code = confirmEmailRepo.findByConfirmCode(otp)
+        User user = getCurrentUser();
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD);
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+
+        Locale locale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("account.password_change_success", null, locale);
+    }
+
+    public String resetPasswordWithToken(String token, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new AppException(ErrorCode.PASSWORD_MISMATCH);
+        }
+        ConfirmEmail code = confirmEmailRepo.findByConfirmCode(token)
                 .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
+
         LocalDateTime now = LocalDateTime.now();
         if (code.getExpiredTime().isBefore(now) && !code.isConfirm()) {
             confirmEmailRepo.delete(code);
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
+
         User user = userRepo.findByConfirmEmails(code)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
         user.setPassword(passwordEncoder.encode(newPassword));
+        code.setConfirm(true);
         userRepo.save(user);
+        confirmEmailRepo.save(code);
+
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("account.password_change_success", null, locale);
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        String email = authentication.getName();
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
     }
 
     public String sendChangePassword(String email) throws MessagingException, UnsupportedEncodingException {
