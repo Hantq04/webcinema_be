@@ -1,5 +1,7 @@
 package vi.wbca.webcinema.repository.bill;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,34 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     Optional<Bill> findByTradingCode(String code);
 
     Optional<Bill> findByUser(User user);
+
+        Page<Bill> findAllByIsActiveTrue(Pageable pageable);
+
+        Page<Bill> findAllByUserAndIsActiveTrue(User user, Pageable pageable);
+
+        @Query(value = """
+        SELECT DISTINCT b
+        FROM Bill b
+        JOIN b.billTickets bt
+        JOIN bt.ticket t
+        JOIN t.schedule s
+        JOIN s.room r
+        JOIN r.cinema c
+        WHERE b.isActive = true
+            AND c.id = :cinemaId
+        """,
+        countQuery = """
+        SELECT COUNT(DISTINCT b)
+        FROM Bill b
+        JOIN b.billTickets bt
+        JOIN bt.ticket t
+        JOIN t.schedule s
+        JOIN s.room r
+        JOIN r.cinema c
+        WHERE b.isActive = true
+            AND c.id = :cinemaId
+        """)
+        Page<Bill> findAllByCinemaIdAndIsActiveTrue(Long cinemaId, Pageable pageable);
 
     boolean existsByUserAndBillStatus(User user, BillStatus billStatus);
 
