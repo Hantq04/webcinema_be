@@ -166,10 +166,8 @@ public class UserController {
                 request.getNewPassword(),
                 request.getConfirmPassword()
         );
-        Locale locale = LocaleContextHolder.getLocale();
-        String message = messageSource.getMessage("success.change_password", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+                new ResponseObject(HttpStatus.OK, null, responseData)
         );
     }
 

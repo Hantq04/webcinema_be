@@ -12,9 +12,14 @@ import vi.wbca.webcinema.enums.UserStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.setting.ConfirmEmail;
+import vi.wbca.webcinema.model.entity.user.ChangeTypeEnum;
 import vi.wbca.webcinema.model.entity.user.User;
+import vi.wbca.webcinema.model.entity.user.UserChangeHistory;
+import vi.wbca.webcinema.model.entity.user.UserProfile;
 import vi.wbca.webcinema.model.entity.user.UserStatus;
 import vi.wbca.webcinema.repository.setting.ConfirmEmailRepo;
+import vi.wbca.webcinema.repository.user.UserChangeHistoryRepo;
+import vi.wbca.webcinema.repository.user.UserProfileRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.repository.user.UserStatusRepo;
 import vi.wbca.webcinema.util.EmailUtils;
@@ -33,6 +38,8 @@ public class AccountService {
     private final EmailService emailService;
     private final ConfirmEmailRepo confirmEmailRepo;
     private final UserRepo userRepo;
+    private final UserProfileRepo userProfileRepo;
+    private final UserChangeHistoryRepo userChangeHistoryRepo;
     private final UserStatusRepo userStatusRepo;
     private final PasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
@@ -43,8 +50,8 @@ public class AccountService {
 
     public void sendVerificationEmail(User user) throws MessagingException, UnsupportedEncodingException {
         String subject = "Email Verification";
-        String content = EmailUtils.getEmailMessage(user, generateOTP);
-        emailService.sendMail(user.getEmail(), subject, content);
+        String content = EmailUtils.getEmailMessage(getUserDisplayName(user), generateOTP);
+        emailService.sendMail(getUserEmail(user), subject, content);
         createConfirmEmail(user);
     }
 
@@ -86,9 +93,10 @@ public class AccountService {
         String subject = "Email Verification";
         String content = EmailUtils.getResendEmailMessage(generateOTP);
 
-        emailService.sendMail(email, subject, content);
-        User user = userRepo.findByEmail(email)
+        User user = userProfileRepo.findByEmail(email)
+            .map(UserProfile::getUser)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+        emailService.sendMail(email, subject, content);
         createConfirmEmail(user);
         userRepo.save(user);
         Locale locale = LocaleContextHolder.getLocale();
@@ -101,11 +109,21 @@ public class AccountService {
         }
         User user = getCurrentUser();
 
+        LocalDateTime updatedAt = user.getUpdatedAt();
+        if (updatedAt != null && updatedAt.plusDays(30).isAfter(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.PASSWORD_CHANGE_TOO_SOON);
+        }
+
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new AppException(ErrorCode.INVALID_PASSWORD);
+            throw new AppException(ErrorCode.CURRENT_PASSWORD_INCORRECT);
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
+        userChangeHistoryRepo.save(UserChangeHistory.builder()
+            .user(user)
+            .changeType(ChangeTypeEnum.PASSWORD_CHANGE)
+            .passwordChanged(true)
+            .build());
 
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("account.password_change_success", null, locale);
@@ -130,6 +148,11 @@ public class AccountService {
         user.setPassword(passwordEncoder.encode(newPassword));
         code.setConfirm(true);
         userRepo.save(user);
+        userChangeHistoryRepo.save(UserChangeHistory.builder()
+            .user(user)
+            .changeType(ChangeTypeEnum.PASSWORD_CHANGE)
+            .passwordChanged(true)
+            .build());
         confirmEmailRepo.save(code);
 
         Locale locale = LocaleContextHolder.getLocale();
@@ -141,8 +164,9 @@ public class AccountService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AppException(ErrorCode.NOT_FOUND);
         }
-        String email = authentication.getName();
-        return userRepo.findByEmail(email)
+        String principal = authentication.getName();
+        return userRepo.findByUserName(principal)
+                .or(() -> userProfileRepo.findByEmail(principal).map(UserProfile::getUser))
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
     }
 
@@ -150,11 +174,24 @@ public class AccountService {
         String subject = "Email Change Password";
         String content = EmailUtils.getChangePasswordMessage(generateOTP);
 
-        emailService.sendMail(email, subject, content);
-        User user = userRepo.findByEmail(email)
+        User user = userProfileRepo.findByEmail(email)
+                .map(UserProfile::getUser)
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+        emailService.sendMail(email, subject, content);
         createConfirmEmail(user);
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("account.check_email_change_password", null, locale);
+    }
+
+    private String getUserEmail(User user) {
+        return userProfileRepo.findByUser(user)
+                .map(UserProfile::getEmail)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+    }
+
+    private String getUserDisplayName(User user) {
+        return userProfileRepo.findByUser(user)
+                .map(UserProfile::getName)
+                .orElse(user.getUsername());
     }
 }

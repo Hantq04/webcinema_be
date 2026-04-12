@@ -6,6 +6,7 @@ import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.request.BannerRequest;
+import vi.wbca.webcinema.model.response.BannerResponse;
 import vi.wbca.webcinema.repository.setting.BannerRepo;
 import vi.wbca.webcinema.service.BannerService;
 import vi.wbca.webcinema.util.ImageUtils;
@@ -36,7 +37,11 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
-    public List<Banner> getAllBanner() {
-        return bannerRepo.findAll();
+    public List<BannerResponse> getAllBanner() {
+        return bannerRepo.findAll().stream().map(banner -> BannerResponse.builder()
+                .id(banner.getId())
+                .imageUrl(banner.getImageUrl())
+                .title(banner.getTitle())
+                .build()).toList();
     }
 }

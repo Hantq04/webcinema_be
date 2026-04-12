@@ -10,17 +10,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import vi.wbca.webcinema.model.entity.user.UserProfile;
+import vi.wbca.webcinema.repository.user.UserProfileRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityApplication {
     private final UserRepo userRepo;
+    private final UserProfileRepo userProfileRepo;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepo.findByUserName(username)
-                .orElseGet(() -> userRepo.findByEmail(username)
+            .orElseGet(() -> userProfileRepo.findByEmail(username)
+                .map(UserProfile::getUser)
                         .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username)));
     }
 

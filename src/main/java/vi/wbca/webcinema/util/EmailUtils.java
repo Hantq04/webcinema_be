@@ -1,9 +1,7 @@
 package vi.wbca.webcinema.util;
 
-import vi.wbca.webcinema.model.entity.user.User;
-
 public class EmailUtils {
-    public static String getEmailMessage(User user, String otp) {
+    public static String getEmailMessage(String displayName, String otp) {
         return String.format(
                 "<p>Hi, %s,</p>" +
                         "<p>Thank you for registering with us.</p>" +
@@ -11,7 +9,7 @@ public class EmailUtils {
                         "<h2>%s</h2>" +
                         "<p>Please enter this OTP to activate your account. This OTP is valid for a limited time.</p>" +
                         "<p>Thank you, <br>FilmTick Support Team</p>",
-                user.getName(), otp
+                displayName, otp
         );
     }
 

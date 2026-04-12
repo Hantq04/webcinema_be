@@ -13,11 +13,10 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseObject {
     int status;
     String message;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     Object data;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

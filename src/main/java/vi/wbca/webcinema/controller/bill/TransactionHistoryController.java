@@ -21,11 +21,13 @@ import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.Locale;
+import java.util.logging.Logger;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/transaction")
 public class TransactionHistoryController {
+	private static final Logger logger = Logger.getLogger(PromotionController.class.getName());
 	private final TransactionHistoryService historyService;
 	private final MessageSource messageSource;
 
@@ -36,6 +38,7 @@ public class TransactionHistoryController {
 																@RequestParam int page,
 																@RequestParam int size
 	) {
+		logger.info("----------Web Cinema: Get Transaction History----------");
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
 		Page<TransactionHistoryResponse> responseData = historyService.getTransactionHistory(cinemaId, pageable);
 		Locale locale = LocaleContextHolder.getLocale();

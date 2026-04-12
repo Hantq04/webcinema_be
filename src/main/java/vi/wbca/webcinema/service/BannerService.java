@@ -1,7 +1,7 @@
 package vi.wbca.webcinema.service;
 
-import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.request.BannerRequest;
+import vi.wbca.webcinema.model.response.BannerResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,5 +11,5 @@ public interface BannerService {
 
     void deleteBanner(Long id);
 
-    List<Banner> getAllBanner();
+    List<BannerResponse> getAllBanner();
 }

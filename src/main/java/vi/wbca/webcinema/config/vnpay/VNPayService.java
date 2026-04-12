@@ -15,10 +15,12 @@ import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.model.entity.bill.UserPromotion;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.model.entity.user.User;
+import vi.wbca.webcinema.model.entity.user.UserProfile;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.bill.UserPromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
+import vi.wbca.webcinema.repository.user.UserProfileRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.service.TicketHoldCleanupService;
 import vi.wbca.webcinema.util.EmailUtils;
@@ -41,6 +43,7 @@ public class VNPayService {
     private final BillStatusRepo billStatusRepo;
     private final UserPromotionRepo userPromotionRepo;
     private final UserRepo userRepo;
+    private final UserProfileRepo userProfileRepo;
     private final RankCustomerRepo rankCustomerRepo;
     private final TicketHoldCleanupService ticketHoldCleanupService;
 
@@ -213,13 +216,16 @@ public class VNPayService {
 
                 message.append("Total Price: ").append(formattedTotalPrice).append(" VND");
 
-                String userEmail = bill.getUser().getEmail();
+                String userEmail = userProfileRepo.findByUser(bill.getUser())
+                    .map(profile -> profile.getEmail())
+                    .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
 
                 // Send the response via email
                 sendResponse(message, userEmail);
 
                 bill.setBillStatus(getStatus(BillStatusEnum.SUCCESS.toString()));
-                user.setPoint(calculatePoint(bill, user));
+                UserProfile profile = getUserProfile(bill.getUser());
+                profile.setPoint(calculatePoint(bill, profile));
 
                 if (bill.getPromotion() != null) {
                     UserPromotion userPromotion = userPromotionRepo.findByUserIdAndPromotionId(
@@ -240,9 +246,10 @@ public class VNPayService {
                         userPromotionRepo.save(userPromotion);
                     }
                 }
-                if (user.getPoint() >= rankCustomer.getPoint()) {
+                if (profile.getPoint() >= rankCustomer.getPoint()) {
                     user.setRankCustomer(rankCustomer);
                 }
+                userProfileRepo.save(profile);
                 userRepo.save(user);
                 billRepo.save(bill);
 
@@ -286,10 +293,15 @@ public class VNPayService {
         return !bill.getCreateTime().plusMinutes(5).isAfter(LocalDateTime.now());
     }
 
-    public int calculatePoint(Bill bill, User user) {
+    public int calculatePoint(Bill bill, UserProfile profile) {
         int newPoint = bill.getTotalMoney().intValue();
-        int currentPoint = user.getPoint();
+        int currentPoint = profile.getPoint() == null ? 0 : profile.getPoint();
         return currentPoint + newPoint;
+    }
+
+    private UserProfile getUserProfile(User user) {
+        return userProfileRepo.findByUser(user)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
     }
 
     private String formatDetailAsList(String detailText) {

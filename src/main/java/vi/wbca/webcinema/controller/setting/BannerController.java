@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.request.BannerRequest;
+import vi.wbca.webcinema.model.response.BannerResponse;
 import vi.wbca.webcinema.service.BannerService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -60,7 +60,7 @@ public class BannerController {
         logger.info("----------Web Cinema: Get All Banner----------");
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_all_banner", null, locale);
-        List<Banner> responseData = bannerService.getAllBanner();
+        List<BannerResponse> responseData = bannerService.getAllBanner();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );

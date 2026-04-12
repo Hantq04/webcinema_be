@@ -67,6 +67,9 @@ public enum ErrorCode {
     TICKET_ALREADY_BOOKED(1245, "error.1245", HttpStatus.BAD_REQUEST),
     DUPLICATE_PROMOTION(1246, "error.1246", HttpStatus.BAD_REQUEST),
     PRINT_TICKET_NOT_ALLOWED(1247, "error.1247", HttpStatus.BAD_REQUEST),
+    PASSWORD_CHANGE_TOO_SOON(1248, "error.1248", HttpStatus.BAD_REQUEST),
+    CURRENT_PASSWORD_INCORRECT(1249, "error.1249", HttpStatus.BAD_REQUEST),
+    PASSWORD_CHANGED_RECENTLY(1250, "error.1250", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),
