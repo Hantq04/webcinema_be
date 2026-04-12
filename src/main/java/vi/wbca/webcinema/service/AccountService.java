@@ -109,8 +109,11 @@ public class AccountService {
         }
         User user = getCurrentUser();
 
-        LocalDateTime updatedAt = user.getUpdatedAt();
-        if (updatedAt != null && updatedAt.plusDays(30).isAfter(LocalDateTime.now())) {
+        if (userChangeHistoryRepo.existsByUserAndChangeTypeAndChangedAtAfter(
+                user,
+                ChangeTypeEnum.PASSWORD_CHANGE,
+                LocalDateTime.now().minusDays(30)
+        )) {
             throw new AppException(ErrorCode.PASSWORD_CHANGE_TOO_SOON);
         }
 

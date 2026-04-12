@@ -19,7 +19,6 @@ public interface UserMapper {
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "profile", ignore = true)
     @Mapping(target = "changeHistories", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     User toUser(UserDTO userDTO);
 
     @Mapping(source = "username", target = "userName")

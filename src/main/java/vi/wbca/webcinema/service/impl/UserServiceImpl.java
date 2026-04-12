@@ -106,8 +106,8 @@ public class UserServiceImpl implements UserService {
             AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
 //            response.setRefreshToken(refreshTokenService.getRefreshToken(user));
 
-            boolean changedRecently = userChangeHistoryRepo.existsByUserAndPasswordChangedTrueAndChangedAtAfter(
-                    user, LocalDateTime.now().minusDays(30));
+            boolean changedRecently = userChangeHistoryRepo.existsByUserAndChangeTypeAndChangedAtAfter(
+                    user, ChangeTypeEnum.PASSWORD_CHANGE, LocalDateTime.now().minusDays(30));
             if (changedRecently) {
                 throw new AppException(ErrorCode.PASSWORD_CHANGED_RECENTLY);
             }

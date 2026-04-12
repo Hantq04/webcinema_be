@@ -1,10 +1,8 @@
 package vi.wbca.webcinema.model.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +12,6 @@ import vi.wbca.webcinema.model.entity.setting.ConfirmEmail;
 import vi.wbca.webcinema.model.entity.token.AccessToken;
 import vi.wbca.webcinema.model.entity.token.RefreshToken;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,10 +33,6 @@ public class User implements UserDetails {
 
     @Column(name = "password")
     String password;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    LocalDateTime updatedAt;
 
     @Column(name = "is_active")
     boolean isActive;
