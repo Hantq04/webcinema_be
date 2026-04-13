@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +44,6 @@ import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +63,6 @@ public class UserServiceImpl implements UserService {
     RefreshTokenService refreshTokenService;
     UserProfileRepo userProfileRepo;
     UserChangeHistoryRepo userChangeHistoryRepo;
-    MessageSource messageSource;
 
     @Override
     public void register(UserDTO request) {
@@ -139,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
         UserChangeHistory history = UserChangeHistory.builder()
                 .user(currentUser)
-            .changeType(ChangeTypeEnum.PROFILE_UPDATE)
+                .changeType(ChangeTypeEnum.PROFILE_UPDATE)
                 .oldName(profile.getName())
                 .newName(request.getName())
                 .oldEmail(profile.getEmail())
@@ -150,11 +147,11 @@ public class UserServiceImpl implements UserService {
                 .build();
         userChangeHistoryRepo.save(history);
 
-        if (request.getPassword() != null) currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.getPassword() != null) {
+            currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
 
-        profile.setName(request.getName());
-        profile.setEmail(request.getEmail());
-        profile.setPhoneNumber(request.getPhoneNumber());
+        userMapper.updateUserProfileFromDTO(request, profile);
 
         userProfileRepo.save(profile);
         userRepo.save(currentUser);
@@ -182,16 +179,8 @@ public class UserServiceImpl implements UserService {
     public UserDTO findById(Long id) {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        UserProfile profile = getRequiredProfile(user);
-
-        UserDTO dto = new UserDTO();
-        dto.setPoint(profile.getPoint());
-        dto.setUserName(user.getUsername());
-        dto.setEmail(profile.getEmail());
-        dto.setName(profile.getName());
-        dto.setPhoneNumber(profile.getPhoneNumber());
-        dto.setPassword(user.getPassword());
-        return dto;
+        getRequiredProfile(user);
+        return userMapper.toUserDTO(user);
     }
 
     public void userStatusAndRank(User user) {

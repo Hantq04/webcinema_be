@@ -102,9 +102,9 @@ public class UserController {
         );
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update-profile")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
-    @Operation(summary = "Cập nhật tài khoản người dùng")
+    @Operation(summary = "Cập nhật thông tin người dùng")
     public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
         logger.info("----------Web Cinema: Update User----------");
         userService.updateUser(request);
