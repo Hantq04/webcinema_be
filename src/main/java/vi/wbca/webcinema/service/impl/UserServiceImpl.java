@@ -81,6 +81,9 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepo.findByUserName(request.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+        boolean changedRecently = userChangeHistoryRepo.existsByUserAndChangeTypeAndChangedAtAfter(
+                user, ChangeTypeEnum.PASSWORD_CHANGE, LocalDateTime.now().minusDays(30));
+
         if (!user.isActive()) {
             throw new AppException(ErrorCode.USER_NOT_VERIFIED);
         }
@@ -103,12 +106,6 @@ public class UserServiceImpl implements UserService {
             AccessToken accessToken = accessTokenService.findByAccessToken(jwt);
 //            response.setRefreshToken(refreshTokenService.getRefreshToken(user));
 
-            boolean changedRecently = userChangeHistoryRepo.existsByUserAndChangeTypeAndChangedAtAfter(
-                    user, ChangeTypeEnum.PASSWORD_CHANGE, LocalDateTime.now().minusDays(30));
-            if (changedRecently) {
-                throw new AppException(ErrorCode.PASSWORD_CHANGED_RECENTLY);
-            }
-
             return LoginResponse.builder()
                     .userName(user.getUsername())
                     .role(user.getRole().toString())
@@ -116,6 +113,9 @@ public class UserServiceImpl implements UserService {
                     .expiresIn(accessToken.getExpiresIn())
                     .build();
         } catch (BadCredentialsException ex) {
+            if (changedRecently) {
+                throw new AppException(ErrorCode.PASSWORD_CHANGED_RECENTLY);
+            }
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
