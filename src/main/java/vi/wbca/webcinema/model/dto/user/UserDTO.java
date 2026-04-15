@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.model.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -35,17 +36,12 @@ public class UserDTO {
     @Pattern(regexp = "^0\\d{9}$", message = "INVALID_PHONE_FORM", groups = {InsertUser.class, UpdateUser.class})
     String phoneNumber;
 
-    String address;
-
-    String city;
-
-    String district;
-
-    String gender;
-
+    @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     LocalDate birthDate;
 
-    String avatarUrl;
+    @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})
+    String gender;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, LoginUser.class, UpdateUser.class})
     @Size(min = 6, max = 20, message = "INVALID_PASSWORD", groups = {InsertUser.class, UpdateUser.class})

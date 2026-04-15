@@ -235,6 +235,8 @@ public class UserServiceImpl implements UserService {
             .name(request.getName())
             .email(request.getEmail())
             .phoneNumber(request.getPhoneNumber())
+            .birthDate(request.getBirthDate())
+            .gender(request.getGender())
             .point(0)
             .build();
         userProfileRepo.save(profile);
