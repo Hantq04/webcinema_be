@@ -1,9 +1,11 @@
 package vi.wbca.webcinema.model.entity.movie;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vi.wbca.webcinema.model.entity.setting.Banner;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,6 +56,11 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie")
     List<Schedule> schedules;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "banner_id")
+    Banner banner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_type_id")

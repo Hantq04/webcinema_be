@@ -40,8 +40,8 @@ public class MovieDTO {
     @Size(min = 3, max = 20, message = "INVALID_DIRECTOR", groups = {InsertMovie.class, UpdateMovie.class})
     String director;
 
-    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    String image;
+    @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    Long bannerId;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @Size(min = 3, max = 20, message = "INVALID_LANGUAGE", groups = {InsertMovie.class, UpdateMovie.class})
@@ -56,7 +56,7 @@ public class MovieDTO {
     String trailer;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class})
-    String movieTypeName;
+    String movieType;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     String code;

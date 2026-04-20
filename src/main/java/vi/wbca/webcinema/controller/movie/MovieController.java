@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.movie.MovieDTO;
+import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.validation.groupValidate.movie.InsertMovie;
@@ -22,6 +23,7 @@ import vi.wbca.webcinema.service.MovieService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -95,6 +97,18 @@ public class MovieController {
         Page<MovieStatisticDTO> pageData = movieService.sortMovieByTicketOrder(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, pageData)
+        );
+    }
+
+    @GetMapping("/get-now-showing-movie")
+    @Operation(summary = "Lấy danh sách phim đang chiếu")
+    public ResponseEntity<ResponseObject> getNowShowingMovie() {
+        logger.info("----------Web Cinema: Get Now Showing Movie----------");
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_now_showing_movie", null, locale);
+        List<MovieNowShowingDTO> responseData = movieService.getNowShowingMovies();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 

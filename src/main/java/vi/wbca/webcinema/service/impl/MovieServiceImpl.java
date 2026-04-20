@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.model.dto.movie.MovieDTO;
+import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.exception.AppException;
@@ -15,16 +16,19 @@ import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.movie.Movie;
 import vi.wbca.webcinema.model.entity.movie.MovieType;
 import vi.wbca.webcinema.model.entity.movie.Rate;
+import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
 import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
 import vi.wbca.webcinema.repository.movie.MovieTypeRepo;
 import vi.wbca.webcinema.repository.movie.RateRepo;
+import vi.wbca.webcinema.repository.setting.BannerRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.service.MovieService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,7 @@ public class MovieServiceImpl implements MovieService {
     private final MovieMapper movieMapper;
     private final MovieTypeRepo movieTypeRepo;
     private final RateRepo rateRepo;
+    private final BannerRepo bannerRepo;
     private final CinemaRepo cinemaRepo;
     private final RoomRepo roomRepo;
     private final SeatStatusRepo seatStatusRepo;
@@ -40,7 +45,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void insertMovie(MovieDTO request) {
         Movie movie = movieMapper.toMovie(request);
-        MovieType movieType = movieTypeRepo.findByMovieTypeName(request.getMovieTypeName())
+        MovieType movieType = movieTypeRepo.findByMovieTypeName(request.getMovieType())
                 .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
         LocalDateTime premiereDate = request.getPremiereDate();
@@ -48,6 +53,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setRate(setRate(request));
         movie.setPremiereDate(premiereDate);
         movie.setEndDate(premiereDate.plusDays(30));
+        applyBanner(movie, request.getBannerId());
         movie.setActive(true);
         movieRepo.save(movie);
     }
@@ -60,10 +66,10 @@ public class MovieServiceImpl implements MovieService {
         movie.setMovieDuration(movieDTO.getMovieDuration());
         movie.setDescription(movieDTO.getDescription());
         movie.setDirector(movieDTO.getDirector());
-        movie.setImage(movieDTO.getImage());
         movie.setLanguage(movieDTO.getLanguage());
         movie.setTrailer(movieDTO.getTrailer());
         movie.setRate(setRate(movieDTO));
+        applyBanner(movie, movieDTO.getBannerId());
         movieRepo.save(movie);
     }
 
@@ -84,6 +90,18 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable) {
         return movieRepo.getTicketStatistics(pageable);
+    }
+
+    @Override
+    public List<MovieNowShowingDTO> getNowShowingMovies() {
+        LocalDateTime now = LocalDateTime.now();
+        return movieRepo.filterMovies(now, true, false, null).stream()
+            .map(movie -> MovieNowShowingDTO.builder()
+                    .id(movie.getId())
+                    .name(movie.getName())
+                    .image(movie.getBanner() != null ? movie.getBanner().getImageUrl() : null)
+                    .trailer(movie.getTrailer())
+                    .build()).toList();
     }
 
     @Override
@@ -115,5 +133,12 @@ public class MovieServiceImpl implements MovieService {
     public Cinema getCinema(String code) {
         return cinemaRepo.findByCode(code).
                 orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+    }
+
+    private void applyBanner(Movie movie, Long bannerId) {
+        Banner banner = bannerRepo.findById(bannerId)
+                .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
+        movie.setBanner(banner);
+        movie.setImage(banner.getImageUrl());
     }
 }

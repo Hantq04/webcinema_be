@@ -1,8 +1,10 @@
 package vi.wbca.webcinema.model.entity.setting;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vi.wbca.webcinema.model.entity.movie.Movie;
 
 @Entity
 @Getter
@@ -21,4 +23,8 @@ public class Banner {
 
     @Column(name = "title")
     String title;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "banner", fetch = FetchType.LAZY)
+    Movie movie;
 }

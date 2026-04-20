@@ -31,12 +31,8 @@ public interface UserMapper {
     @Mapping(source = "profile.email", target = "email")
     @Mapping(source = "profile.name", target = "name")
     @Mapping(source = "profile.phoneNumber", target = "phoneNumber")
-    @Mapping(source = "profile.address", target = "address")
-    @Mapping(source = "profile.city", target = "city")
-    @Mapping(source = "profile.district", target = "district")
-    @Mapping(source = "profile.gender", target = "gender")
     @Mapping(source = "profile.birthDate", target = "birthDate")
-    @Mapping(source = "profile.avatarUrl", target = "avatarUrl")
+    @Mapping(source = "profile.gender", target = "gender")
     UserDTO toUserDTO(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
