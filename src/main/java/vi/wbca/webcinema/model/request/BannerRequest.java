@@ -21,6 +21,6 @@ public class BannerRequest {
 
     @Schema(description = "Tiêu đề của banner")
     @NotBlank(message = "NOT_BLANK")
-    @Size(min = 3, max = 20, message = "INVALID_NAME")
+    @Size(min = 3, max = 20, message = "SIZE_RANGE")
     private String title;
 }

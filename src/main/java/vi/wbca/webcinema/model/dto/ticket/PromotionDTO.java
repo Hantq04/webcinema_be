@@ -38,11 +38,11 @@ public class PromotionDTO {
     LocalDateTime endTime;
 
     @NotBlank(message = "NOT_BLANK")
-    @Size(min = 6, max = 50, message = "INVALID_DESCRIPTION")
+    @Size(min = 6, max = 50, message = "SIZE_RANGE")
     String description;
 
     @NotBlank(message = "NOT_BLANK")
-    @Size(min = 3, max = 20, message = "INVALID_NAME")
+    @Size(min = 3, max = 20, message = "SIZE_RANGE")
     String name;
 
     @NotBlank(message = "NOT_BLANK")

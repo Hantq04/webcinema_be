@@ -4,11 +4,13 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import jakarta.validation.constraints.Size;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,9 +20,7 @@ import vi.wbca.webcinema.util.logging.LoggingUtils;
 import vi.wbca.webcinema.util.response.FieldValidationError;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @ControllerAdvice
@@ -51,45 +51,29 @@ public class GlobalExceptionHandler {
 
         if (exception instanceof MethodArgumentNotValidException e) {
             errorCode = ErrorCode.VALIDATE_ERROR;
+            Object target = e.getBindingResult().getTarget();
 
-            // First, check for all NOT_BLANK errors (required fields)
-            List<FieldValidationError> blankErrors = e.getFieldErrors().stream()
-                    .filter(fieldError -> REQUIRED_FIELD_MESSAGES.contains(fieldError.getDefaultMessage()))
-                    .map(fieldError -> {
-                        String fieldLabel = resolveFieldLabel(fieldError.getField());
-                        String msg = messageUtils.getMessage(ErrorCode.NOT_BLANK.getMessage(), fieldLabel);
-                        return new FieldValidationError(fieldError.getField(), msg);
-                    }).toList();
+            Map<String, FieldValidationError> requiredFieldErrorsByField = new LinkedHashMap<>();
+            Map<String, FieldValidationError> otherFieldErrorsByField = new LinkedHashMap<>();
 
-            // If there are blank errors, return all of them
-            if (!blankErrors.isEmpty()) {
-                log.info("Error :: Validation Exception - Blank Fields");
-                log.info("Error Fields :: {}", e.getFieldErrors());
-                LoggingUtils.loggingError(exception);
-                log.error("Full stack trace:", exception);
-                if (exception.getCause() != null) {
-                    log.error("Caused by:", exception.getCause());
+            e.getFieldErrors().forEach(fieldError -> {
+                String fieldName = fieldError.getField();
+                boolean isRequiredError = REQUIRED_FIELD_MESSAGES.contains(fieldError.getDefaultMessage());
+
+                FieldValidationError mappedError = isRequiredError
+                    ? new FieldValidationError(fieldName, messageUtils.getMessage(ErrorCode.NOT_BLANK.getMessage(), resolveFieldLabel(fieldName)))
+                    : isSizeMessage(fieldError.getDefaultMessage()) ? new FieldValidationError(fieldName, resolveSizeMessage(target, fieldName))
+                        : new FieldValidationError(fieldName, resolveValidationMessage(fieldError.getDefaultMessage()));
+
+                if (isRequiredError) {
+                    requiredFieldErrorsByField.put(fieldName, mappedError);
+                } else if (!requiredFieldErrorsByField.containsKey(fieldName)) {
+                    otherFieldErrorsByField.putIfAbsent(fieldName, mappedError);
                 }
-                return ResponseEntity.status(e.getStatusCode()).body(
-                        new ResponseObject(errorCode.getCode(), messageUtils.getMessage(errorCode.getMessage()), blankErrors)
-                );
-            }
+            });
 
-            // If no blank errors, return first format/validation error
-            List<FieldValidationError> fieldErrors = e.getFieldErrors().stream()
-                    .filter(fieldError -> !REQUIRED_FIELD_MESSAGES.contains(fieldError.getDefaultMessage()))
-                    .limit(1)
-                    .map(fieldError -> {
-                        String enumKey = fieldError.getDefaultMessage();
-                        ErrorCode fieldErrorCode = errorCode;
-                        try {
-                            fieldErrorCode = ErrorCode.valueOf(enumKey);
-                        } catch (IllegalArgumentException ex) {
-                            log.info("Exception: {}", ex.getMessage());
-                        }
-                        String msg = messageUtils.getMessage(fieldErrorCode.getMessage());
-                        return new FieldValidationError(fieldError.getField(), msg);
-                    }).toList();
+            List<FieldValidationError> fieldErrors = !requiredFieldErrorsByField.isEmpty()
+                    ? new ArrayList<>(requiredFieldErrorsByField.values()) : new ArrayList<>(otherFieldErrorsByField.values());
 
             log.info("Error :: Validation Exception");
             log.info("Error Fields :: {}", e.getFieldErrors());
@@ -162,5 +146,43 @@ public class GlobalExceptionHandler {
         }
 
         return Character.toUpperCase(normalized.charAt(0)) + normalized.substring(1);
+    }
+
+    private String resolveValidationMessage(String defaultMessage) {
+        ErrorCode fieldErrorCode = ErrorCode.VALIDATE_ERROR;
+        try {
+            fieldErrorCode = ErrorCode.valueOf(defaultMessage);
+        } catch (IllegalArgumentException ex) {
+            log.info("Exception: {}", ex.getMessage());
+        }
+        return messageUtils.getMessage(fieldErrorCode.getMessage());
+    }
+
+    private boolean isSizeMessage(String defaultMessage) {
+        return "SIZE_RANGE".equals(defaultMessage);
+    }
+
+    private String resolveSizeMessage(Object target, String fieldName) {
+        Size size = resolveSizeConstraint(target, fieldName);
+        if (size == null) {
+            return messageUtils.getMessage(ErrorCode.SIZE_RANGE.getMessage(), resolveFieldLabel(fieldName), "", "");
+        }
+
+        String fieldLabel = resolveFieldLabel(fieldName);
+        return messageUtils.getMessage(ErrorCode.SIZE_RANGE.getMessage(), fieldLabel, size.min(), size.max());
+    }
+
+    private Size resolveSizeConstraint(Object target, String fieldName) {
+        if (target == null) {
+            return null;
+        }
+
+        try {
+            java.lang.reflect.Field declaredField = target.getClass().getDeclaredField(fieldName);
+            return declaredField.getAnnotation(Size.class);
+        } catch (NoSuchFieldException ex) {
+            log.info("Exception: {}", ex.getMessage());
+            return null;
+        }
     }
 }

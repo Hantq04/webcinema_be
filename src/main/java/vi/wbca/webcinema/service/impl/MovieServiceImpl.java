@@ -28,6 +28,7 @@ import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.service.MovieService;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -66,6 +67,8 @@ public class MovieServiceImpl implements MovieService {
         movie.setMovieDuration(movieDTO.getMovieDuration());
         movie.setDescription(movieDTO.getDescription());
         movie.setDirector(movieDTO.getDirector());
+        movie.setPremiereDate(movieDTO.getPremiereDate());
+        movie.setEndDate(movieDTO.getPremiereDate().plusDays(30));
         movie.setLanguage(movieDTO.getLanguage());
         movie.setTrailer(movieDTO.getTrailer());
         movie.setRate(setRate(movieDTO));
@@ -96,6 +99,7 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieNowShowingDTO> getNowShowingMovies() {
         LocalDateTime now = LocalDateTime.now();
         return movieRepo.filterMovies(now, true, false, null).stream()
+            .sorted(Comparator.comparing(Movie::getId))
             .map(movie -> MovieNowShowingDTO.builder()
                     .id(movie.getId())
                     .name(movie.getName())

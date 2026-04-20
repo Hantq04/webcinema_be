@@ -33,22 +33,22 @@ public class MovieDTO {
     LocalDateTime premiereDate;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Size(min = 6, max = 50, message = "INVALID_DESCRIPTION", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 6, max = 500, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String description;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Size(min = 3, max = 20, message = "INVALID_DIRECTOR", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 3, max = 30, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String director;
 
     @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     Long bannerId;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Size(min = 3, max = 20, message = "INVALID_LANGUAGE", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 3, max = 20, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String language;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Size(min = 3, max = 20, message = "INVALID_NAME", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 3, max = 50, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String name;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
