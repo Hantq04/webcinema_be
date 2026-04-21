@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,7 +35,7 @@ public class WebSecurityConfig {
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "api/v1/user/**",
+            "/api/v1/user/**",
             "/api/v1/test/**",
             "/api/v1/rank/**",
             "/api/v1/cinema/**",
@@ -51,17 +53,19 @@ public class WebSecurityConfig {
             "uploads/**",
             "/api/v1/captcha/**",
             "/api/v1/chat-bot/**",
-            "/api/v1/print-ticket/**"
+            "/api/v1/print-ticket/**",
+            "/api/v1/event/**",
     };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers(listEndpoint).permitAll()
+                        request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(listEndpoint).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

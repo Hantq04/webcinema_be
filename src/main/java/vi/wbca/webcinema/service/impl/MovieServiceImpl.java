@@ -105,6 +105,7 @@ public class MovieServiceImpl implements MovieService {
                     .name(movie.getName())
                     .image(movie.getBanner() != null ? movie.getBanner().getImageUrl() : null)
                     .trailer(movie.getTrailer())
+                    .rate(movie.getRate().getCode())
                     .build()).toList();
     }
 

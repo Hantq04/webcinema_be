@@ -1,6 +1,7 @@
 package vi.wbca.webcinema.model.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -50,4 +51,12 @@ public class UserDTO {
             groups = {InsertUser.class, UpdateUser.class}
     )
     String password;
+
+    @Schema(description = "ID của captcha")
+    @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})
+    private String captchaId;
+
+    @Schema(description = "Mã xác thực của captcha")
+    @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})
+    private String captchaValue;
 }

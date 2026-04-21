@@ -49,6 +49,8 @@ spring:
       port: 6379
       password: redis
       timeout: 60000
+      repositories:
+        enabled: false
   main:
     allow-bean-definition-overriding: true
 application:

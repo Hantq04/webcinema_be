@@ -225,6 +225,9 @@ public class UserServiceImpl implements UserService {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 
+        // Validate the CAPTCHA
+        captchaService.validateCaptcha(request.getCaptchaId(), request.getCaptchaValue());
+
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
