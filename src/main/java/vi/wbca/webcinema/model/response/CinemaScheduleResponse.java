@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CinemaScheduleResponse {
-    private Long cinemaId;
     private String cinemaName;
     private String roomCode;
     private String roomType;

@@ -149,7 +149,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                         .toList();
 
                     return CinemaScheduleResponse.builder()
-                        .cinemaId(firstSchedule.getRoom().getCinema().getId())
                         .cinemaName(firstSchedule.getRoom().getCinema().getNameOfCinema())
                         .roomCode(firstSchedule.getRoom().getCode())
                         .roomType(firstSchedule.getRoom().getType() != null ? firstSchedule.getRoom().getType().name() : null)
