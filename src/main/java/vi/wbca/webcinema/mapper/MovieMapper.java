@@ -5,7 +5,12 @@ import org.mapstruct.Mapping;
 import vi.wbca.webcinema.model.dto.movie.MovieDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.entity.movie.Movie;
+import vi.wbca.webcinema.model.response.MovieDetailResponse;
 import vi.wbca.webcinema.model.response.MovieShowingResponse;
+
+import vi.wbca.webcinema.util.Constants;
+
+import java.time.LocalDateTime;
 
 @Mapper(componentModel = "spring")
 public interface MovieMapper {
@@ -18,6 +23,7 @@ public interface MovieMapper {
     @Mapping(target = "rate", ignore = true)
     @Mapping(target = "endDate", ignore = true)
     @Mapping(target = "image", ignore = true)
+    @Mapping(target = "code", ignore = true)
     Movie toMovie(MovieDTO movieDTO);
 
     @Mapping(target = "movieType", source = "movieType.movieTypeName")
@@ -26,12 +32,28 @@ public interface MovieMapper {
     MovieDTO toMovieDTO(Movie movie);
 
     @Mapping(target = "image", source = "banner.imageUrl")
+    @Mapping(target = "code", source = "code")
     @Mapping(target = "rate", source = "rate.code")
     MovieNowShowingDTO toMovieNowShowingDTO(Movie movie);
 
     @Mapping(target = "image", source = "banner.imageUrl")
     @Mapping(target = "rate", source = "rate.code")
     @Mapping(target = "movieType", source = "movieType.movieTypeName")
+    @Mapping(target = "code", source = "code")
     @Mapping(target = "duration", source = "movieDuration")
     MovieShowingResponse toMovieShowingResponse(Movie movie);
+
+    @Mapping(target = "code", source = "code")
+    @Mapping(target = "image", source = "image")
+    @Mapping(target = "movieType", source = "movieType.movieTypeName")
+    @Mapping(target = "premiereDate", expression = "java(formatDate(movie.getPremiereDate()))")
+    @Mapping(target = "duration", source = "movieDuration")
+    @Mapping(target = "rate", source = "rate.code")
+    @Mapping(target = "rateName", source = "rate.description")
+    @Mapping(target = "trailerUrl", source = "trailer")
+    MovieDetailResponse toMovieDetailResponse(Movie movie);
+
+    default String formatDate(LocalDateTime dateTime) {
+        return dateTime == null ? null : dateTime.format(Constants.DATE_TIME_FORMATTER);
+    }
 }

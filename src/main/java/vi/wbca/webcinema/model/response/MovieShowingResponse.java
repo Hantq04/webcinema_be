@@ -17,6 +17,9 @@ public class MovieShowingResponse {
     @Schema(description = "ID của phim")
     Long id;
 
+    @Schema(description = "Mã của phim")
+    String code;
+
     @Schema(description = "Tên phim")
     String name;
 

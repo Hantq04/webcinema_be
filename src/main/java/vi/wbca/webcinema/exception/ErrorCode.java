@@ -70,6 +70,7 @@ public enum ErrorCode {
     PASSWORD_CHANGE_TOO_SOON(1248, "error.1248", HttpStatus.BAD_REQUEST),
     CURRENT_PASSWORD_INCORRECT(1249, "error.1249", HttpStatus.BAD_REQUEST),
     PASSWORD_CHANGED_RECENTLY(1250, "error.1250", HttpStatus.BAD_REQUEST),
+    MOVIE_NOT_FOUND(1251, "error.1251", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),
@@ -118,4 +119,4 @@ public enum ErrorCode {
     private final int code;
     private final String message;
     private final HttpStatusCode statusCode;
-    }
+}

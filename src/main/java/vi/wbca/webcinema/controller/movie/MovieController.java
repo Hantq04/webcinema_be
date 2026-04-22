@@ -17,6 +17,7 @@ import vi.wbca.webcinema.model.dto.movie.MovieDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
+import vi.wbca.webcinema.model.response.MovieDetailResponse;
 import vi.wbca.webcinema.model.response.MovieShowingResponse;
 import vi.wbca.webcinema.validation.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.validation.groupValidate.movie.UpdateMovie;
@@ -85,6 +86,18 @@ public class MovieController {
         Page<MovieDTO> pageData = movieService.getMoviePage(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, pageData)
+        );
+    }
+
+    @GetMapping("/get-movie-detail")
+    @Operation(summary = "Lấy thông tin chi tiết phim theo code")
+    public ResponseEntity<ResponseObject> getMovieDetail(@RequestParam String code) {
+        logger.info("----------Web Cinema: Get Movie Detail----------");
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_movie_detail", null, locale);
+        MovieDetailResponse responseData = movieService.getMovieDetailByCode(code);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 

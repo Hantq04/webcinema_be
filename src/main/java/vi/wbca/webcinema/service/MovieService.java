@@ -6,6 +6,7 @@ import vi.wbca.webcinema.model.dto.movie.MovieDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
+import vi.wbca.webcinema.model.response.MovieDetailResponse;
 import vi.wbca.webcinema.model.response.MovieShowingResponse;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public interface MovieService {
     void deleteMovie(String name);
 
     Page<MovieDTO> getMoviePage(Pageable pageable);
+
+    MovieDetailResponse getMovieDetailByCode(String code);
 
     Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable);
 

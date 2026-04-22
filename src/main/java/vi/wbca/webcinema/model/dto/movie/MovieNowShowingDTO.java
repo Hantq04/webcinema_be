@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
@@ -21,6 +19,9 @@ import java.time.LocalDateTime;
 public class MovieNowShowingDTO {
     @Schema(description = "ID của phim")
     Long id;
+
+    @Schema(description = "Mã của phim")
+    String code;
 
     @Schema(description = "Tên phim")
     String name;

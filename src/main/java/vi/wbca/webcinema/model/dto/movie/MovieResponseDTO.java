@@ -16,6 +16,8 @@ public class MovieResponseDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
+    String code;
+
     String name;
 
     String movieTypeName;

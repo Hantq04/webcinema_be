@@ -1,6 +1,7 @@
 package vi.wbca.webcinema.service;
 
 import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
+import vi.wbca.webcinema.model.request.ScheduleMovieFilterRequest;
 import vi.wbca.webcinema.model.response.ScheduleResponse;
 import vi.wbca.webcinema.model.response.ScheduleGroupByDateResponse;
 
@@ -17,5 +18,5 @@ public interface ScheduleService {
 
     List<ScheduleResponse> getAllSchedule();
 
-    List<ScheduleGroupByDateResponse> getSchedulesByMovieGroupedByDate(Long movieId);
+    List<ScheduleGroupByDateResponse> getSchedulesByMovieGroupedByDate(ScheduleMovieFilterRequest request);
 }

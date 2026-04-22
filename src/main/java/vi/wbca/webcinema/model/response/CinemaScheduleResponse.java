@@ -14,5 +14,7 @@ import java.util.List;
 public class CinemaScheduleResponse {
     private Long cinemaId;
     private String cinemaName;
-    private List<String> showtimes;
+    private String roomCode;
+    private String roomType;
+    private List<String> sometimes;
 }

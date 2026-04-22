@@ -20,6 +20,8 @@ import java.util.Optional;
 public interface MovieRepo extends JpaRepository<Movie, Long> {
     Optional<Movie> findByNameAndIsActive(String name, boolean isActive);
 
+    Optional<Movie> findByCodeAndIsActive(String code, boolean isActive);
+
     @Modifying
     @Transactional
     @Query("UPDATE Movie m SET m.isActive = false WHERE m.isActive = true AND m.endDate < :now")
@@ -41,7 +43,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
-        m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
+        m.id, m.code, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     )
     FROM Movie m
     JOIN m.schedules s
@@ -54,7 +56,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
-        m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
+        m.id, m.code, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     )
     FROM Movie m
     JOIN m.schedules s
@@ -66,7 +68,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
-        m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
+        m.id, m.code, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     )
     FROM Movie m
     JOIN m.schedules s

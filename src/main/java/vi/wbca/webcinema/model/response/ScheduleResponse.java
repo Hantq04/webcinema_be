@@ -20,6 +20,12 @@ public class ScheduleResponse {
     @Schema(description = "Tên rạp phim")
     private String cinema;
 
+    @Schema(description = "Mã phòng chiếu")
+    private String roomCode;
+
+    @Schema(description = "Loại phòng chiếu")
+    private String roomType;
+
     @Schema(description = "Tên phim")
     private String movie;
 

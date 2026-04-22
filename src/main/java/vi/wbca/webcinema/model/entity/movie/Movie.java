@@ -39,11 +39,20 @@ public class Movie {
     @Column(name = "director")
     String director;
 
+    @Column(name = "code")
+    String code;
+
+    @Column(name = "actor")
+    String actor;
+
     @Column(name = "image")
     String image;
 
     @Column(name = "language")
     String language;
+
+    @Column(name = "subtitle")
+    String subtitle;
 
     @Column(name = "name")
     String name;

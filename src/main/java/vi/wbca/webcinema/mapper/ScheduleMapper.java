@@ -22,6 +22,8 @@ public interface ScheduleMapper {
 
     @Mapping(source = "schedule.id", target = "id")
     @Mapping(source = "schedule.room.name", target = "cinema")
+    @Mapping(source = "schedule.room.code", target = "roomCode")
+    @Mapping(source = "schedule.room.type", target = "roomType")
     @Mapping(source = "schedule.movie.name", target = "movie")
     @Mapping(source = "schedule.startAt", target = "startAt")
     @Mapping(source = "schedule.endAt", target = "endAt")

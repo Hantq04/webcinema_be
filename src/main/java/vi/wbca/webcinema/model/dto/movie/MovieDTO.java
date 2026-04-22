@@ -40,12 +40,20 @@ public class MovieDTO {
     @Size(min = 3, max = 30, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String director;
 
+    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 3, max = 200, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
+    String actor;
+
     @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     Long bannerId;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @Size(min = 3, max = 20, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String language;
+
+    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 2, max = 100, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
+    String subtitle;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @Size(min = 3, max = 50, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})

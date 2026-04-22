@@ -18,6 +18,7 @@ import vi.wbca.webcinema.model.entity.movie.MovieType;
 import vi.wbca.webcinema.model.entity.movie.Rate;
 import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
+import vi.wbca.webcinema.model.response.MovieDetailResponse;
 import vi.wbca.webcinema.model.response.MovieShowingResponse;
 import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
@@ -27,6 +28,7 @@ import vi.wbca.webcinema.repository.movie.RateRepo;
 import vi.wbca.webcinema.repository.setting.BannerRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.service.MovieService;
+import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,6 +52,7 @@ public class MovieServiceImpl implements MovieService {
                 .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
 
         LocalDateTime premiereDate = request.getPremiereDate();
+        movie.setCode(GenerateCode.generateCode());
         movie.setMovieType(movieType);
         movie.setRate(setRate(request));
         movie.setPremiereDate(premiereDate);
@@ -67,9 +70,11 @@ public class MovieServiceImpl implements MovieService {
         movie.setMovieDuration(movieDTO.getMovieDuration());
         movie.setDescription(movieDTO.getDescription());
         movie.setDirector(movieDTO.getDirector());
+        movie.setActor(movieDTO.getActor());
         movie.setPremiereDate(movieDTO.getPremiereDate());
         movie.setEndDate(movieDTO.getPremiereDate().plusDays(30));
         movie.setLanguage(movieDTO.getLanguage());
+        movie.setSubtitle(movieDTO.getSubtitle());
         movie.setTrailer(movieDTO.getTrailer());
         movie.setRate(setRate(movieDTO));
         applyBanner(movie, movieDTO.getBannerId());
@@ -88,6 +93,13 @@ public class MovieServiceImpl implements MovieService {
     public Page<MovieDTO> getMoviePage(Pageable pageable) {
         Page<Movie> movies = movieRepo.findAll(pageable);
         return movies.map(movieMapper::toMovieDTO);
+    }
+
+    @Override
+    public MovieDetailResponse getMovieDetailByCode(String code) {
+        Movie movie = movieRepo.findByCodeAndIsActive(code, true)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+        return movieMapper.toMovieDetailResponse(movie);
     }
 
     @Override

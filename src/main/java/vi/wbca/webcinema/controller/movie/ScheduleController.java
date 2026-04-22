@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
+import vi.wbca.webcinema.model.request.ScheduleMovieFilterRequest;
 import vi.wbca.webcinema.model.response.ScheduleResponse;
 import vi.wbca.webcinema.model.response.ScheduleGroupByDateResponse;
 import vi.wbca.webcinema.validation.groupValidate.schedule.InsertSchedule;
@@ -98,9 +99,9 @@ public class ScheduleController {
 
     @GetMapping("/movie")
     @Operation(summary = "Lấy lịch chiếu theo phim")
-    public ResponseEntity<ResponseObject> getSchedulesByMovieGroupedByDate(@RequestParam Long movieId) {
+    public ResponseEntity<ResponseObject> getSchedulesByMovieGroupedByDate(@Valid @ModelAttribute ScheduleMovieFilterRequest request) {
         logger.info("----------Web Cinema: Get Schedules For Movie----------");
-        List<ScheduleGroupByDateResponse> responseData = scheduleService.getSchedulesByMovieGroupedByDate(movieId);
+        List<ScheduleGroupByDateResponse> responseData = scheduleService.getSchedulesByMovieGroupedByDate(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_schedule_grouped", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
