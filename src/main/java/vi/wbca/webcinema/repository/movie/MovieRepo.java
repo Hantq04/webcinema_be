@@ -100,4 +100,20 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
             @Param("comingSoon") boolean comingSoon,
             @Param("genre") String genre
     );
+
+    @Query("""
+    SELECT m
+    FROM Movie m
+    WHERE m.isActive = true
+    AND m.premiereDate <= :now
+    AND (m.endDate IS NULL OR m.endDate >= :now)
+    ORDER BY (
+        SELECT COUNT(bt.id)
+        FROM BillTicket bt
+        JOIN bt.ticket t
+        JOIN t.schedule s
+        WHERE s.movie = m
+    ) DESC, m.premiereDate DESC
+    """)
+    List<Movie> findHotNowShowingMovies(@Param("now") LocalDateTime now);
 }

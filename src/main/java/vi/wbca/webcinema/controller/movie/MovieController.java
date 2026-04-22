@@ -17,6 +17,7 @@ import vi.wbca.webcinema.model.dto.movie.MovieDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
+import vi.wbca.webcinema.model.response.MovieShowingResponse;
 import vi.wbca.webcinema.validation.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.validation.groupValidate.movie.UpdateMovie;
 import vi.wbca.webcinema.service.MovieService;
@@ -107,6 +108,30 @@ public class MovieController {
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_now_showing_movie", null, locale);
         List<MovieNowShowingDTO> responseData = movieService.getNowShowingMovies();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/get-now-showing-movie-hot")
+    @Operation(summary = "Lấy danh sách phim đang chiếu theo độ hot")
+    public ResponseEntity<ResponseObject> getHotNowShowingMovie() {
+        logger.info("----------Web Cinema: Get Hot Now Showing Movie----------");
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_now_showing_movie_hot", null, locale);
+        List<MovieShowingResponse> responseData = movieService.getHotNowShowingMovies();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/get-coming-soon-movie")
+    @Operation(summary = "Lấy danh sách phim sắp chiếu")
+    public ResponseEntity<ResponseObject> getComingSoonMovie() {
+        logger.info("----------Web Cinema: Get Coming Soon Movie----------");
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_coming_soon_movie", null, locale);
+        List<MovieShowingResponse> responseData = movieService.getComingSoonMovies();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );

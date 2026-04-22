@@ -18,6 +18,7 @@ import vi.wbca.webcinema.model.entity.movie.MovieType;
 import vi.wbca.webcinema.model.entity.movie.Rate;
 import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
+import vi.wbca.webcinema.model.response.MovieShowingResponse;
 import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
@@ -28,7 +29,6 @@ import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.service.MovieService;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -99,14 +99,24 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieNowShowingDTO> getNowShowingMovies() {
         LocalDateTime now = LocalDateTime.now();
         return movieRepo.filterMovies(now, true, false, null).stream()
-            .sorted(Comparator.comparing(Movie::getId))
-            .map(movie -> MovieNowShowingDTO.builder()
-                    .id(movie.getId())
-                    .name(movie.getName())
-                    .image(movie.getBanner() != null ? movie.getBanner().getImageUrl() : null)
-                    .trailer(movie.getTrailer())
-                    .rate(movie.getRate().getCode())
-                    .build()).toList();
+            .map(movieMapper::toMovieNowShowingDTO)
+            .toList();
+    }
+
+    @Override
+    public List<MovieShowingResponse> getHotNowShowingMovies() {
+        LocalDateTime now = LocalDateTime.now();
+        return movieRepo.findHotNowShowingMovies(now).stream()
+            .map(movieMapper::toMovieShowingResponse)
+            .toList();
+    }
+
+    @Override
+    public List<MovieShowingResponse> getComingSoonMovies() {
+        LocalDateTime now = LocalDateTime.now();
+        return movieRepo.filterMovies(now, false, true, null).stream()
+            .map(movieMapper::toMovieShowingResponse)
+            .toList();
     }
 
     @Override

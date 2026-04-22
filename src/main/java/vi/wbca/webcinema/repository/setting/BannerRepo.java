@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface BannerRepo extends JpaRepository<Banner, Long> {
     Optional<Banner> findByTitle(String title);
+
+    java.util.List<Banner> findAllByOrderByIdDesc();
 }

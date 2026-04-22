@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
+import vi.wbca.webcinema.mapper.BannerMapper;
 import vi.wbca.webcinema.model.entity.setting.Banner;
 import vi.wbca.webcinema.model.request.BannerRequest;
 import vi.wbca.webcinema.model.response.BannerResponse;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BannerServiceImpl implements BannerService {
     private final BannerRepo bannerRepo;
+    private final BannerMapper bannerMapper;
 
     @Override
     public void insertBanner(BannerRequest request) throws IOException {
@@ -38,10 +40,8 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public List<BannerResponse> getAllBanner() {
-        return bannerRepo.findAll().stream().map(banner -> BannerResponse.builder()
-                .id(banner.getId())
-                .imageUrl(banner.getImageUrl())
-                .title(banner.getTitle())
-                .build()).toList();
+        return bannerRepo.findAllByOrderByIdDesc().stream()
+            .map(bannerMapper::toBannerResponse)
+            .toList();
     }
 }

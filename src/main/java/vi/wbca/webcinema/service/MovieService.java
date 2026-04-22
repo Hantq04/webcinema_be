@@ -6,6 +6,7 @@ import vi.wbca.webcinema.model.dto.movie.MovieDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
+import vi.wbca.webcinema.model.response.MovieShowingResponse;
 
 import java.util.List;
 
@@ -21,6 +22,10 @@ public interface MovieService {
     Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable);
 
     List<MovieNowShowingDTO> getNowShowingMovies();
+
+    List<MovieShowingResponse> getHotNowShowingMovies();
+
+    List<MovieShowingResponse> getComingSoonMovies();
 
     Page<MovieResponseDTO> getMovieWithCinemaId(String code, Pageable pageable);
 

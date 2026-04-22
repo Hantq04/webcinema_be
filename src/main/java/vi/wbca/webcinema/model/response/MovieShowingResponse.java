@@ -1,13 +1,8 @@
-package vi.wbca.webcinema.model.dto.movie;
+package vi.wbca.webcinema.model.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -18,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MovieNowShowingDTO {
+public class MovieShowingResponse {
     @Schema(description = "ID của phim")
     Long id;
 
@@ -28,9 +23,16 @@ public class MovieNowShowingDTO {
     @Schema(description = "Ảnh bìa của phim")
     String image;
 
-    @Schema(description = "Trailer của phim")
-    String trailer;
-
     @Schema(description = "Nhãn của phim")
     String rate;
+
+    @Schema(description = "Thể loại của phim")
+    String movieType;
+
+    @Schema(description = "Thời lượng của phim")
+    Integer duration;
+
+    @Schema(description = "Ngày công chiếu của phim")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
+    LocalDateTime premiereDate;
 }
