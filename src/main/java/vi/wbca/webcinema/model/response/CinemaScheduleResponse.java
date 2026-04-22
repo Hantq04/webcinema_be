@@ -16,5 +16,5 @@ public class CinemaScheduleResponse {
     private String cinemaName;
     private String roomCode;
     private String roomType;
-    private List<String> sometimes;
+    private List<ScheduleShowtimeResponse> showtimes;
 }

@@ -14,6 +14,7 @@ import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.response.ScheduleResponse;
 import vi.wbca.webcinema.model.response.ScheduleGroupByDateResponse;
 import vi.wbca.webcinema.model.response.CinemaScheduleResponse;
+import vi.wbca.webcinema.model.response.ScheduleShowtimeResponse;
 import vi.wbca.webcinema.model.request.ScheduleMovieFilterRequest;
 import vi.wbca.webcinema.repository.setting.GeneralSettingRepo;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
@@ -23,6 +24,7 @@ import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,10 +139,13 @@ public class ScheduleServiceImpl implements ScheduleService {
                     .map(roomEntry -> {
                     List<Schedule> roomSchedulesList = roomEntry.getValue();
                     Schedule firstSchedule = roomSchedulesList.get(0);
-                    List<String> showtimeList = roomSchedulesList.stream()
-                        .map(schedule -> schedule.getStartAt().toLocalTime().toString())
+                        List<ScheduleShowtimeResponse> showtimeList = roomSchedulesList.stream()
+                            .map(schedule -> ScheduleShowtimeResponse.builder()
+                                .time(schedule.getStartAt().toLocalTime().toString())
+                                .scheduleCode(schedule.getCode())
+                                .build())
                         .distinct()
-                        .sorted()
+                        .sorted(Comparator.comparing(ScheduleShowtimeResponse::getTime))
                         .toList();
 
                     return CinemaScheduleResponse.builder()
@@ -148,7 +153,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                         .cinemaName(firstSchedule.getRoom().getCinema().getNameOfCinema())
                         .roomCode(firstSchedule.getRoom().getCode())
                         .roomType(firstSchedule.getRoom().getType() != null ? firstSchedule.getRoom().getType().name() : null)
-                        .sometimes(showtimeList)
+                        .showtimes(showtimeList)
                         .build();
                     })
                     .toList();
