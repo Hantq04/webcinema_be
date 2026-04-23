@@ -33,8 +33,13 @@ public class Movie {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime premiereDate;
 
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     String description;
+
+    @Lob
+    @Column(name = "description_en", columnDefinition = "TEXT")
+    String descriptionEn;
 
     @Column(name = "director")
     String director;
@@ -57,6 +62,9 @@ public class Movie {
     @Column(name = "name")
     String name;
 
+    @Column(name = "name_en")
+    String nameEn;
+
     @Column(name = "trailer")
     String trailer;
 
@@ -71,9 +79,13 @@ public class Movie {
     @JoinColumn(name = "banner_id")
     Banner banner;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_type_id")
-    MovieType movieType;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "movie_movie_types",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_type_id")
+    )
+    List<MovieType> movieTypes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rate_id")

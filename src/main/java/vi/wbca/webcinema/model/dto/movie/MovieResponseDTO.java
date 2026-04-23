@@ -20,7 +20,11 @@ public class MovieResponseDTO {
 
     String name;
 
+    String nameEn;
+
     String movieTypeName;
+
+    String movieTypeNameEn;
 
     Integer movieDuration;
 

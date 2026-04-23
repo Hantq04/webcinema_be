@@ -2,11 +2,12 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.response.ScheduleResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ScheduleMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "tickets", ignore = true)

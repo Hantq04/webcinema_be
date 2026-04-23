@@ -48,12 +48,13 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void insertMovie(MovieDTO request) {
         Movie movie = movieMapper.toMovie(request);
-        MovieType movieType = movieTypeRepo.findByMovieTypeName(request.getMovieType())
-                .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND));
+        List<MovieType> movieTypes = resolveMovieTypes(request.getMovieTypeIds());
 
         LocalDateTime premiereDate = request.getPremiereDate();
         movie.setCode(GenerateCode.generateCode());
-        movie.setMovieType(movieType);
+        movie.setNameEn(request.getNameEn());
+        movie.setDescriptionEn(request.getDescriptionEn());
+        movie.setMovieTypes(movieTypes);
         movie.setRate(setRate(request));
         movie.setPremiereDate(premiereDate);
         movie.setEndDate(premiereDate.plusDays(30));
@@ -69,13 +70,17 @@ public class MovieServiceImpl implements MovieService {
 
         movie.setMovieDuration(movieDTO.getMovieDuration());
         movie.setDescription(movieDTO.getDescription());
+        movie.setDescriptionEn(movieDTO.getDescriptionEn());
         movie.setDirector(movieDTO.getDirector());
         movie.setActor(movieDTO.getActor());
+        movie.setNameEn(movieDTO.getNameEn());
+        movie.setMovieTypes(resolveMovieTypes(movieDTO.getMovieTypeIds()));
         movie.setPremiereDate(movieDTO.getPremiereDate());
         movie.setEndDate(movieDTO.getPremiereDate().plusDays(30));
         movie.setLanguage(movieDTO.getLanguage());
         movie.setSubtitle(movieDTO.getSubtitle());
         movie.setTrailer(movieDTO.getTrailer());
+        movie.setCode(movieDTO.getCode());
         movie.setRate(setRate(movieDTO));
         applyBanner(movie, movieDTO.getBannerId());
         movieRepo.save(movie);
@@ -104,7 +109,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable) {
-        return movieRepo.getTicketStatistics(pageable);
+        return movieRepo.getTicketStatistics(pageable).map(movie -> {
+            MovieStatisticDTO dto = movieMapper.toMovieStatisticDTO(movie);
+            dto.setTotalTicketsBooked(movieRepo.countBookedTicketsByMovieId(movie.getId()));
+            return dto;
+        });
     }
 
     @Override
@@ -134,7 +143,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Page<MovieResponseDTO> getMovieWithCinemaId(String code, Pageable pageable) {
         Cinema cinema = getCinema(code);
-        return movieRepo.getMovieWithCinema(cinema.getId(), pageable);
+        return movieRepo.getMovieWithCinema(cinema.getId(), pageable).map(movieMapper::toMovieResponseDTO);
     }
 
     @Override
@@ -142,18 +151,18 @@ public class MovieServiceImpl implements MovieService {
         Cinema cinema = getCinema(cinemaCode);
         Room room = roomRepo.findByCodeAndCinema(code, cinema)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        return movieRepo.getMovieWithRoom(room.getId(), pageable);
+        return movieRepo.getMovieWithRoom(room.getId(), pageable).map(movieMapper::toMovieResponseDTO);
     }
 
     @Override
     public Page<MovieResponseDTO> getMovieWithSeatStatusId(String name, Pageable pageable) {
         SeatStatus seatStatus = seatStatusRepo.findByCode(name)
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
-        return movieRepo.getMovieWithSeatStatus(seatStatus.getId(), pageable);
+        return movieRepo.getMovieWithSeatStatus(seatStatus.getId(), pageable).map(movieMapper::toMovieResponseDTO);
     }
 
     public Rate setRate(MovieDTO movieDTO) {
-        return rateRepo.findByCode(movieDTO.getCode())
+        return rateRepo.findByCode(movieDTO.getRate())
                 .orElseThrow(() -> new AppException(ErrorCode.RATE_NOT_FOUND));
     }
 
@@ -167,5 +176,23 @@ public class MovieServiceImpl implements MovieService {
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         movie.setBanner(banner);
         movie.setImage(banner.getImageUrl());
+    }
+
+    private List<MovieType> resolveMovieTypes(List<Long> movieTypeIds) {
+        if (movieTypeIds == null || movieTypeIds.isEmpty()) {
+            throw new AppException(ErrorCode.TYPE_NOT_FOUND);
+        }
+
+        List<MovieType> movieTypes = movieTypeRepo.findByIdInAndIsActiveTrue(movieTypeIds);
+        if (movieTypes.size() != movieTypeIds.size()) {
+            throw new AppException(ErrorCode.TYPE_NOT_FOUND);
+        }
+
+        return movieTypeIds.stream()
+                .map(id -> movieTypes.stream()
+                        .filter(movieType -> movieType.getId().equals(id))
+                        .findFirst()
+                        .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND)))
+                .toList();
     }
 }

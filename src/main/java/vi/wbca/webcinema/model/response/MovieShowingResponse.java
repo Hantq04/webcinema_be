@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,14 +24,23 @@ public class MovieShowingResponse {
     @Schema(description = "Tên phim")
     String name;
 
+    @Schema(description = "Tên phim tiếng Anh")
+    String nameEn;
+
     @Schema(description = "Ảnh bìa của phim")
     String image;
 
     @Schema(description = "Nhãn của phim")
     String rate;
 
-    @Schema(description = "Thể loại của phim")
-    String movieType;
+    @Schema(description = "Nhãn tiếng Anh của phim")
+    String rateEn;
+
+    @Schema(description = "Danh sách thể loại của phim")
+    List<String> movieType;
+
+    @Schema(description = "Danh sách thể loại tiếng Anh của phim")
+    List<String> movieTypeEn;
 
     @Schema(description = "Thời lượng của phim")
     Integer duration;

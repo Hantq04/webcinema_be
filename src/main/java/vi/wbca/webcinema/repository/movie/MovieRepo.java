@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
-import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
-import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.model.entity.movie.Movie;
 
 import java.time.LocalDateTime;
@@ -28,60 +26,83 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     void updateExpiredMovies(@Param("now") LocalDateTime now);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO(
-        m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate, COUNT(bt.id)
-    )
+    SELECT DISTINCT m
     FROM Movie m
     JOIN m.schedules s
     JOIN s.tickets t
     JOIN t.billTickets bt
     WHERE t.isActive = false
-    GROUP BY m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
     ORDER BY COUNT(bt.id) DESC
     """)
-    Page<MovieStatisticDTO> getTicketStatistics(Pageable pageable);
+    Page<Movie> getTicketStatistics(Pageable pageable);
 
     @Query("""
-    SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
-        m.id, m.code, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
-    )
+    SELECT COUNT(DISTINCT bt.id)
+    FROM Movie m
+    JOIN m.schedules s
+    JOIN s.tickets t
+    JOIN t.billTickets bt
+    WHERE m.id = :movieId AND t.isActive = false
+    """)
+    Long countBookedTicketsByMovieId(@Param("movieId") Long movieId);
+
+    @Query(value = """
+    SELECT DISTINCT m
     FROM Movie m
     JOIN m.schedules s
     JOIN s.room r
     JOIN r.cinema c
     WHERE c.id = :cinemaId
-    GROUP BY m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
+    """,
+    countQuery = """
+    SELECT COUNT(DISTINCT m)
+    FROM Movie m
+    JOIN m.schedules s
+    JOIN s.room r
+    JOIN r.cinema c
+    WHERE c.id = :cinemaId
     """)
-    Page<MovieResponseDTO> getMovieWithCinema(Long cinemaId, Pageable pageable);
+    Page<Movie> getMovieWithCinema(Long cinemaId, Pageable pageable);
 
-    @Query("""
-    SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
-        m.id, m.code, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
-    )
+    @Query(value = """
+    SELECT DISTINCT m
     FROM Movie m
     JOIN m.schedules s
     JOIN s.room r
     WHERE r.id = :roomId
-    GROUP BY m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
+    """,
+    countQuery = """
+    SELECT COUNT(DISTINCT m)
+    FROM Movie m
+    JOIN m.schedules s
+    JOIN s.room r
+    WHERE r.id = :roomId
     """)
-    Page<MovieResponseDTO> getMovieWithRoom(Long roomId, Pageable pageable);
+    Page<Movie> getMovieWithRoom(Long roomId, Pageable pageable);
 
-    @Query("""
-    SELECT new vi.wbca.webcinema.model.dto.movie.MovieResponseDTO(
-        m.id, m.code, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
-    )
+    @Query(value = """
+    SELECT DISTINCT m
     FROM Movie m
     JOIN m.schedules s
     JOIN s.room r
     JOIN r.seats st
     JOIN st.seatStatus ss
     WHERE ss.id = :seatStatusId
-    GROUP BY m.id, m.name, m.movieType.movieTypeName, m.movieDuration, m.premiereDate
+    """,
+    countQuery = """
+    SELECT COUNT(DISTINCT m)
+    FROM Movie m
+    JOIN m.schedules s
+    JOIN s.room r
+    JOIN r.seats st
+    JOIN st.seatStatus ss
+    WHERE ss.id = :seatStatusId
     """)
-    Page<MovieResponseDTO> getMovieWithSeatStatus(Long seatStatusId, Pageable pageable);
+    Page<Movie> getMovieWithSeatStatus(Long seatStatusId, Pageable pageable);
 
     @Query("""
-    SELECT m FROM Movie m
+    SELECT DISTINCT m FROM Movie m
+    LEFT JOIN m.movieTypes mt
     WHERE m.isActive = true
     AND (
         (:nowShowing = false OR
@@ -92,7 +113,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
         (:comingSoon = false OR m.premiereDate > :now)
     )
     AND (
-        (:genre IS NULL OR m.movieType.movieTypeName = :genre)
+        (:genre IS NULL OR mt.movieTypeNameVi = :genre)
     )
     ORDER BY m.premiereDate DESC
     """)

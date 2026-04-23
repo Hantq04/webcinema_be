@@ -19,7 +19,10 @@ public class Rate {
     Long id;
 
     @Column(name = "description")
-    String description;
+    String descriptionVi;
+
+    @Column(name = "description_en")
+    String descriptionEn;
 
     @Column(name = "code")
     String code;

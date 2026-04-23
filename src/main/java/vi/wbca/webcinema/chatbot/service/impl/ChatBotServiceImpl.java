@@ -8,11 +8,13 @@ import vi.wbca.webcinema.chatbot.model.request.ChatRequest;
 import vi.wbca.webcinema.chatbot.model.response.ChatResponse;
 import vi.wbca.webcinema.chatbot.service.ChatBotService;
 import vi.wbca.webcinema.model.entity.movie.Movie;
+import vi.wbca.webcinema.model.entity.movie.MovieType;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -92,7 +94,10 @@ public class ChatBotServiceImpl implements ChatBotService {
             sb.append("- ")
                     .append(m.getName())
                     .append(" | ")
-                    .append(m.getMovieType().getMovieTypeName())
+                    .append(m.getMovieTypes() == null ? "" : m.getMovieTypes().stream()
+                        .map(MovieType::getMovieTypeNameVi)
+                        .filter(name -> name != null && !name.isBlank())
+                        .collect(Collectors.joining(", ")))
                     .append(" | ")
                     .append(m.getPremiereDate().format(formatter))
                     .append(" | ")

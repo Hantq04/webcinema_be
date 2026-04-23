@@ -18,7 +18,11 @@ public class MovieStatisticDTO {
 
     String name;
 
+    String nameEn;
+
     String movieTypeName;
+
+    String movieTypeNameEn;
 
     Integer movieDuration;
 

@@ -24,6 +24,9 @@ public class Banner {
     @Column(name = "title")
     String title;
 
+    @Column(name = "title_en")
+    String titleEn;
+
     @JsonIgnore
     @OneToOne(mappedBy = "banner", fetch = FetchType.LAZY)
     Movie movie;

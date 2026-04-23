@@ -112,9 +112,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Schedule> schedules = scheduleRepo.findByMovieId(request.getMovieId());
         String address = request.getAddress() == null ? null : request.getAddress().trim();
         String roomType = request.getRoomType() == null ? null : request.getRoomType().trim();
+        java.time.LocalDate selectedDate = request.getDate();
+        LocalDateTime now = LocalDateTime.now();
 
         Map<String, Map<String, List<Schedule>>> groupedByDateAndRoom = schedules.stream()
             .filter(Schedule::isActive)
+            .filter(schedule -> !schedule.getStartAt().isBefore(now))
+            .filter(schedule -> selectedDate == null || schedule.getStartAt().toLocalDate().equals(selectedDate))
             .filter(schedule -> !StringUtils.hasText(address)
                 || (schedule.getRoom().getCinema().getAddress() != null
                 && schedule.getRoom().getCinema().getAddress().trim().equalsIgnoreCase(address)))
@@ -134,26 +138,26 @@ public class ScheduleServiceImpl implements ScheduleService {
             ));
 
         return groupedByDateAndRoom.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
                 .map(dateEntry -> {
-                List<CinemaScheduleResponse> cinemaSchedules = dateEntry.getValue().entrySet().stream()
-                    .map(roomEntry -> {
-                    List<Schedule> roomSchedulesList = roomEntry.getValue();
-                    Schedule firstSchedule = roomSchedulesList.get(0);
+                List<CinemaScheduleResponse> cinemaSchedules = dateEntry.getValue().values().stream()
+                    .map(roomSchedulesList -> {
+                        Schedule firstSchedule = roomSchedulesList.get(0);
                         List<ScheduleShowtimeResponse> showtimeList = roomSchedulesList.stream()
-                            .map(schedule -> ScheduleShowtimeResponse.builder()
-                                .time(schedule.getStartAt().toLocalTime().toString())
-                                .scheduleCode(schedule.getCode())
-                                .build())
-                        .distinct()
-                        .sorted(Comparator.comparing(ScheduleShowtimeResponse::getTime))
-                        .toList();
+                                .map(schedule -> ScheduleShowtimeResponse.builder()
+                                        .time(schedule.getStartAt().toLocalTime().toString())
+                                        .scheduleCode(schedule.getCode())
+                                        .build())
+                                .distinct()
+                                .sorted(Comparator.comparing(ScheduleShowtimeResponse::getTime))
+                                .toList();
 
-                    return CinemaScheduleResponse.builder()
-                        .cinemaName(firstSchedule.getRoom().getCinema().getNameOfCinema())
-                        .roomCode(firstSchedule.getRoom().getCode())
-                        .roomType(firstSchedule.getRoom().getType() != null ? firstSchedule.getRoom().getType().name() : null)
-                        .showtimes(showtimeList)
-                        .build();
+                        return CinemaScheduleResponse.builder()
+                                .cinemaName(firstSchedule.getRoom().getCinema().getNameOfCinema())
+                                .roomCode(firstSchedule.getRoom().getCode())
+                                .roomType(firstSchedule.getRoom().getType() != null ? firstSchedule.getRoom().getType().name() : null)
+                                .showtimes(showtimeList)
+                                .build();
                     })
                     .toList();
 

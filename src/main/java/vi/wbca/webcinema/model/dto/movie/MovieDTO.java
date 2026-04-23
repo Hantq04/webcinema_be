@@ -12,6 +12,7 @@ import vi.wbca.webcinema.validation.groupValidate.movie.InsertMovie;
 import vi.wbca.webcinema.validation.groupValidate.movie.UpdateMovie;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,7 +34,7 @@ public class MovieDTO {
     LocalDateTime premiereDate;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Size(min = 6, max = 500, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 6, max = 5000, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String description;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
@@ -60,12 +61,24 @@ public class MovieDTO {
     String name;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 3, max = 50, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
+    String nameEn;
+
+    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 6, max = 5000, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
+    String descriptionEn;
+
+    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @URL(message = "INVALID_TRAILER_FORM", groups = {InsertMovie.class, UpdateMovie.class})
     String trailer;
 
-    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class})
-    String movieType;
+    @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 1, message = "NOT_EMPTY", groups = {InsertMovie.class, UpdateMovie.class})
+    List<Long> movieTypeIds;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     String code;
+
+    @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
+    String rate;
 }

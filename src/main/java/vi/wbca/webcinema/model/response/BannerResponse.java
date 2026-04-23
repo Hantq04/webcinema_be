@@ -19,4 +19,7 @@ public class BannerResponse {
 
     @Schema(description = "Tiêu đề của banner")
     private String title;
+
+    @Schema(description = "Tiêu đề tiếng Anh của banner")
+    private String titleEn;
 }

@@ -19,11 +19,14 @@ public class MovieType {
     Long id;
 
     @Column(name = "movie_type_name")
-    String movieTypeName;
+    String movieTypeNameVi;
+
+    @Column(name = "movie_type_name_en")
+    String movieTypeNameEn;
 
     @Column(name = "is_active")
     boolean isActive;
 
-    @OneToMany(mappedBy = "movieType")
+    @ManyToMany(mappedBy = "movieTypes")
     List<Movie> movies;
 }

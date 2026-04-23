@@ -23,4 +23,8 @@ public class BannerRequest {
     @NotBlank(message = "NOT_BLANK")
     @Size(min = 3, max = 50, message = "SIZE_RANGE")
     private String title;
+
+    @Schema(description = "Tiêu đề tiếng Anh của banner")
+    @Size(min = 3, max = 50, message = "SIZE_RANGE")
+    private String titleEn;
 }

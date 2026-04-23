@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -20,6 +22,9 @@ public class MovieDetailResponse {
     @Schema(description = "Tên phim")
     private String name;
 
+    @Schema(description = "Tên phim tiếng Anh")
+    private String nameEn;
+
     @Schema(description = "Ảnh bìa của phim")
     private String image;
 
@@ -29,8 +34,11 @@ public class MovieDetailResponse {
     @Schema(description = "Diễn viên của phim")
     private String actor;
 
-    @Schema(description = "Thể loại của phim")
-    private String movieType;
+    @Schema(description = "Danh sách thể loại của phim")
+    private List<String> movieType;
+
+    @Schema(description = "Danh sách thể loại tiếng Anh của phim")
+    private List<String> movieTypeEn;
 
     @Schema(description = "Ngày công chiếu của phim")
     private String premiereDate;
@@ -47,12 +55,21 @@ public class MovieDetailResponse {
     @Schema(description = "Nhãn của phim")
     private String rate;
 
+    @Schema(description = "Nhãn tiếng Anh của phim")
+    private String rateEn;
+
     @Schema(description = "Tên nhãn của phim")
     private String rateName;
+
+    @Schema(description = "Tên nhãn tiếng Anh của phim")
+    private String rateNameEn;
 
     @Schema(description = "Đường dẫn đến trailer của phim")
     private String trailerUrl;
 
     @Schema(description = "Mô tả của phim")
     private String description;
+
+    @Schema(description = "Mô tả tiếng Anh của phim")
+    private String descriptionEn;
 }

@@ -16,6 +16,14 @@ import vi.wbca.webcinema.model.response.TransactionHistoryResponse;
 public interface TransactionHistoryMapper {
     @Mapping(target = "customerName", source = "user.username")
     @Mapping(target = "billStatus", ignore = true)
+    @Mapping(target = "cinemaCode", ignore = true)
+    @Mapping(target = "cinemaName", ignore = true)
+    @Mapping(target = "roomCode", ignore = true)
+    @Mapping(target = "roomName", ignore = true)
+    @Mapping(target = "movieName", ignore = true)
+    @Mapping(target = "showTimeName", ignore = true)
+    @Mapping(target = "ticketCount", ignore = true)
+    @Mapping(target = "foodCount", ignore = true)
     TransactionHistoryResponse toResponse(Bill bill);
 
     @AfterMapping

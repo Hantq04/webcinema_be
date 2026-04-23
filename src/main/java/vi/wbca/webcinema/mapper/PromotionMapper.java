@@ -2,11 +2,12 @@ package vi.wbca.webcinema.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import vi.wbca.webcinema.model.dto.ticket.PromotionDTO;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
 import vi.wbca.webcinema.model.response.PromotionResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PromotionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "bills", ignore = true)

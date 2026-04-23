@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -25,6 +27,9 @@ public class MovieNowShowingDTO {
 
     @Schema(description = "Tên phim")
     String name;
+
+    @Schema(description = "Tên phim tiếng Anh")
+    String nameEn;
 
     @Schema(description = "Ảnh bìa của phim")
     String image;

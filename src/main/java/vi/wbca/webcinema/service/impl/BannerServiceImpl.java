@@ -27,6 +27,7 @@ public class BannerServiceImpl implements BannerService {
 
         Banner banner = new Banner();
         banner.setTitle(request.getTitle());
+        banner.setTitleEn(request.getTitleEn());
         banner.setImageUrl(imageUrl);
         bannerRepo.save(banner);
     }
