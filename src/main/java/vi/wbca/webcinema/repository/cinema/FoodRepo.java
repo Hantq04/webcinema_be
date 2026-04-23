@@ -12,4 +12,6 @@ public interface FoodRepo extends JpaRepository<Food, Long> {
     Optional<Food> findByNameOfFood(String name);
     
     List<Food> findByIsActiveTrue();
+
+    List<Food> findAllByIsActiveTrueOrderByPriceDesc();
 }

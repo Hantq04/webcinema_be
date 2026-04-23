@@ -1,6 +1,5 @@
 package vi.wbca.webcinema.model.dto.cinema;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FoodDTO {
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
     @NotNull(message = "NOT_BLANK")

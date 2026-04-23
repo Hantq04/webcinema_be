@@ -2,6 +2,7 @@ package vi.wbca.webcinema.controller.cinema;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -10,15 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.cinema.FoodDTO;
-import vi.wbca.webcinema.model.entity.cinema.Food;
+import vi.wbca.webcinema.model.request.FoodRequest;
 import vi.wbca.webcinema.service.FoodService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -32,7 +31,7 @@ public class FoodController {
     @PostMapping("/save")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     @Operation(summary = "Thêm món ăn mới")
-    public ResponseEntity<ResponseObject> insertFood(@Valid @RequestBody FoodDTO request) {
+    public ResponseEntity<ResponseObject> insertFood(@Valid @ModelAttribute FoodRequest request) throws IOException {
         logger.info("----------Web Cinema: Insert New Food----------");
         FoodDTO responseData = foodService.insertFood(request);
         Locale locale = LocaleContextHolder.getLocale();
@@ -45,7 +44,7 @@ public class FoodController {
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     @Operation(summary = "Cập nhật món ăn")
-    public ResponseEntity<ResponseObject> updateFood(@Valid @RequestBody FoodDTO request) {
+    public ResponseEntity<ResponseObject> updateFood(@Valid @ModelAttribute FoodRequest request) throws IOException {
         logger.info("----------Web Cinema: Update Food----------");
         foodService.updateFood(request);
         Locale locale = LocaleContextHolder.getLocale();
@@ -73,7 +72,7 @@ public class FoodController {
     @Operation(summary = "Lấy danh sách tất cả món ăn đang hoạt động")
     public ResponseEntity<ResponseObject> getAllFood() {
         logger.info("----------Web Cinema: Get All Food Active----------");
-        List<Food> responseData = foodService.getAllFoodActive();
+        List<FoodDTO> responseData = foodService.getAllFoodActive();
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_all_food", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
