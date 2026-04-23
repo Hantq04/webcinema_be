@@ -2,15 +2,12 @@ package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vi.wbca.webcinema.enums.RoomTypeEnum;
-import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.entity.movie.Ticket;
 import vi.wbca.webcinema.model.entity.seat.Seat;
-import vi.wbca.webcinema.model.entity.setting.GeneralSetting;
 import vi.wbca.webcinema.model.request.BookingRequest;
 import vi.wbca.webcinema.model.response.BookingResponse;
 import vi.wbca.webcinema.model.response.TicketResponse;
@@ -19,13 +16,12 @@ import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.repository.movie.TicketRepo;
 import vi.wbca.webcinema.repository.seat.SeatRepo;
-import vi.wbca.webcinema.repository.setting.GeneralSettingRepo;
 import vi.wbca.webcinema.service.SeatService;
+import vi.wbca.webcinema.service.TicketPricingService;
 import vi.wbca.webcinema.service.TicketService;
 import vi.wbca.webcinema.service.ScheduleService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +33,9 @@ public class TicketServiceImpl implements TicketService {
     private final ScheduleRepo scheduleRepo;
     private final SeatRepo seatRepo;
     private final RoomRepo roomRepo;
-    private final GeneralSettingRepo generalSettingRepo;
     private final ScheduleService scheduleService;
     private final SeatService seatService;
+    private final TicketPricingService ticketPricingService;
     private final TicketMapper ticketMapper;
 
     @Override
@@ -51,8 +47,8 @@ public class TicketServiceImpl implements TicketService {
         updateTicket(schedule);
 
         List<Seat> seats = request.getSeats().stream()
-                .map(seatStr -> parseSeat(seatStr, room))
-                .toList();
+            .map(seatStr -> parseSeat(seatStr, room))
+            .toList();
 
         seatService.validateSeatSelection(seats);
 
@@ -65,7 +61,7 @@ public class TicketServiceImpl implements TicketService {
 
         List<Ticket> tickets = new ArrayList<>();
         for (Seat seat : seats) {
-            Long finalPrice = calculateFinalPrice(schedule, seat);
+            Long finalPrice = ticketPricingService.calculateFinalPrice(schedule, seat.getSeatType().getNameType());
 
             Ticket ticket = new Ticket();
             ticket.setCode(GenerateCode.generateCode());
@@ -102,57 +98,6 @@ public class TicketServiceImpl implements TicketService {
     public Schedule getSchedule(BookingRequest request, Room room) {
         return scheduleRepo.findByStartAtAndRoom(request.getStartTime(), room)
                 .orElseThrow(() -> new AppException(ErrorCode.START_TIME_NOT_FOUND));
-    }
-
-    public Long calculateFinalPrice(Schedule schedule, Seat seat) {
-        GeneralSetting setting = generalSetting();
-        double basePrice = getSeatPrice(seat);
-        double roomMultiplier = getRoomPriceMultiplier(schedule);
-
-        String showTimeName = schedule.getName();
-        double discount = switch (showTimeName) {
-            // The price is discounted based on the showtime
-            case "MORNING" -> 0.15;
-            case "NOON" -> 0.10;
-            case "AFTERNOON" -> 0.05;
-            case "EVENING" -> 0.0;
-            case "LATE_NIGHT" -> 0.20;
-            default -> throw new AppException(ErrorCode.INVALID_SHOW_TIME);
-        };
-
-        DayOfWeek dayOfWeek = schedule.getStartAt().getDayOfWeek();
-        boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
-
-        double finalPrice = basePrice * roomMultiplier;
-        finalPrice *= (isWeekend ? (1 + setting.getPercentWeekend() / 100.0) : 1);
-        finalPrice *= (1 - discount);
-
-        return Math.round(finalPrice);
-    }
-
-    public double getRoomPriceMultiplier(Schedule schedule) {
-        Room room = schedule.getRoom();
-        if (room == null || room.getType() == null) {
-            throw new AppException(ErrorCode.TYPE_NOT_FOUND);
-        }
-        RoomTypeEnum roomType = room.getType();
-        return roomType.getPriceMultiplier();
-    }
-
-    public Double getSeatPrice(Seat seat) {
-        int seatTypeId = Math.toIntExact(seat.getSeatType().getId());
-        String seatTypeName = switch (seatTypeId) {
-            case 1 -> "STANDARD";
-            case 2 -> "VIP";
-            case 3 -> "SWEET_BOX";
-            default -> throw new AppException(ErrorCode.INVALID_SEAT);
-        };
-        return SeatTypeEnum.getPriceByType(seatTypeName);
-    }
-
-    public GeneralSetting generalSetting() {
-        return generalSettingRepo.findTopByOrderByIdDesc()
-                .orElseThrow(() -> new AppException(ErrorCode.SETTING_NOT_FOUND));
     }
 
     public void updateTicket(Schedule schedule) {

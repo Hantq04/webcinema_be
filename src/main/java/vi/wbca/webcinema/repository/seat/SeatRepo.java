@@ -30,7 +30,7 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.room.SeatByScheduleDTO(
-        s.id, s.line, s.number,
+        s.id, s.line, s.number, s.pairIndex,
         CASE WHEN t.id IS NOT NULL THEN 'OCCUPIED' ELSE 'AVAILABLE' END,
         s.seatType.nameType
     )

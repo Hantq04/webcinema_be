@@ -26,6 +26,7 @@ import vi.wbca.webcinema.repository.seat.SeatRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.repository.seat.SeatTypeRepo;
 import vi.wbca.webcinema.service.SeatService;
+import vi.wbca.webcinema.service.TicketPricingService;
 import vi.wbca.webcinema.util.Constants;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class SeatServiceImpl implements SeatService {
     private final BillTicketRepo billTicketRepo;
     private final ScheduleRepo scheduleRepo;
     private final SeatMapper seatMapper;
+    private final TicketPricingService ticketPricingService;
 
     @Override
     public void insertSeat(SeatDTO request) {
@@ -141,6 +143,7 @@ public class SeatServiceImpl implements SeatService {
         
         Room room = schedule.getRoom();
         List<SeatByScheduleDTO> seatsDto = seatRepo.getSeatsWithStatusBySchedule(scheduleCode);
+        seatsDto.forEach(seat -> seat.setPriceTicket(ticketPricingService.calculateFinalPrice(schedule, seat.getSeatType())));
         Integer bookedSeats = seatRepo.countBookedSeatsBySchedule(scheduleCode);
         Integer capacity = room.getCapacity();
         Integer remainSeats = capacity - (bookedSeats != null ? bookedSeats : 0);
@@ -160,7 +163,9 @@ public class SeatServiceImpl implements SeatService {
     @Transactional
     public void generateSeatsForRoom(Room room) {
         int capacity = room.getCapacity();
-        int totalRows = Math.max(5, (int) Math.ceil(capacity / 12.0));
+        int totalRows = capacity <= 49
+            ? Math.max(5, (int) Math.ceil(Math.sqrt(capacity)))
+            : Math.max(5, (int) Math.ceil(Math.sqrt(capacity) * 0.75));
         int baseSeatsPerRow = capacity / totalRows;
         int extraSeats = capacity % totalRows;
         SeatType standard = getSeatType(SeatTypeEnum.STANDARD);
