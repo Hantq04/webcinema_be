@@ -33,7 +33,6 @@ public class BillTicketServiceImpl implements BillTicketService {
             if (!ticket.isActive()) {
                 throw new AppException(ErrorCode.TICKET_ALREADY_BOOKED);
             }
-            ticket.setActive(false);
 
             BillTicket bt = new BillTicket();
             bt.setBill(bill);
@@ -82,9 +81,7 @@ public class BillTicketServiceImpl implements BillTicketService {
                 if (!ticket.isActive()) {
                     throw new AppException(ErrorCode.TICKET_ALREADY_BOOKED);
                 }
-                ticket.setActive(false);
             }
-            ticketRepo.saveAll(tickets);
 
             List<BillTicket> newBillTickets = tickets.stream()
                     .map(ticket -> {

@@ -24,8 +24,9 @@ import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -48,10 +49,12 @@ public class BillServiceImpl implements BillService {
         BillStatus pendingStatus = billStatusRepo.findByName(BillStatusEnum.PENDING.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
 
-        ticketHoldCleanupService.cleanupExpiredTicketHolds();
-
-        if (billRepo.existsByUserAndBillStatus(user, pendingStatus)) {
-            throw new AppException(ErrorCode.BILL_EXISTED);
+        Bill existingBill = billRepo.findByUserAndBillStatus(user, pendingStatus).orElse(null);
+        if (existingBill != null && existingBill.isActive()) {
+            return buildBillHoldResponse(existingBill);
+        }
+        if (existingBill != null) {
+            ticketHoldCleanupService.cancelBill(existingBill);
         }
         Bill bill = billMapper.toBill(request);
         bill.setCreateTime(LocalDateTime.now());
@@ -71,8 +74,8 @@ public class BillServiceImpl implements BillService {
         billRepo.save(bill);
         billMapper.toBillDTO(bill);
 
-        LocalDateTime holdExpiresAt = bill.getCreateTime().plusMinutes(5);
-        long remainingSeconds = Math.max(0, Duration.between(LocalDateTime.now(), holdExpiresAt).getSeconds());
+        LocalDateTime holdExpiresAt = LocalDateTime.now().plus(Constants.BILL_HOLD_DURATION);
+        long remainingSeconds = Constants.BILL_HOLD_DURATION.toSeconds();
 
         return BillHoldResponse.builder()
             .tradingCode(bill.getTradingCode())
@@ -82,13 +85,25 @@ public class BillServiceImpl implements BillService {
             .build();
     }
 
+    private BillHoldResponse buildBillHoldResponse(Bill bill) {
+        LocalDateTime holdExpiresAt = LocalDateTime.now().plus(Constants.BILL_HOLD_DURATION);
+        long remainingSeconds = Constants.BILL_HOLD_DURATION.toSeconds();
+
+        return BillHoldResponse.builder()
+                .tradingCode(bill.getTradingCode())
+                .createTime(bill.getCreateTime())
+                .holdExpiresAt(holdExpiresAt)
+                .remainingSeconds(remainingSeconds)
+                .build();
+    }
+
     @Override
     public void updateBill(BillDTO billDTO) {
         User user = getCustomer(billDTO);
         Bill bill = billRepo.findByUser(user)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        billFoodService.updateBillFood(billDTO.getFoods(), bill);
+        billFoodService.updateBillFood(billDTO.getFoods() == null ? Collections.emptyList() : billDTO.getFoods(), bill);
         billTicketService.updateBillTicket(billDTO.getTickets(), bill);
 
         calculateTotal(bill, billDTO.getPromotionCode());
@@ -124,6 +139,10 @@ public class BillServiceImpl implements BillService {
     }
 
     public void insertBillFood(BillDTO billDTO, Bill bill) {
+        if (billDTO.getFoods() == null || billDTO.getFoods().isEmpty()) {
+            return;
+        }
+
         for (BillFoodDTO billFoodDTO : billDTO.getFoods()) {
             billFoodDTO.setCustomerName(billDTO.getCustomerName());
             billFoodService.insertBillFood(billFoodDTO, bill);

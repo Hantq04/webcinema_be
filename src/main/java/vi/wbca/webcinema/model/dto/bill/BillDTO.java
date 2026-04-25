@@ -36,7 +36,6 @@ public class BillDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String customerName;
 
-    @NotEmpty(message = "NOT_BLANK")
     List<BillFoodDTO> foods;
 
     @NotEmpty(message = "NOT_BLANK")

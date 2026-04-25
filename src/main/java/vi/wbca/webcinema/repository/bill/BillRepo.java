@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO;
 import vi.wbca.webcinema.model.entity.bill.Bill;
@@ -19,6 +20,8 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     Optional<Bill> findByTradingCode(String code);
 
     Optional<Bill> findByUser(User user);
+
+    Optional<Bill> findByUserAndBillStatus(User user, BillStatus billStatus);
 
         Page<Bill> findAllByIsActiveTrue(Pageable pageable);
 
@@ -51,6 +54,24 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     boolean existsByUserAndBillStatus(User user, BillStatus billStatus);
 
     List<Bill> findAllByBillStatusAndCreateTimeBeforeAndIsActiveTrue(BillStatus billStatus, LocalDateTime createTime);
+
+    @Query("""
+    SELECT b
+    FROM Bill b
+    JOIN b.billTickets bt
+    JOIN bt.ticket t
+    JOIN t.schedule s
+    WHERE b.isActive = true
+        AND b.billStatus = :successStatus
+    GROUP BY b
+    HAVING MAX(s.endAt) < :currentTime
+    """)
+    List<Bill> findAllActiveSuccessBillsWithEndedShowtime(
+            @Param("successStatus") BillStatus successStatus,
+            @Param("currentTime") LocalDateTime currentTime
+    );
+
+    List<Bill> findAllByCreateTimeBeforeAndIsActiveTrue(LocalDateTime createTime);
 
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO(

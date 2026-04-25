@@ -60,7 +60,7 @@ public class EventController {
         );
     }
 
-    @GetMapping("/event-list")
+    @GetMapping("/list")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Lấy danh sách event đang active")
     public ResponseEntity<ResponseObject> getAllEventActive() {

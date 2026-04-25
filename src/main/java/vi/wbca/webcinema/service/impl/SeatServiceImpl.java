@@ -88,13 +88,30 @@ public class SeatServiceImpl implements SeatService {
     public void refreshSeat(String code) {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
-        if (bill.getBillStatus().getId() == 2) return;
+
+        if (bill.getBillStatus() == null || bill.getBillStatus().getName() == null) {
+            return;
+        }
+        String billStatusName = bill.getBillStatus().getName();
+        if (isBillStatus(billStatusName, "PENDING")) {
+            return;
+        }
         List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
         if (billTickets.isEmpty()) {
-            throw new AppException(ErrorCode.CODE_NOT_FOUND);
+            return;
+        }
+        if (isBillStatus(billStatusName, "SUCCESS")) {
+            seatRepo.updateSeatStatusByBill(bill, getSeatStatus(SeatStatusEnum.OCCUPIED));
+            return;
         }
 
-        seatRepo.updateSeatStatusByBill(bill, getSeatStatus());
+        if (isBillStatus(billStatusName, "CANCEL")
+                || isBillStatus(billStatusName, "CANCELLED")
+                || isBillStatus(billStatusName, "FAIL")
+                || isBillStatus(billStatusName, "FAILURE")
+                || isBillStatus(billStatusName, "EXPIRED")) {
+            seatRepo.updateSeatStatusByBill(bill, getSeatStatus(SeatStatusEnum.AVAILABLE));
+        }
     }
 
     @Override
@@ -236,7 +253,15 @@ public class SeatServiceImpl implements SeatService {
     }
 
     public SeatStatus getSeatStatus() {
-        return seatStatusRepo.findByCode(SeatStatusEnum.AVAILABLE.toString())
+        return getSeatStatus(SeatStatusEnum.AVAILABLE);
+    }
+
+    private SeatStatus getSeatStatus(SeatStatusEnum seatStatusEnum) {
+        return seatStatusRepo.findByCode(seatStatusEnum.toString())
                 .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
+    }
+
+    private boolean isBillStatus(String actualStatus, String expectedStatus) {
+        return actualStatus != null && actualStatus.trim().equalsIgnoreCase(expectedStatus);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.request.BookingRequest;
+import vi.wbca.webcinema.model.request.TicketCancelRequest;
 import vi.wbca.webcinema.model.response.BookingResponse;
 import vi.wbca.webcinema.model.response.TicketResponse;
 import vi.wbca.webcinema.service.TicketService;
@@ -38,6 +39,19 @@ public class TicketController {
         String message = messageSource.getMessage("success.insert_ticket", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @PostMapping("/cancel")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Hủy ticket hold hoặc booking đang chờ thanh toán")
+    public ResponseEntity<ResponseObject> cancelTicket(@Valid @RequestBody TicketCancelRequest request) {
+        logger.info("----------Web Cinema: Cancel Ticket Hold----------");
+        ticketService.cancelTicket(request);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.delete", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, null)
         );
     }
 

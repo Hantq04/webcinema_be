@@ -15,7 +15,8 @@ public class TicketHoldScheduler {
     @Scheduled(fixedDelay = 30000)
     public void cleanupExpiredTicketHolds() {
         try {
-            ticketHoldCleanupService.cleanupExpiredTicketHolds();
+            ticketHoldCleanupService.cleanupExpiredTicketSelectionHolds();
+            ticketHoldCleanupService.deactivateCompletedSuccessBills();
         } catch (Exception e) {
             log.error("An error occurred during the ticket hold cleanup process:", e);
         }

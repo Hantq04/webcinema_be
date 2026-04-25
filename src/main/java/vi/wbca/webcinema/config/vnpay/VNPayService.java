@@ -11,19 +11,18 @@ import vi.wbca.webcinema.enums.BillStatusEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
-import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.model.entity.bill.UserPromotion;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.model.entity.user.UserProfile;
 import vi.wbca.webcinema.repository.bill.BillRepo;
-import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.bill.UserPromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.UserProfileRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.service.TicketHoldCleanupService;
 import vi.wbca.webcinema.util.EmailUtils;
+import vi.wbca.webcinema.util.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -40,7 +39,6 @@ import java.util.*;
 public class VNPayService {
     private final BillRepo billRepo;
     private final EmailService emailService;
-    private final BillStatusRepo billStatusRepo;
     private final UserPromotionRepo userPromotionRepo;
     private final UserRepo userRepo;
     private final UserProfileRepo userProfileRepo;
@@ -51,8 +49,9 @@ public class VNPayService {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
-        if (isTicketHoldExpired(bill)) {
-            ticketHoldCleanupService.expireBill(bill);
+        long remainingSeconds = Constants.BILL_HOLD_DURATION.toSeconds() + Constants.VNPAY_EXPIRE_GRACE_SECONDS;
+
+        if (!bill.isActive() || !isBillStatus(bill, BillStatusEnum.PENDING.toString())) {
             throw new AppException(ErrorCode.PAYMENT_EXCEPTION);
         }
 
@@ -89,7 +88,7 @@ public class VNPayService {
             var vnp_CreateDate = formatter.format(cld.getTime());
             vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-            cld.add(Calendar.MINUTE, 10);
+            cld.setTimeInMillis(cld.getTimeInMillis() + (remainingSeconds * 1000));
             String vnp_ExpireDate = formatter.format(cld.getTime());
             vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -127,7 +126,7 @@ public class VNPayService {
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             return VNPayConfig.vnp_PayUrl + "?" + queryUrl;
         } else {
-            if (bill.getBillStatus().equals(getStatus(BillStatusEnum.SUCCESS.toString()))) {
+            if (isBillStatus(bill, BillStatusEnum.SUCCESS.toString())) {
                 throw new AppException(ErrorCode.PAYMENT_SUCCESS);
             }
             else throw new AppException(ErrorCode.PAYMENT_EXCEPTION);
@@ -164,8 +163,10 @@ public class VNPayService {
         Bill bill = billRepo.findByTradingCode(tradingCode)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
-        if (isTicketHoldExpired(bill)) {
-            ticketHoldCleanupService.expireBill(bill);
+        if (isBillStatus(bill, BillStatusEnum.SUCCESS.toString())) {
+            return 1;
+        }
+        if (!bill.isActive() || !isBillStatus(bill, BillStatusEnum.PENDING.toString())) {
             return 0;
         }
 
@@ -223,7 +224,7 @@ public class VNPayService {
                 // Send the response via email
                 sendResponse(message, userEmail);
 
-                bill.setBillStatus(getStatus(BillStatusEnum.SUCCESS.toString()));
+                bill.setBillStatus(ticketHoldCleanupService.getStatus(BillStatusEnum.SUCCESS));
                 UserProfile profile = getUserProfile(bill.getUser());
                 profile.setPoint(calculatePoint(bill, profile));
 
@@ -255,10 +256,12 @@ public class VNPayService {
 
                 return 1;
             } else {
-                bill.setBillStatus(getStatus(BillStatusEnum.CANCELLED.toString()));
-                bill.setActive(false);
-                bill.setUpdateTime(LocalDateTime.now());
-                billRepo.save(bill);
+                String responseCode = request.getParameter("vnp_ResponseCode");
+                if ("24".equals(responseCode)) {
+                    ticketHoldCleanupService.cancelBill(bill);
+                } else {
+                    ticketHoldCleanupService.expireBill(bill);
+                }
 
                 return 0;
             }
@@ -272,25 +275,10 @@ public class VNPayService {
         return parts.length > 1 ? parts[1].trim() : "";
     }
 
-    public BillStatus getStatus(String eBillStatus) {
-        return billStatusRepo.findByName(eBillStatus)
-                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
-    }
-
     private boolean isBillStatus(Bill bill, String statusName) {
         return bill.getBillStatus() != null
                 && bill.getBillStatus().getName() != null
                 && bill.getBillStatus().getName().equalsIgnoreCase(statusName);
-    }
-
-    private boolean isTicketHoldExpired(Bill bill) {
-        if (bill.getBillStatus() == null || bill.getCreateTime() == null) {
-            return false;
-        }
-        if (!isBillStatus(bill, BillStatusEnum.PENDING.toString())) {
-            return false;
-        }
-        return !bill.getCreateTime().plusMinutes(5).isAfter(LocalDateTime.now());
     }
 
     public int calculatePoint(Bill bill, UserProfile profile) {

@@ -37,6 +37,10 @@ public class BillFoodServiceImpl implements BillFoodService {
 
     @Override
     public void updateBillFood(List<BillFoodDTO> billFoodDTOs, Bill bill) {
+        if (billFoodDTOs == null) {
+            billFoodDTOs = List.of();
+        }
+
         // Retrieve existing BillFood records from the database
         List<BillFood> existingBillFoods = billFoodRepo.findAllByBill(bill);
 

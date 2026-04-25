@@ -67,7 +67,7 @@ public class FoodController {
         );
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/get-all-food")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Lấy danh sách tất cả món ăn đang hoạt động")
     public ResponseEntity<ResponseObject> getAllFood() {

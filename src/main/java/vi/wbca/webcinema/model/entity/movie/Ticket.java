@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.entity.bill.BillTicket;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,6 +29,9 @@ public class Ticket {
 
     @Column(name = "is_active")
     boolean isActive;
+
+    @Column(name = "create_time", columnDefinition = "DATETIME")
+    LocalDateTime createTime;
 
     @OneToMany(mappedBy = "ticket")
     List<BillTicket> billTickets;

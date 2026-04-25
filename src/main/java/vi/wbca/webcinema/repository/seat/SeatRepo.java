@@ -24,6 +24,11 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
             "SELECT bt.ticket.id FROM BillTicket bt WHERE bt.bill = :bill))")
     void updateSeatStatusByBill(@Param("bill") Bill bill, @Param("status") SeatStatus status);
 
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Seat s SET s.seatStatus = :status WHERE s.id IN (" +
+        "SELECT t.seat.id FROM Ticket t WHERE t.code IN :codes)")
+    void updateSeatStatusByTicketCodes(@Param("codes") List<String> codes, @Param("status") SeatStatus status);
+
     boolean existsByRoom(Room room);
 
     List<Seat> findByRoom(Room room);
@@ -37,7 +42,7 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
     FROM Seat s
     JOIN s.room r
     JOIN r.schedules sch
-    LEFT JOIN Ticket t ON t.schedule.id = sch.id AND t.seat = s
+    LEFT JOIN Ticket t ON t.schedule.id = sch.id AND t.seat = s AND t.isActive = true
     WHERE sch.code = :scheduleCode
     ORDER BY s.line, s.number
     """)
@@ -46,7 +51,7 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
     @Query("""
     SELECT COUNT(DISTINCT t.id)
     FROM Ticket t
-    WHERE t.schedule.code = :scheduleCode
+    WHERE t.schedule.code = :scheduleCode AND t.isActive = true
     """)
     Integer countBookedSeatsBySchedule(@Param("scheduleCode") String scheduleCode);
 }

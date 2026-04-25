@@ -17,7 +17,7 @@ public enum SeatTypeEnum {
 
     public static SeatTypeEnum getByName(String name) {
         for (SeatTypeEnum seatType: values()) {
-            if (seatType.name().equalsIgnoreCase(name)) {
+            if (seatType.name().equalsIgnoreCase(name) || seatType.getName().equalsIgnoreCase(name)) {
                 return seatType;
             }
         }
@@ -26,7 +26,7 @@ public enum SeatTypeEnum {
 
     public static Double getPriceByType(String type) {
         for (SeatTypeEnum seatType: values()) {
-            if (seatType.name().equalsIgnoreCase(type)) {
+            if (seatType.name().equalsIgnoreCase(type) || seatType.getName().equalsIgnoreCase(type)) {
                 return seatType.getPrice();
             }
         }
