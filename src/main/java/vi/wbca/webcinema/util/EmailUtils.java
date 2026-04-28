@@ -8,7 +8,7 @@ public class EmailUtils {
                         "<p>Your One-Time Password (OTP) for verification is:</p>" +
                         "<h2>%s</h2>" +
                         "<p>Please enter this OTP to activate your account. This OTP is valid for a limited time.</p>" +
-                        "<p>Thank you, <br>FilmTick Support Team</p>",
+                        "<p>Thank you, <br>CineGo Support Team</p>",
                 displayName, otp
         );
     }
@@ -19,7 +19,7 @@ public class EmailUtils {
                         "<p>Your new OTP is:</p>" +
                         "<h2>%s</h2>" +
                         "<p>Please enter this OTP to verify your account. This OTP is valid for a limited time.</p>" +
-                        "<p>Thank you,<br>FilmTick Support Team</p>",
+                        "<p>Thank you,<br>CineGo Support Team</p>",
                 otp
         );
     }
@@ -30,7 +30,7 @@ public class EmailUtils {
                         "<p>Your One-Time Password (OTP) for changing your password is:</p>" +
                         "<h2> %s </h2>" +
                         "<p>Please enter this OTP to proceed with changing your password. This OTP is valid for a limited time.</p>" +
-                        "<p>Thank you,<br>FilmTick Support Team</p>",
+                        "<p>Thank you,<br>CineGo Support Team</p>",
                 otp
         );
     }
@@ -41,7 +41,7 @@ public class EmailUtils {
                         "<p>Your order has been successfully processed. Below are your transaction details:</p>" +
                         "<ul>%s</ul>" +
                         "<p>If you have any questions, feel free to contact our support team.</p>" +
-                        "<p>Regards,<br>FilmTick Support Team</p>",
+                        "<p>Regards,<br>CineGo Support Team</p>",
                 detail
         );
     }

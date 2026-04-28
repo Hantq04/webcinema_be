@@ -18,6 +18,7 @@ import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.Locale;
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -64,6 +65,30 @@ public class CinemaController {
         String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, "")
+        );
+    }
+
+    @GetMapping("/get-all-address")
+    @Operation(summary = "Lấy danh sách tất cả địa chỉ rạp đang hoạt động")
+    public ResponseEntity<ResponseObject> getAllAddressActive() {
+        logger.info("----------Web Cinema: Get All Cinema Address Active----------");
+        List<String> responseData = cinemaService.getAllAddressActive();
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_all_cinema_address", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/get-name-by-address")
+    @Operation(summary = "Lấy danh sách tên rạp theo địa chỉ")
+    public ResponseEntity<ResponseObject> getCinemaNamesByAddress(@RequestParam String address) {
+        logger.info("----------Web Cinema: Get Cinema Names By Address----------");
+        List<String> responseData = cinemaService.getCinemaNamesByAddress(address);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_cinema_names_by_address", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 }

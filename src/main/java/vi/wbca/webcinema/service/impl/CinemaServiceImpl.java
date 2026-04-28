@@ -11,6 +11,10 @@ import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.service.CinemaService;
 import vi.wbca.webcinema.util.generate.GenerateCinemaCode;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.LinkedHashSet;
+
 @Service
 @RequiredArgsConstructor
 public class CinemaServiceImpl implements CinemaService {
@@ -44,5 +48,20 @@ public class CinemaServiceImpl implements CinemaService {
         Cinema cinema = cinemaRepo.findByCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
         cinemaRepo.delete(cinema);
+    }
+
+    @Override
+    public List<String> getAllAddressActive() {
+        return cinemaRepo.findAllByIsActiveTrueOrderByIdAsc().stream()
+                .map(Cinema::getAddress)
+                .filter(address -> address != null && !address.isBlank())
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+                .stream().toList();
+    }
+
+    @Override
+    public List<String> getCinemaNamesByAddress(String address) {
+        return cinemaRepo.findAllByAddressIgnoreCaseAndIsActiveTrueOrderByNameOfCinemaAsc(address)
+                .stream().map(Cinema::getNameOfCinema).toList();
     }
 }

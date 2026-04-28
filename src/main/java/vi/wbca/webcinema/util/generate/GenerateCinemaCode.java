@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class GenerateCinemaCode {
     public static String generateCinemaCode(String location) {
-        String name = "CGV";
+        String name = "CG";
         String normalizedLocation = removeVietnameseAccents(location);
         String cityCode = extractCityCode(normalizedLocation);
         int randomNum = new Random().nextInt(900) + 100;

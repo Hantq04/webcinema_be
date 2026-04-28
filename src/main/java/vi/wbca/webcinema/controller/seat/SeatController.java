@@ -97,7 +97,6 @@ public class SeatController {
     }
 
     @GetMapping("/get-by-schedule")
-    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Lấy ghế theo lịch chiếu")
     public ResponseEntity<ResponseObject> getSeatBySchedule(@RequestParam String scheduleCode) {
         logger.info("----------Web Cinema: Get Seat By Schedule: " + scheduleCode + "----------");
