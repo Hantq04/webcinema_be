@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
 import vi.wbca.webcinema.model.response.SeatResponse;
+import vi.wbca.webcinema.model.response.RoomSeatMapResponse;
 import vi.wbca.webcinema.validation.groupValidate.seat.InsertSeat;
 import vi.wbca.webcinema.validation.groupValidate.seat.UpdateSeat;
 import vi.wbca.webcinema.service.SeatService;
@@ -74,7 +75,7 @@ public class SeatController {
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Làm mới trạng thái ghế")
     public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String code) {
-        logger.info("----------Web Cinema: Update Seat Status----------");
+        logger.info("----------Web Cinema: Refresh Seat Status----------");
         seatService.refreshSeat(code);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.refresh_seat", null, locale);
@@ -103,6 +104,18 @@ public class SeatController {
         Map<String, Object> responseData = seatService.getSeatBySchedule(scheduleCode);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_seat_by_schedule", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/get-by-room")
+    @Operation(summary = "Lấy sơ đồ ghế theo mã phòng")
+    public ResponseEntity<ResponseObject> getSeatByRoom(@RequestParam String roomCode) {
+        logger.info("----------Web Cinema: Get Seat By Room: " + roomCode + "----------");
+        RoomSeatMapResponse responseData = seatService.getSeatByRoom(roomCode);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_seat_by_room", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );

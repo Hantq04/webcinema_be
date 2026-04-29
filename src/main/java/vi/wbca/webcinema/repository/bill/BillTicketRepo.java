@@ -17,6 +17,9 @@ public interface BillTicketRepo extends JpaRepository<BillTicket, Long> {
     @Query("SELECT bt FROM BillTicket bt WHERE bt.bill.id = :billId")
     List<BillTicket> findAllByBillId(Long billId);
 
+    @Query("SELECT bt FROM BillTicket bt WHERE bt.bill.id IN :billIds")
+    List<BillTicket> findAllByBillIdIn(List<Long> billIds);
+
     List<BillTicket> findAllByBill(Bill bill);
 
     @Modifying

@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.dto.cinema.CinemaRevenueDTO;
-import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillStatus;
+import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.user.User;
 
 import java.time.LocalDateTime;
@@ -83,9 +83,44 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     JOIN t.schedule s
     JOIN s.room r
     JOIN r.cinema c
-    WHERE b.createTime BETWEEN :start AND :end
+    WHERE b.paidAt BETWEEN :start AND :end
+        AND b.billStatus.name = :successStatus
     GROUP BY c.nameOfCinema, c.code
     ORDER BY SUM(b.totalMoney) DESC
     """)
-    List<CinemaRevenueDTO> getRevenueWithTime(LocalDateTime start, LocalDateTime end);
+    List<CinemaRevenueDTO> getRevenueWithTime(@Param("start") LocalDateTime start,
+                                              @Param("end") LocalDateTime end,
+                                              @Param("successStatus") String successStatus);
+
+    @Query("""
+    SELECT b
+    FROM Bill b
+    WHERE b.paidAt BETWEEN :start AND :end
+        AND b.billStatus.name = :successStatus
+    """)
+    List<Bill> findAllSuccessfulByCreateTimeBetween(@Param("start") LocalDateTime start,
+                                                    @Param("end") LocalDateTime end,
+                                                    @Param("successStatus") String successStatus);
+
+    @Query("""
+    SELECT DISTINCT b
+    FROM Bill b
+    JOIN b.billTickets bt
+    JOIN bt.ticket t
+    JOIN t.schedule s
+    JOIN s.room r
+    JOIN r.cinema c
+    JOIN s.movie m
+    WHERE b.paidAt BETWEEN :start AND :end
+        AND b.billStatus.name = :successStatus
+        AND (:cinemaId IS NULL OR c.id = :cinemaId)
+        AND (:roomId IS NULL OR r.id = :roomId)
+        AND (:movieId IS NULL OR m.id = :movieId)
+    """)
+    List<Bill> findRevenueBills(@Param("start") LocalDateTime start,
+                                @Param("end") LocalDateTime end,
+                                @Param("successStatus") String successStatus,
+                                @Param("cinemaId") Long cinemaId,
+                                @Param("roomId") Long roomId,
+                                @Param("movieId") Long movieId);
 }

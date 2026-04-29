@@ -225,6 +225,14 @@ public class VNPayService {
                 sendResponse(message, userEmail);
 
                 bill.setBillStatus(ticketHoldCleanupService.getStatus(BillStatusEnum.SUCCESS));
+                try {
+                    bill.setPaidAt(new SimpleDateFormat("yyyyMMddHHmmss").parse(paymentTime)
+                            .toInstant()
+                            .atZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh").toZoneId())
+                            .toLocalDateTime());
+                } catch (ParseException e) {
+                    bill.setPaidAt(LocalDateTime.now());
+                }
                 UserProfile profile = getUserProfile(bill.getUser());
                 profile.setPoint(calculatePoint(bill, profile));
 

@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface CinemaRepo extends JpaRepository<Cinema, Long> {
     Optional<Cinema> findByNameOfCinema(String name);
+    Optional<Cinema> findByNameOfCinemaIgnoreCase(String name);
     Optional<Cinema> findByCode(String code);
 
     List<Cinema> findAllByIsActiveTrueOrderByIdAsc();

@@ -17,6 +17,7 @@ import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.entity.seat.SeatStatus;
 import vi.wbca.webcinema.model.entity.seat.SeatType;
 import vi.wbca.webcinema.model.response.SeatResponse;
+import vi.wbca.webcinema.model.response.RoomSeatMapResponse;
 import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillTicketRepo;
@@ -175,6 +176,25 @@ public class SeatServiceImpl implements SeatService {
         response.put("seats", seatsDto);
         
         return response;
+    }
+
+    @Override
+    public RoomSeatMapResponse getSeatByRoom(String roomCode) {
+        Room room = roomRepo.findByCode(roomCode)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+        List<SeatResponse> seats = seatRepo.findAllByRoomOrderByLineAscNumberAsc(room)
+                .stream()
+                .map(seatMapper::toSeatResponse)
+                .toList();
+
+        return RoomSeatMapResponse.builder()
+                .cinemaName(room.getCinema().getNameOfCinema())
+                .roomCode(room.getCode())
+                .roomName(room.getName())
+                .capacity(room.getCapacity())
+                .seats(seats)
+                .build();
     }
 
     @Transactional

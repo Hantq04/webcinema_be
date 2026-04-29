@@ -112,10 +112,6 @@ public class TicketHoldCleanupService {
                 LocalDateTime.now()
         );
 
-        if (!completedBills.isEmpty()) {
-            log.info("Deactivating {} successful bill(s) with ended showtime", completedBills.size());
-        }
-
         for (Bill bill : completedBills) {
             bill.setActive(false);
             bill.setUpdateTime(LocalDateTime.now());

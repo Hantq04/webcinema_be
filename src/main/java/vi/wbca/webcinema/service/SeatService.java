@@ -3,6 +3,7 @@ package vi.wbca.webcinema.service;
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
 import vi.wbca.webcinema.model.entity.seat.Seat;
 import vi.wbca.webcinema.model.response.SeatResponse;
+import vi.wbca.webcinema.model.response.RoomSeatMapResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -23,4 +24,6 @@ public interface SeatService {
     void validateSeatSelection(List<Seat> seats);
 
     Map<String, Object> getSeatBySchedule(String scheduleCode);
+
+    RoomSeatMapResponse getSeatByRoom(String roomCode);
 }

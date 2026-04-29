@@ -12,6 +12,9 @@ import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.service.RoomService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
@@ -45,5 +48,14 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepo.findByCode(code)
                 .orElseThrow(() -> new AppException((ErrorCode.CODE_NOT_FOUND)));
         roomRepo.delete(room);
+    }
+
+    @Override
+    public List<String> getRoomCodesByCinema(String cinemaName) {
+        Cinema cinema = cinemaRepo.findByNameOfCinemaIgnoreCase(cinemaName)
+                .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+
+        return roomRepo.findAllByCinemaAndIsActiveTrueOrderByCodeAsc(cinema).stream().map(Room::getCode)
+                .collect(Collectors.toList());
     }
 }

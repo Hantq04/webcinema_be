@@ -24,7 +24,6 @@ import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -135,7 +134,7 @@ public class BillServiceImpl implements BillService {
         if (from.isAfter(to)) {
             throw new AppException(ErrorCode.DATE_TIME_EXCEPTION);
         }
-        return billRepo.getRevenueWithTime(from, to);
+        return billRepo.getRevenueWithTime(from, to, BillStatusEnum.SUCCESS.toString());
     }
 
     public void insertBillFood(BillDTO billDTO, Bill bill) {

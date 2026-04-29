@@ -15,6 +15,7 @@ import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
 import java.util.Locale;
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -61,6 +62,18 @@ public class RoomController {
         String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, "")
+        );
+    }
+
+    @GetMapping("/get-by-cinema")
+    @Operation(summary = "Lấy danh sách mã phòng theo rạp")
+    public ResponseEntity<ResponseObject> getRoomsByCinema(@RequestParam String cinemaName) {
+        logger.info("----------Web Cinema: Get Rooms By Cinema: " + cinemaName + "----------");
+        List<String> responseData = roomService.getRoomCodesByCinema(cinemaName);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_room_by_cinema", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 }

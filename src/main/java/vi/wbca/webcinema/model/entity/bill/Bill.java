@@ -39,6 +39,10 @@ public class Bill {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime updateTime;
 
+    @Column(name = "paid_at", columnDefinition = "DATETIME")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    LocalDateTime paidAt;
+
     @Column(name = "is_active")
     boolean isActive;
 

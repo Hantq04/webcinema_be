@@ -33,6 +33,8 @@ public interface SeatRepo extends JpaRepository<Seat, Long> {
 
     List<Seat> findByRoom(Room room);
 
+    List<Seat> findAllByRoomOrderByLineAscNumberAsc(Room room);
+
     @Query("""
     SELECT new vi.wbca.webcinema.model.dto.room.SeatByScheduleDTO(
         s.id, s.line, s.number, s.pairIndex,

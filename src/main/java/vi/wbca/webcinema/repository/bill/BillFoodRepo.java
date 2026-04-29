@@ -17,6 +17,9 @@ public interface BillFoodRepo extends JpaRepository<BillFood, Long> {
     @Query("SELECT bf FROM BillFood bf WHERE bf.bill.id = :billId")
     List<BillFood> findAllByBillId(Long billId);
 
+    @Query("SELECT bf FROM BillFood bf WHERE bf.bill.id IN :billIds")
+    List<BillFood> findAllByBillIdIn(List<Long> billIds);
+
     List<BillFood> findAllByBill(Bill bill);
 
     Optional<BillFood> findByBillAndFood(Bill bill, Food food);
@@ -27,7 +30,8 @@ public interface BillFoodRepo extends JpaRepository<BillFood, Long> {
     )
     FROM BillFood bf
     JOIN bf.food f
-    WHERE bf.bill.createTime BETWEEN :start AND :end
+    WHERE bf.bill.paidAt BETWEEN :start AND :end
+        AND bf.bill.billStatus.name = 'SUCCESS'
     GROUP BY f.nameOfFood
     ORDER BY SUM(bf.quantity) DESC
     """)
