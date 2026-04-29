@@ -23,7 +23,7 @@ public class Constants {
 
     public static final long BILL_HOLD_MINUTES = 5L;
     public static final Duration BILL_HOLD_DURATION = Duration.ofMinutes(BILL_HOLD_MINUTES);
-    public static final long VNPAY_EXPIRE_GRACE_SECONDS = 3L;
+    public static final long VNPAY_EXPIRE_GRACE_SECONDS = 0L;
     public static final String FRONTEND_PAYMENT_RETURN_URL = "http://localhost:4200/home";
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

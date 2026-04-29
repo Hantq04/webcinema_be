@@ -28,7 +28,9 @@ import vi.wbca.webcinema.model.entity.user.UserChangeHistory;
 import vi.wbca.webcinema.model.entity.user.UserProfile;
 import vi.wbca.webcinema.model.entity.user.UserStatus;
 import vi.wbca.webcinema.model.request.LoginRequest;
+import vi.wbca.webcinema.model.request.UserProfileUpdateRequest;
 import vi.wbca.webcinema.model.response.LoginResponse;
+import vi.wbca.webcinema.model.response.UserProfileResponse;
 import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.RoleRepo;
@@ -38,9 +40,11 @@ import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.repository.user.UserStatusRepo;
 import vi.wbca.webcinema.service.*;
 import vi.wbca.webcinema.util.Constants;
+import vi.wbca.webcinema.util.ImageUtils;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -120,9 +124,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(UserDTO request) {
-        User currentUser = userRepo.findByUserName(request.getUserName())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    public void updateProfile(UserProfileUpdateRequest request) {
+        User currentUser = getCurrentUser();
         UserProfile profile = getRequiredProfile(currentUser);
 
         if (userProfileRepo.existsByEmailAndUserIdNot(request.getEmail(), currentUser.getId())) {
@@ -146,11 +149,18 @@ public class UserServiceImpl implements UserService {
                 .build();
         userChangeHistoryRepo.save(history);
 
-        if (request.getPassword() != null) {
-            currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
+        profile.setEmail(request.getEmail());
+        profile.setName(request.getName());
+        profile.setPhoneNumber(request.getPhoneNumber());
+        profile.setAddress(request.getAddress());
+        profile.setCity(request.getCity());
+        profile.setDistrict(request.getDistrict());
+        profile.setGender(request.getGender());
+        profile.setBirthDate(request.getBirthDate());
 
-        userMapper.updateUserProfileFromDTO(request, profile);
+        if (request.getFile() != null && !request.getFile().isEmpty()) {
+            profile.setAvatarUrl(saveAvatar(request.getFile()));
+        }
 
         userProfileRepo.save(profile);
         userRepo.save(currentUser);
@@ -180,6 +190,25 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         getRequiredProfile(user);
         return userMapper.toUserDTO(user);
+    }
+
+    @Override
+    public UserProfileResponse findProfileByUserName(String userName) {
+        User user = userRepo.findByUserName(userName)
+            .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+        UserProfile profile = getRequiredProfile(user);
+        return new UserProfileResponse(
+            profile.getEmail(),
+            profile.getName(),
+            profile.getPhoneNumber(),
+            profile.getAddress(),
+            profile.getCity(),
+            profile.getDistrict(),
+            profile.getGender(),
+            profile.getBirthDate(),
+            profile.getAvatarUrl(),
+            profile.getPoint()
+        );
     }
 
     public void userStatusAndRank(User user) {
@@ -257,6 +286,23 @@ public class UserServiceImpl implements UserService {
     private UserProfile getRequiredProfile(User user) {
         return userProfileRepo.findByUser(user)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        return userRepo.findByUserName(authentication.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private String saveAvatar(org.springframework.web.multipart.MultipartFile file) {
+        try {
+            return ImageUtils.saveImage(file);
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.SYSTEM_ERROR);
+        }
     }
 
     private UserResponse toUserResponse(User user) {

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -16,10 +17,11 @@ import vi.wbca.webcinema.model.dto.user.UserDTO;
 import vi.wbca.webcinema.model.request.LoginRequest;
 import vi.wbca.webcinema.model.request.ChangePasswordRequest;
 import vi.wbca.webcinema.model.request.ResetPasswordRequest;
+import vi.wbca.webcinema.model.request.UserProfileUpdateRequest;
 import vi.wbca.webcinema.validation.groupValidate.user.DeleteUser;
 import vi.wbca.webcinema.validation.groupValidate.user.InsertUser;
-import vi.wbca.webcinema.validation.groupValidate.user.UpdateUser;
 import vi.wbca.webcinema.model.response.LoginResponse;
+import vi.wbca.webcinema.model.response.UserProfileResponse;
 import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.service.AccountService;
 import vi.wbca.webcinema.service.RefreshTokenService;
@@ -102,12 +104,12 @@ public class UserController {
         );
     }
 
-    @PutMapping("/update-profile")
+    @PutMapping(value = "/update-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Cập nhật thông tin người dùng")
-    public ResponseEntity<ResponseObject> updateUser(@Validated(UpdateUser.class) @RequestBody UserDTO request) {
+        public ResponseEntity<ResponseObject> updateUser(@Valid @ModelAttribute UserProfileUpdateRequest request) {
         logger.info("----------Web Cinema: Update User----------");
-        userService.updateUser(request);
+        userService.updateProfile(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.update", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -206,6 +208,19 @@ public class UserController {
         UserDTO responseData = userService.findById(id);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.find_user", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/profile")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Lấy thông tin profile theo username")
+        public ResponseEntity<ResponseObject> findProfileByUserName(@Valid @RequestParam String userName) {
+        logger.info("----------Web Cinema: Get User Profile By Username----------");
+        UserProfileResponse responseData = userService.findProfileByUserName(userName);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.find_user_profile", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );
