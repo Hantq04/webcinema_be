@@ -74,9 +74,9 @@ public class SeatController {
     @PutMapping("/refresh")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Làm mới trạng thái ghế")
-    public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String code) {
+    public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String roomCode) {
         logger.info("----------Web Cinema: Refresh Seat Status----------");
-        seatService.refreshSeat(code);
+        seatService.refreshSeat(roomCode);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.refresh_seat", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -56,6 +56,18 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     List<Bill> findAllByBillStatusAndCreateTimeBeforeAndIsActiveTrue(BillStatus billStatus, LocalDateTime createTime);
 
     @Query("""
+    SELECT DISTINCT b
+    FROM Bill b
+    JOIN FETCH b.billStatus
+    JOIN b.billTickets bt
+    JOIN bt.ticket t
+    JOIN t.schedule s
+    JOIN s.room r
+    WHERE r.code = :roomCode
+    """)
+    List<Bill> findDistinctBillsWithStatusByRoomCode(@Param("roomCode") String roomCode);
+
+    @Query("""
     SELECT b
     FROM Bill b
     JOIN b.billTickets bt

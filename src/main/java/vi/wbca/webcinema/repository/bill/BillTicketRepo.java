@@ -3,6 +3,7 @@ package vi.wbca.webcinema.repository.bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillTicket;
@@ -21,6 +22,16 @@ public interface BillTicketRepo extends JpaRepository<BillTicket, Long> {
     List<BillTicket> findAllByBillIdIn(List<Long> billIds);
 
     List<BillTicket> findAllByBill(Bill bill);
+
+    @Query("""
+    SELECT DISTINCT bt.bill
+    FROM BillTicket bt
+    JOIN bt.ticket t
+    JOIN t.schedule s
+    JOIN s.room r
+    WHERE r.code = :roomCode
+    """)
+    List<Bill> findDistinctBillsByRoomCode(@Param("roomCode") String roomCode);
 
     @Modifying
     @Query("DELETE FROM BillTicket bt WHERE bt.bill.id = :billId")

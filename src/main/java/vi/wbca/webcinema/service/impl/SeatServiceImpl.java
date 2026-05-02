@@ -10,7 +10,6 @@ import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
-import vi.wbca.webcinema.model.entity.bill.BillTicket;
 import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.entity.seat.Seat;
@@ -20,7 +19,6 @@ import vi.wbca.webcinema.model.response.SeatResponse;
 import vi.wbca.webcinema.model.response.RoomSeatMapResponse;
 import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
-import vi.wbca.webcinema.repository.bill.BillTicketRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.repository.seat.SeatRepo;
@@ -45,7 +43,6 @@ public class SeatServiceImpl implements SeatService {
     private final RoomRepo roomRepo;
     private final SeatTypeRepo seatTypeRepo;
     private final BillRepo billRepo;
-    private final BillTicketRepo billTicketRepo;
     private final ScheduleRepo scheduleRepo;
     private final SeatMapper seatMapper;
     private final TicketPricingService ticketPricingService;
@@ -86,32 +83,44 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     @Transactional
-    public void refreshSeat(String code) {
-        Bill bill = billRepo.findByTradingCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+    public void refreshSeat(String roomCode) {
+        SeatStatus occupiedSeatStatus = getSeatStatus(SeatStatusEnum.OCCUPIED);
+        SeatStatus availableSeatStatus = getSeatStatus(SeatStatusEnum.AVAILABLE);
 
+        Room room = roomRepo.findByCode(roomCode)
+            .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+        billRepo.findDistinctBillsWithStatusByRoomCode(room.getCode()).stream()
+                .forEach(bill -> refreshSeatByBill(
+                        bill,
+                        occupiedSeatStatus,
+                        availableSeatStatus
+                ));
+    }
+
+    private void refreshSeatByBill(Bill bill,
+                                   SeatStatus occupiedSeatStatus, SeatStatus availableSeatStatus) {
         if (bill.getBillStatus() == null || bill.getBillStatus().getName() == null) {
             return;
         }
+
         String billStatusName = bill.getBillStatus().getName();
         if (isBillStatus(billStatusName, "PENDING")) {
             return;
         }
-        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-        if (billTickets.isEmpty()) {
-            return;
-        }
-        if (isBillStatus(billStatusName, "SUCCESS")) {
-            seatRepo.updateSeatStatusByBill(bill, getSeatStatus(SeatStatusEnum.OCCUPIED));
+
+        if (isBillStatus(billStatusName, "SUCCESS") && bill.isActive()) {
+            seatRepo.updateSeatStatusByBill(bill, occupiedSeatStatus);
             return;
         }
 
-        if (isBillStatus(billStatusName, "CANCEL")
+        if (isBillStatus(billStatusName, "SUCCESS")
+                || isBillStatus(billStatusName, "CANCEL")
                 || isBillStatus(billStatusName, "CANCELLED")
                 || isBillStatus(billStatusName, "FAIL")
                 || isBillStatus(billStatusName, "FAILURE")
                 || isBillStatus(billStatusName, "EXPIRED")) {
-            seatRepo.updateSeatStatusByBill(bill, getSeatStatus(SeatStatusEnum.AVAILABLE));
+            seatRepo.updateSeatStatusByBill(bill, availableSeatStatus);
         }
     }
 

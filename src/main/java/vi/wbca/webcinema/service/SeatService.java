@@ -17,7 +17,7 @@ public interface SeatService {
 
     Seat findById(Long id);
 
-    void refreshSeat(String code);
+    void refreshSeat(String roomCode);
 
     List<SeatResponse> getAllSeat();
 

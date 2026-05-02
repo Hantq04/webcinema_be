@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.entity.movie.MovieType;
+import vi.wbca.webcinema.model.response.MovieTypeResponse;
 import vi.wbca.webcinema.service.MovieTypeService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -44,7 +45,7 @@ public class MovieTypeController {
     @Operation(summary = "Lấy tất cả thể loại phim")
     public ResponseEntity<ResponseObject> getAllType() {
         logger.info("----------Web Cinema: Get All Movie Type----------");
-        List<MovieType> responseData = movieTypeService.getAllType();
+        List<MovieTypeResponse> responseData = movieTypeService.getAllType();
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_all_movie_type", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

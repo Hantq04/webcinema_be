@@ -64,6 +64,7 @@ public interface MovieMapper {
 
     @Mapping(target = "code", source = "code")
     @Mapping(target = "image", source = "image")
+    @Mapping(target = "bannerId", source = "banner.id")
     @Mapping(target = "nameEn", source = "nameEn")
     @Mapping(target = "movieType", expression = "java(extractMovieTypeNamesVi(movie.getMovieTypes()))")
     @Mapping(target = "movieTypeEn", expression = "java(extractMovieTypeNamesEn(movie.getMovieTypes()))")

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.entity.movie.Rate;
+import vi.wbca.webcinema.model.response.RateResponse;
 import vi.wbca.webcinema.service.RateService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -44,7 +45,7 @@ public class RateController {
     @Operation(summary = "Lấy tất cả mức giá")
     public ResponseEntity<ResponseObject> getAllRate() {
         logger.info("----------Web Cinema: Get All Rate----------");
-        List<Rate> responseData = rateService.getAllRate();
+        List<RateResponse> responseData = rateService.getAllRate();
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_all_rate", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

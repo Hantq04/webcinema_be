@@ -28,6 +28,9 @@ public class MovieDetailResponse {
     @Schema(description = "Ảnh bìa của phim")
     private String image;
 
+    @Schema(description = "ID của banner")
+    private Long bannerId;
+
     @Schema(description = "Đạo diễn của phim")
     private String director;
 
