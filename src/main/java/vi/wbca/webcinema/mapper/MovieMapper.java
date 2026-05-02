@@ -34,6 +34,7 @@ public interface MovieMapper {
     @Mapping(target = "movieTypeIds", expression = "java(extractMovieTypeIds(movie.getMovieTypes()))")
     @Mapping(target = "rate", source = "rate.code")
     @Mapping(target = "bannerId", source = "banner.id")
+    @Mapping(target = "image", source = "banner.imageUrl")
     @Mapping(target = "nameEn", source = "nameEn")
     @Mapping(target = "descriptionEn", source = "descriptionEn")
     MovieDTO toMovieDTO(Movie movie);

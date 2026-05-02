@@ -48,6 +48,8 @@ public class MovieDTO {
     @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     Long bannerId;
 
+    String image;
+
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
     @Size(min = 3, max = 20, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String language;
