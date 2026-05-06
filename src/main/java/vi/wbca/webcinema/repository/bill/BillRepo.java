@@ -114,6 +114,8 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
                                                     @Param("end") LocalDateTime end,
                                                     @Param("successStatus") String successStatus);
 
+    List<Bill> findTop5ByBillStatus_NameAndIsActiveTrueAndPaidAtIsNotNullOrderByPaidAtDesc(String successStatus);
+
     @Query("""
     SELECT DISTINCT b
     FROM Bill b

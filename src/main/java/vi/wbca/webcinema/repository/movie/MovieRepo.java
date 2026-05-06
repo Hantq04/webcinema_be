@@ -26,12 +26,13 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     void updateExpiredMovies(@Param("now") LocalDateTime now);
 
     @Query("""
-    SELECT DISTINCT m
+    SELECT m
     FROM Movie m
     JOIN m.schedules s
     JOIN s.tickets t
     JOIN t.billTickets bt
     WHERE t.isActive = false
+    GROUP BY m
     ORDER BY COUNT(bt.id) DESC
     """)
     Page<Movie> getTicketStatistics(Pageable pageable);

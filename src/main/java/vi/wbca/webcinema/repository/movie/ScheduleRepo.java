@@ -38,6 +38,17 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Long> {
     SELECT DISTINCT s
     FROM Schedule s
     JOIN FETCH s.room r
+    WHERE s.isActive = true
+        AND s.startAt <= :endOfDay
+        AND s.endAt >= :startOfDay
+    """)
+    List<Schedule> findActiveSchedulesOverlapping(@Param("startOfDay") LocalDateTime startOfDay,
+                                                  @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Query("""
+    SELECT DISTINCT s
+    FROM Schedule s
+    JOIN FETCH s.room r
     JOIN FETCH r.cinema c
     WHERE s.movie.id = :movieId
     """)

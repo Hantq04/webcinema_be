@@ -55,7 +55,8 @@ public class WebSecurityConfig {
             "/api/v1/chat-bot/**",
             "/api/v1/print-ticket/**",
             "/api/v1/event/**",
-            "/api/v1/revenue/**"
+            "/api/v1/revenue/**",
+            "api/v1/overview/**"
     };
 
     @Bean
