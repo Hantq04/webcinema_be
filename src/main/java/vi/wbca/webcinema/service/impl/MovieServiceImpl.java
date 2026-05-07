@@ -109,7 +109,8 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable) {
-        return movieRepo.getTicketStatistics(pageable).map(movie -> {
+        LocalDateTime now = LocalDateTime.now();
+        return movieRepo.getTicketStatistics(now, pageable).map(movie -> {
             MovieStatisticDTO dto = movieMapper.toMovieStatisticDTO(movie);
             dto.setTotalTicketsBooked(movieRepo.countTotalTicketsByMovieId(movie.getId()));
             return dto;

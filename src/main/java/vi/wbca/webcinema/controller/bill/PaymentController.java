@@ -38,6 +38,6 @@ public class PaymentController {
         logger.info("----------Web Cinema: Confirm Payment----------");
         int paymentResult = vnPayService.paymentReturn(request);
         String paymentStatus = paymentResult == 1 ? "success" : paymentResult == 0 ? "cancel" : "fail";
-        response.sendRedirect(Constants.FRONTEND_PAYMENT_RETURN_URL + "?paymentStatus=" + paymentStatus);
+        response.sendRedirect(vnPayService.resolveFrontendReturnUrl(request) + "?paymentStatus=" + paymentStatus);
     }
 }

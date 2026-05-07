@@ -31,17 +31,20 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     JOIN m.schedules s
     JOIN s.tickets t
     JOIN t.billTickets bt
-    WHERE t.isActive = false
+    WHERE m.isActive = true
+    AND m.premiereDate <= :now
+    AND (m.endDate IS NULL OR m.endDate >= :now)
     GROUP BY m
     ORDER BY COUNT(bt.id) DESC
     """)
-    Page<Movie> getTicketStatistics(Pageable pageable);
+    Page<Movie> getTicketStatistics(@Param("now") LocalDateTime now, Pageable pageable);
 
     @Query("""
-    SELECT COUNT(DISTINCT t.id)
+    SELECT COUNT(DISTINCT bt.id)
     FROM Movie m
     JOIN m.schedules s
     JOIN s.tickets t
+    JOIN t.billTickets bt
     WHERE m.id = :movieId
     """)
     Long countTotalTicketsByMovieId(@Param("movieId") Long movieId);

@@ -30,4 +30,6 @@ public class Constants {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.1);
     public static final ZoneId HO_CHI_MINH = ZoneId.of("Asia/Ho_Chi_Minh");
+
+    public static final String UPLOAD_DIR = "D:/project/uploads/";
 }

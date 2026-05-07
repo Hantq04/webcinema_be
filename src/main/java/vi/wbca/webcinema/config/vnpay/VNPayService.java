@@ -27,6 +27,7 @@ import vi.wbca.webcinema.util.Constants;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -131,6 +132,24 @@ public class VNPayService {
             }
             else throw new AppException(ErrorCode.PAYMENT_EXCEPTION);
         }
+    }
+
+    public String resolveFrontendReturnUrl(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        if (origin == null || origin.isBlank()) {
+            origin = request.getHeader("Referer");
+        }
+        if (origin != null && !origin.isBlank()) {
+            try {
+                URI uri = URI.create(origin);
+                if (uri.getScheme() != null && uri.getAuthority() != null) {
+                    return uri.getScheme() + "://" + uri.getAuthority() + "/home";
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Fall back to the configured default below.
+            }
+        }
+        return Constants.FRONTEND_PAYMENT_RETURN_URL;
     }
 
     @Transactional
