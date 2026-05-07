@@ -111,7 +111,7 @@ public class MovieServiceImpl implements MovieService {
     public Page<MovieStatisticDTO> sortMovieByTicketOrder(Pageable pageable) {
         return movieRepo.getTicketStatistics(pageable).map(movie -> {
             MovieStatisticDTO dto = movieMapper.toMovieStatisticDTO(movie);
-            dto.setTotalTicketsBooked(movieRepo.countBookedTicketsByMovieId(movie.getId()));
+            dto.setTotalTicketsBooked(movieRepo.countTotalTicketsByMovieId(movie.getId()));
             return dto;
         });
     }

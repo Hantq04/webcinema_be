@@ -38,14 +38,13 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     Page<Movie> getTicketStatistics(Pageable pageable);
 
     @Query("""
-    SELECT COUNT(DISTINCT bt.id)
+    SELECT COUNT(DISTINCT t.id)
     FROM Movie m
     JOIN m.schedules s
     JOIN s.tickets t
-    JOIN t.billTickets bt
-    WHERE m.id = :movieId AND t.isActive = false
+    WHERE m.id = :movieId
     """)
-    Long countBookedTicketsByMovieId(@Param("movieId") Long movieId);
+    Long countTotalTicketsByMovieId(@Param("movieId") Long movieId);
 
     @Query(value = """
     SELECT DISTINCT m

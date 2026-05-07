@@ -25,14 +25,23 @@ public class OverviewResponse {
     @Schema(description = "Doanh thu hôm nay", example = "1500000.00")
     private BigDecimal todayRevenue;
 
+    @Schema(description = "Tăng giảm doanh thu hôm nay so với hôm qua", example = "12.5")
+    private BigDecimal todayRevenueChangePercent;
+
     @Schema(description = "Số vé bán được hôm nay", example = "120")
     private Long todayTicketCount;
+
+    @Schema(description = "Tăng giảm số vé bán hôm nay so với hôm qua", example = "5.2")
+    private BigDecimal todayTicketCountChangePercent;
 
     @Schema(description = "Số vé đã đặt hôm nay", example = "150")
     private Long nowShowingMovieCount;
 
     @Schema(description = "Tỷ lệ lấp đầy ghế hôm nay", example = "0.75")
     private BigDecimal seatOccupancyRate;
+
+    @Schema(description = "Tăng giảm tỷ lệ lấp đầy ghế hôm nay so với hôm qua", example = "-2.4")
+    private BigDecimal seatOccupancyRateChangePercent;
 
     @Schema(description = "Doanh thu trong 7 ngày qua")
     private List<RevenueTimePointDTO> revenueLast7Days;
