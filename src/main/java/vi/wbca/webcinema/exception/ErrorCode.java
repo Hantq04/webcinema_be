@@ -71,6 +71,7 @@ public enum ErrorCode {
     CURRENT_PASSWORD_INCORRECT(1249, "error.1249", HttpStatus.BAD_REQUEST),
     PASSWORD_CHANGED_RECENTLY(1250, "error.1250", HttpStatus.BAD_REQUEST),
     MOVIE_NOT_FOUND(1251, "error.1251", HttpStatus.NOT_FOUND),
+    SEAT_REFRESH_NOT_ALLOWED(1252, "error.1252", HttpStatus.BAD_REQUEST),
 
     // Validation, code 13**
     NOT_BLANK(1300, "error.1300", HttpStatus.BAD_REQUEST),

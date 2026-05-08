@@ -114,7 +114,32 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
                                                     @Param("end") LocalDateTime end,
                                                     @Param("successStatus") String successStatus);
 
-    List<Bill> findTop5ByBillStatus_NameAndIsActiveTrueAndPaidAtIsNotNullOrderByPaidAtDesc(String successStatus);
+    @Query("""
+    SELECT b.id
+    FROM Bill b
+    WHERE b.billStatus.name = :successStatus
+        AND b.paidAt IS NOT NULL
+        AND b.paidAt BETWEEN :start AND :end
+    ORDER BY b.paidAt DESC
+    """)
+    List<Long> findRecentSuccessfulBillIds(@Param("successStatus") String successStatus,
+                                           @Param("start") LocalDateTime start,
+                                           @Param("end") LocalDateTime end);
+
+    @Query("""
+    SELECT DISTINCT b
+    FROM Bill b
+    LEFT JOIN FETCH b.user
+    LEFT JOIN FETCH b.billStatus
+    LEFT JOIN FETCH b.billTickets bt
+    LEFT JOIN FETCH bt.ticket t
+    LEFT JOIN FETCH t.seat
+    LEFT JOIN FETCH t.schedule s
+    LEFT JOIN FETCH s.movie
+    LEFT JOIN FETCH s.room
+    WHERE b.id IN :billIds
+    """)
+    List<Bill> findBillsWithOverviewDataByIds(@Param("billIds") List<Long> billIds);
 
     @Query("""
     SELECT DISTINCT b

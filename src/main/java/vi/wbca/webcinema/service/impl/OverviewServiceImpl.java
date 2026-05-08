@@ -1,6 +1,7 @@
 package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,41 +56,34 @@ public class OverviewServiceImpl implements OverviewService {
         List<Bill> todayBills = billRepo.findAllSuccessfulByCreateTimeBetween(startOfToday, endOfToday, BillStatusEnum.SUCCESS.name());
         List<Bill> yesterdayBills = billRepo.findAllSuccessfulByCreateTimeBetween(startOfYesterday, endOfYesterday, BillStatusEnum.SUCCESS.name());
         long todayTicketCount = todayBills.stream()
-                .mapToLong(bill -> bill.getBillTickets() == null ? 0 : bill.getBillTickets().size())
-                .sum();
+                .mapToLong(bill -> bill.getBillTickets() == null ? 0 : bill.getBillTickets().size()).sum();
         long yesterdayTicketCount = yesterdayBills.stream()
-                .mapToLong(bill -> bill.getBillTickets() == null ? 0 : bill.getBillTickets().size())
-                .sum();
+                .mapToLong(bill -> bill.getBillTickets() == null ? 0 : bill.getBillTickets().size()).sum();
 
-        BigDecimal todayRevenue = todayBills.stream()
-                .map(Bill::getTotalMoney)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal yesterdayRevenue = yesterdayBills.stream()
-                .map(Bill::getTotalMoney)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal todayRevenue = todayBills.stream().map(Bill::getTotalMoney)
+                .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal yesterdayRevenue = yesterdayBills.stream().map(Bill::getTotalMoney)
+                .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         long totalCapacity = scheduleRepo.findActiveSchedulesOverlapping(startOfToday, endOfToday).stream()
                 .mapToLong(schedule -> schedule.getRoom() == null || schedule.getRoom().getCapacity() == null
                         ? 0 : schedule.getRoom().getCapacity()).sum();
-        long yesterdayTotalCapacity = scheduleRepo.findActiveSchedulesOverlapping(startOfYesterday, endOfYesterday).stream()
+        long yesterdayTotalCapacity = scheduleRepo.findSchedulesOverlapping(startOfYesterday, endOfYesterday).stream()
                 .mapToLong(schedule -> schedule.getRoom() == null || schedule.getRoom().getCapacity() == null
                         ? 0 : schedule.getRoom().getCapacity()).sum();
 
-        BigDecimal seatOccupancyRate = totalCapacity == 0
-                ? BigDecimal.ZERO : BigDecimal.valueOf(todayTicketCount)
-                    .multiply(BigDecimal.valueOf(100))
-                    .divide(BigDecimal.valueOf(totalCapacity), 1, RoundingMode.HALF_UP);
-        BigDecimal yesterdaySeatOccupancyRate = yesterdayTotalCapacity == 0
-                ? BigDecimal.ZERO : BigDecimal.valueOf(yesterdayTicketCount)
-                    .multiply(BigDecimal.valueOf(100))
-                    .divide(BigDecimal.valueOf(yesterdayTotalCapacity), 1, RoundingMode.HALF_UP);
+        BigDecimal seatOccupancyRate = totalCapacity == 0 ? BigDecimal.ZERO : BigDecimal.valueOf(todayTicketCount)
+                    .multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(totalCapacity), 1, RoundingMode.HALF_UP);
+        BigDecimal yesterdaySeatOccupancyRate = yesterdayTotalCapacity == 0 ? BigDecimal.ZERO : BigDecimal.valueOf(yesterdayTicketCount)
+                    .multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(yesterdayTotalCapacity), 1, RoundingMode.HALF_UP);
 
         long nowShowingMovieCount = movieService.getNowShowingMovies().size();
 
-        List<OverviewRecentBookingResponse> recentBookings = billRepo.findTop5ByBillStatus_NameAndIsActiveTrueAndPaidAtIsNotNullOrderByPaidAtDesc(BillStatusEnum.SUCCESS.name())
-                .stream().map(overviewMapper::toRecentBookingResponse).toList();
+        List<Long> recentBookingIds = billRepo.findRecentSuccessfulBillIds(BillStatusEnum.SUCCESS.name(), fromSevenDaysAgo, endOfToday);
+        List<Bill> recentBookingBills = recentBookingIds.isEmpty() ? List.of() : billRepo.findBillsWithOverviewDataByIds(recentBookingIds);
+        List<OverviewRecentBookingResponse> recentBookings = recentBookingBills.stream()
+                .sorted(Comparator.comparingInt(bill -> recentBookingIds.indexOf(bill.getId())))
+                .map(overviewMapper::toRecentBookingResponse).toList();
 
         List<PromotionResponse> activePromotions = promotionRepo.findAll().stream()
                 .filter(promotion -> {
@@ -102,8 +96,7 @@ public class OverviewServiceImpl implements OverviewService {
                     return afterStart && beforeEnd;
                 })
                 .sorted(Comparator.comparing(Promotion::getEndTime, Comparator.nullsLast(Comparator.naturalOrder())))
-                .map(overviewMapper::toPromotionResponse)
-                .toList();
+                .map(overviewMapper::toPromotionResponse).toList();
 
         return OverviewResponse.builder()
                 .date(today)
@@ -123,9 +116,7 @@ public class OverviewServiceImpl implements OverviewService {
     }
 
         private BigDecimal calculateChangePercent(BigDecimal current, BigDecimal previous) {
-            if (current == null || previous == null) {
-                return null;
-            }
+            if (current == null || previous == null) return null;
             if (previous.compareTo(BigDecimal.ZERO) == 0) {
                 return current.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : BigDecimal.valueOf(100);
             }

@@ -241,7 +241,8 @@ public class VNPayService {
                     .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
 
                 // Send the response via email
-                sendResponse(message, userEmail);
+                String printTicketUrl = buildPrintTicketUrl(request, tradingCode);
+                sendResponse(message, userEmail, printTicketUrl);
 
                 bill.setBillStatus(ticketHoldCleanupService.getStatus(BillStatusEnum.SUCCESS));
                 try {
@@ -328,9 +329,30 @@ public class VNPayService {
         return listHtml.toString();
     }
 
-    private void sendResponse(StringBuilder detail, String userEmail) throws MessagingException, UnsupportedEncodingException {
+    private void sendResponse(StringBuilder detail, String userEmail, String printTicketUrl) throws MessagingException, UnsupportedEncodingException {
         String subject = "VNPay Payment Response";
-        String body = EmailUtils.getConfirmPaymentMessage(formatDetailAsList(detail.toString()));
+        String body = EmailUtils.getConfirmPaymentMessage(formatDetailAsList(detail.toString()), printTicketUrl);
         emailService.sendMail(userEmail, subject, body);
+    }
+
+    private String buildPrintTicketUrl(HttpServletRequest request, String tradingCode) {
+        StringBuilder baseUrl = new StringBuilder();
+        baseUrl.append(request.getScheme())
+                .append("://")
+                .append(request.getServerName());
+
+        int port = request.getServerPort();
+        boolean defaultHttpPort = "http".equalsIgnoreCase(request.getScheme()) && port == 80;
+        boolean defaultHttpsPort = "https".equalsIgnoreCase(request.getScheme()) && port == 443;
+
+        if (!defaultHttpPort && !defaultHttpsPort) {
+            baseUrl.append(":").append(port);
+        }
+
+        baseUrl.append(request.getContextPath())
+                .append("/api/v1/print-ticket/pdf?tradingCode=")
+                .append(tradingCode);
+
+        return baseUrl.toString();
     }
 }

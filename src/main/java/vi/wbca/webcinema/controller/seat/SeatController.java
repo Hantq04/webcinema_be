@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
+import vi.wbca.webcinema.model.dto.room.SeatRefreshRequest;
 import vi.wbca.webcinema.model.response.SeatResponse;
 import vi.wbca.webcinema.model.response.RoomSeatMapResponse;
 import vi.wbca.webcinema.validation.groupValidate.seat.InsertSeat;
@@ -77,6 +78,19 @@ public class SeatController {
     public ResponseEntity<ResponseObject> refreshSeat(@RequestParam String roomCode) {
         logger.info("----------Web Cinema: Refresh Seat Status----------");
         seatService.refreshSeat(roomCode);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.refresh_seat", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, "")
+        );
+    }
+
+    @PutMapping("/refresh-selected")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Làm mới các ghế đã chọn")
+    public ResponseEntity<ResponseObject> refreshSelectedSeats(@Valid @RequestBody SeatRefreshRequest request) {
+        logger.info("----------Web Cinema: Refresh Selected Seat Status----------");
+        seatService.refreshSelectedSeats(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.refresh_seat", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

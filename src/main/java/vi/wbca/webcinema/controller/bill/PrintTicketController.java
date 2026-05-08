@@ -38,8 +38,8 @@ public class PrintTicketController {
     public ResponseEntity<ResponseObject> getPrintTicket(@Valid @RequestParam String tradingCode, HttpServletRequest request) {
         logger.info("----------Web Cinema: Get Print Ticket Data----------");
         String pdfUrl = ServletUriComponentsBuilder.fromRequestUri(request)
-            .replacePath(request.getContextPath() + "/api/v1/print-ticket/pdf")
-            .replaceQueryParam("tradingCode", tradingCode).toUriString();
+                .replacePath(request.getContextPath() + "/api/v1/print-ticket/pdf")
+                .replaceQueryParam("tradingCode", tradingCode).toUriString();
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_print_ticket", null, locale);
         return ResponseEntity.status(HttpStatus.OK)

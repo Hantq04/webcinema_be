@@ -35,14 +35,19 @@ public class EmailUtils {
         );
     }
 
-    public static String getConfirmPaymentMessage(String detail) {
+        public static String getConfirmPaymentMessage(String detail, String printTicketUrl) {
         return String.format(
                 "<h3>Thank you for your payment!</h3>" +
                         "<p>Your order has been successfully processed. Below are your transaction details:</p>" +
-                        "<ul>%s</ul>" +
+                        "<div style=\"padding-left:20px;\">" +
+                        "<ul style=\"margin:0; padding-left:18px;\">%s</ul>" +
+                        "<div style=\"margin:8px 0 14px 10px;\">" +
+                        "<a href=\"%s\" style=\"display:inline-block;background:#f3f4f6;color:#374151;text-decoration:none;padding:8px 16px;border:1px solid #d1d5db;border-radius:6px;font-weight:600;line-height:1.1;\">In vé</a>" +
+                        "</div>" +
+                        "</div>" +
                         "<p>If you have any questions, feel free to contact our support team.</p>" +
                         "<p>Regards,<br>CineGo Support Team</p>",
-                detail
+                detail, printTicketUrl
         );
     }
 }

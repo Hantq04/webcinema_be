@@ -25,6 +25,16 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
 
         boolean existsByScheduleAndSeatAndIsActiveTrue(Schedule schedule, Seat seat);
 
+    @Query("""
+    SELECT COUNT(t)
+    FROM Ticket t
+    JOIN t.schedule s
+    JOIN s.room r
+    WHERE r.code = :roomCode
+        AND t.isActive = true
+    """)
+    Long countActiveTicketsByRoomCode(@Param("roomCode") String roomCode);
+
     List<Ticket> findAllByCodeIn(Set<String> toAdd);
 
         @Query("""

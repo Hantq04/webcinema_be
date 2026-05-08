@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.model.dto.room.SeatByScheduleDTO;
 import vi.wbca.webcinema.model.dto.room.SeatDTO;
+import vi.wbca.webcinema.model.dto.room.SeatRefreshRequest;
 import vi.wbca.webcinema.enums.SeatStatusEnum;
 import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
@@ -21,6 +22,7 @@ import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
+import vi.wbca.webcinema.repository.movie.TicketRepo;
 import vi.wbca.webcinema.repository.seat.SeatRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.repository.seat.SeatTypeRepo;
@@ -44,6 +46,7 @@ public class SeatServiceImpl implements SeatService {
     private final SeatTypeRepo seatTypeRepo;
     private final BillRepo billRepo;
     private final ScheduleRepo scheduleRepo;
+    private final TicketRepo ticketRepo;
     private final SeatMapper seatMapper;
     private final TicketPricingService ticketPricingService;
 
@@ -84,6 +87,8 @@ public class SeatServiceImpl implements SeatService {
     @Override
     @Transactional
     public void refreshSeat(String roomCode) {
+        ensureRoomHasNoActiveTickets(roomCode);
+
         SeatStatus occupiedSeatStatus = getSeatStatus(SeatStatusEnum.OCCUPIED);
         SeatStatus availableSeatStatus = getSeatStatus(SeatStatusEnum.AVAILABLE);
 
@@ -96,6 +101,40 @@ public class SeatServiceImpl implements SeatService {
                         occupiedSeatStatus,
                         availableSeatStatus
                 ));
+    }
+
+    @Override
+    @Transactional
+    public void refreshSelectedSeats(SeatRefreshRequest request) {
+        if (request.getSeatIds() == null || request.getSeatIds().isEmpty()) {
+            throw new AppException(ErrorCode.SEAT_EMPTY);
+        }
+
+        Room room = roomRepo.findByCode(request.getRoomCode())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+        ensureRoomHasNoActiveTickets(room.getCode());
+
+        List<Seat> seats = seatRepo.findAllById(request.getSeatIds());
+        if (seats.size() != request.getSeatIds().size()) {
+            throw new AppException(ErrorCode.SEAT_NOT_FOUND);
+        }
+
+        boolean allBelongToRoom = seats.stream()
+                .allMatch(seat -> seat.getRoom() != null && room.getCode().equals(seat.getRoom().getCode()));
+        if (!allBelongToRoom) {
+            throw new AppException(ErrorCode.SEAT_NOT_BELONG_TO_ROOM);
+        }
+
+        SeatStatus availableSeatStatus = getSeatStatus(SeatStatusEnum.AVAILABLE);
+        seatRepo.updateSeatStatusByIds(request.getSeatIds(), availableSeatStatus);
+    }
+
+    private void ensureRoomHasNoActiveTickets(String roomCode) {
+        Long activeTickets = ticketRepo.countActiveTicketsByRoomCode(roomCode);
+        if (activeTickets != null && activeTickets > 0) {
+            throw new AppException(ErrorCode.SEAT_REFRESH_NOT_ALLOWED);
+        }
     }
 
     private void refreshSeatByBill(Bill bill,
