@@ -10,6 +10,7 @@ import vi.wbca.webcinema.enums.SeatStatusEnum;
 import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
+import vi.wbca.webcinema.model.entity.cinema.Cinema;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
@@ -20,6 +21,7 @@ import vi.wbca.webcinema.model.response.SeatResponse;
 import vi.wbca.webcinema.model.response.RoomSeatMapResponse;
 import vi.wbca.webcinema.mapper.SeatMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
+import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
 import vi.wbca.webcinema.repository.movie.TicketRepo;
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
 public class SeatServiceImpl implements SeatService {
     private final SeatRepo seatRepo;
     private final SeatStatusRepo seatStatusRepo;
+    private final CinemaRepo cinemaRepo;
     private final RoomRepo roomRepo;
     private final SeatTypeRepo seatTypeRepo;
     private final BillRepo billRepo;
@@ -221,8 +224,11 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public RoomSeatMapResponse getSeatByRoom(String roomCode) {
-        Room room = roomRepo.findByCode(roomCode)
+        public RoomSeatMapResponse getSeatByRoom(String roomCode, String cinemaName) {
+        Cinema cinema = cinemaRepo.findByNameOfCinemaIgnoreCase(cinemaName)
+            .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+
+        Room room = roomRepo.findByCodeAndCinema(roomCode, cinema)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         List<SeatResponse> seats = seatRepo.findAllByRoomOrderByLineAscNumberAsc(room)

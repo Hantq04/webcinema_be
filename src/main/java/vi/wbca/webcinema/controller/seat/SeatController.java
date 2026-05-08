@@ -124,10 +124,11 @@ public class SeatController {
     }
 
     @GetMapping("/get-by-room")
-    @Operation(summary = "Lấy sơ đồ ghế theo mã phòng")
-    public ResponseEntity<ResponseObject> getSeatByRoom(@RequestParam String roomCode) {
-        logger.info("----------Web Cinema: Get Seat By Room: " + roomCode + "----------");
-        RoomSeatMapResponse responseData = seatService.getSeatByRoom(roomCode);
+    @Operation(summary = "Lấy sơ đồ ghế theo mã phòng và rạp")
+    public ResponseEntity<ResponseObject> getSeatByRoom(@RequestParam String roomCode,
+                                                        @RequestParam String cinemaName) {
+        logger.info("----------Web Cinema: Get Seat By Room----------");
+        RoomSeatMapResponse responseData = seatService.getSeatByRoom(roomCode, cinemaName);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_seat_by_room", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

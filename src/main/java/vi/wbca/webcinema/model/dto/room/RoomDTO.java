@@ -19,7 +19,7 @@ public class RoomDTO {
 
     @NotNull(message = "NOT_BLANK")
     @Min(value = 50, message = "INVALID_CAPACITY")
-    @Max(value = 400, message = "INVALID_CAPACITY")
+    @Max(value = 550, message = "INVALID_CAPACITY")
     Integer capacity;
 
     @Enumerated(EnumType.STRING)
@@ -30,7 +30,7 @@ public class RoomDTO {
     String description;
 
     @NotBlank(message = "NOT_BLANK")
-    @Size(min = 2, max = 5, message = "SIZE_RANGE")
+    @Size(min = 2, max = 10, message = "SIZE_RANGE")
     String code;
 
     @NotBlank(message = "NOT_BLANK")

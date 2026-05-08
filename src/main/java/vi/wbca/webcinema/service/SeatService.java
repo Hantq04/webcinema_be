@@ -28,5 +28,5 @@ public interface SeatService {
 
     Map<String, Object> getSeatBySchedule(String scheduleCode);
 
-    RoomSeatMapResponse getSeatByRoom(String roomCode);
+    RoomSeatMapResponse getSeatByRoom(String roomCode, String cinemaName);
 }
