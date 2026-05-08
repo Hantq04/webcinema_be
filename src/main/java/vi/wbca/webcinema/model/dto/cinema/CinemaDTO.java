@@ -30,4 +30,6 @@ public class CinemaDTO {
     @NotBlank(message = "NOT_BLANK", groups = {InsertCinema.class, UpdateCinema.class})
     @Size(min = 3, max = 20, message = "SIZE_RANGE", groups = {InsertCinema.class, UpdateCinema.class})
     String nameOfCinema;
+
+    Boolean isActive;
 }

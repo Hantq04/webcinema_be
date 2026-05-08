@@ -51,6 +51,13 @@ public class CinemaServiceImpl implements CinemaService {
     }
 
     @Override
+    public List<CinemaDTO> getAllCinema() {
+        return cinemaRepo.findAllByOrderByIdAsc().stream()
+                .map(cinemaMapper::toCinemaDTO)
+                .toList();
+    }
+
+    @Override
     public List<String> getAllAddressActive() {
         return cinemaRepo.findAllByIsActiveTrueOrderByIdAsc().stream()
                 .map(Cinema::getAddress)

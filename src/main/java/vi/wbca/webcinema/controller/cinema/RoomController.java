@@ -39,6 +39,18 @@ public class RoomController {
         );
     }
 
+    @GetMapping("/get-by-cinema-detail")
+    @Operation(summary = "Lấy danh sách phòng đầy đủ theo rạp")
+    public ResponseEntity<ResponseObject> getRoomsDetailByCinema(@RequestParam String cinemaName) {
+        logger.info("----------Web Cinema: Get Rooms Detail By Cinema: " + cinemaName + "----------");
+        List<RoomDTO> responseData = roomService.getRoomsByCinema(cinemaName);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_room_by_cinema_detail", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     @Operation(summary = "Cập nhật phòng chiếu")

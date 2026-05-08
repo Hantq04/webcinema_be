@@ -76,7 +76,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setNameEn(movieDTO.getNameEn());
         movie.setMovieTypes(resolveMovieTypes(movieDTO.getMovieTypeIds()));
         movie.setPremiereDate(movieDTO.getPremiereDate());
-        movie.setEndDate(movieDTO.getPremiereDate().plusDays(30));
+        movie.setEndDate(movieDTO.getEndDate());
         movie.setLanguage(movieDTO.getLanguage());
         movie.setSubtitle(movieDTO.getSubtitle());
         movie.setTrailer(movieDTO.getTrailer());

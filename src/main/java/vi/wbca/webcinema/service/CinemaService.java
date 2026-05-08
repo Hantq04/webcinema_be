@@ -11,6 +11,8 @@ public interface CinemaService {
 
     void deleteCinema(String code);
 
+    List<CinemaDTO> getAllCinema();
+
     List<String> getAllAddressActive();
 
     List<String> getCinemaNamesByAddress(String address);

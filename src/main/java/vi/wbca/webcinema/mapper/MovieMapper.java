@@ -70,6 +70,7 @@ public interface MovieMapper {
     @Mapping(target = "movieType", expression = "java(extractMovieTypeNamesVi(movie.getMovieTypes()))")
     @Mapping(target = "movieTypeEn", expression = "java(extractMovieTypeNamesEn(movie.getMovieTypes()))")
     @Mapping(target = "premiereDate", expression = "java(formatDate(movie.getPremiereDate()))")
+    @Mapping(target = "endDate", expression = "java(formatDate(movie.getEndDate()))")
     @Mapping(target = "duration", source = "movieDuration")
     @Mapping(target = "rate", source = "rate.code")
     @Mapping(target = "rateEn", source = "rate.descriptionEn")

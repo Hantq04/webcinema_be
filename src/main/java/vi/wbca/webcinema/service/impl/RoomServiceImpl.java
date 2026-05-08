@@ -51,6 +51,16 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public List<RoomDTO> getRoomsByCinema(String cinemaName) {
+        Cinema cinema = cinemaRepo.findByNameOfCinemaIgnoreCase(cinemaName)
+            .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
+
+        return roomRepo.findAllByCinemaOrderByCodeAsc(cinema).stream()
+        .map(roomMapper::toRoomDTO)
+        .toList();
+    }
+
+    @Override
     public List<String> getRoomCodesByCinema(String cinemaName) {
         Cinema cinema = cinemaRepo.findByNameOfCinemaIgnoreCase(cinemaName)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));

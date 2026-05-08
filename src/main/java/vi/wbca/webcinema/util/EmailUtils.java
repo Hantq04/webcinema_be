@@ -41,7 +41,7 @@ public class EmailUtils {
                         "<p>Your order has been successfully processed. Below are your transaction details:</p>" +
                         "<div style=\"padding-left:20px;\">" +
                         "<ul style=\"margin:0; padding-left:18px;\">%s</ul>" +
-                        "<div style=\"margin:8px 0 14px 10px;\">" +
+                        "<div style=\"margin:8px 0 14px 70px;\">" +
                         "<a href=\"%s\" style=\"display:inline-block;background:#f3f4f6;color:#374151;text-decoration:none;padding:8px 16px;border:1px solid #d1d5db;border-radius:6px;font-weight:600;line-height:1.1;\">In vé</a>" +
                         "</div>" +
                         "</div>" +

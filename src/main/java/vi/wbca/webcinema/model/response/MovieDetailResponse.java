@@ -46,6 +46,9 @@ public class MovieDetailResponse {
     @Schema(description = "Ngày công chiếu của phim")
     private String premiereDate;
 
+    @Schema(description = "Ngày kết thúc chiếu của phim")
+    private String endDate;
+
     @Schema(description = "Thời lượng của phim")
     private Integer duration;
 

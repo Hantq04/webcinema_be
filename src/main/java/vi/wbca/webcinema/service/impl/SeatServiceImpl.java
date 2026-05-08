@@ -96,11 +96,7 @@ public class SeatServiceImpl implements SeatService {
             .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
         billRepo.findDistinctBillsWithStatusByRoomCode(room.getCode()).stream()
-                .forEach(bill -> refreshSeatByBill(
-                        bill,
-                        occupiedSeatStatus,
-                        availableSeatStatus
-                ));
+                .forEach(bill -> refreshSeatByBill(bill, occupiedSeatStatus, availableSeatStatus));
     }
 
     @Override
@@ -112,8 +108,6 @@ public class SeatServiceImpl implements SeatService {
 
         Room room = roomRepo.findByCode(request.getRoomCode())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-
-        ensureRoomHasNoActiveTickets(room.getCode());
 
         List<Seat> seats = seatRepo.findAllById(request.getSeatIds());
         if (seats.size() != request.getSeatIds().size()) {

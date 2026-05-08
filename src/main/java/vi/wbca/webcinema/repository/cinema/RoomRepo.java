@@ -16,5 +16,7 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
 
     Optional<Room> findByCodeAndCinema(String code, Cinema cinema);
 
+    List<Room> findAllByCinemaOrderByCodeAsc(Cinema cinema);
+
     List<Room> findAllByCinemaAndIsActiveTrueOrderByCodeAsc(Cinema cinema);
 }

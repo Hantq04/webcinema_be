@@ -13,6 +13,8 @@ public interface CinemaRepo extends JpaRepository<Cinema, Long> {
     Optional<Cinema> findByNameOfCinemaIgnoreCase(String name);
     Optional<Cinema> findByCode(String code);
 
+    List<Cinema> findAllByOrderByIdAsc();
+
     List<Cinema> findAllByIsActiveTrueOrderByIdAsc();
 
     List<Cinema> findAllByAddressIgnoreCaseAndIsActiveTrueOrderByNameOfCinemaAsc(String address);

@@ -10,5 +10,7 @@ public interface RoomService {
 
     void deleteRoom(String name);
 
+    List<RoomDTO> getRoomsByCinema(String cinemaName);
+
     List<String> getRoomCodesByCinema(String cinemaName);
 }

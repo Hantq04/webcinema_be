@@ -36,4 +36,6 @@ public class RoomDTO {
     @NotBlank(message = "NOT_BLANK")
     @Size(min = 3, max = 20, message = "SIZE_RANGE")
     String name;
+
+    Boolean isActive;
 }
