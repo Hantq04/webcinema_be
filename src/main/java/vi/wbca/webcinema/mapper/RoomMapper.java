@@ -16,5 +16,6 @@ public interface RoomMapper {
     @Mapping(target = "cinema", ignore = true)
     Room toRoom(RoomDTO roomDTO);
 
+    @Mapping(source = "active", target = "isActive")
     RoomDTO toRoomDTO(Room room);
 }

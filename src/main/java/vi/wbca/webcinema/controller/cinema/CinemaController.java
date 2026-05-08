@@ -42,18 +42,6 @@ public class CinemaController {
         );
     }
 
-    @GetMapping("/get-all-cinema")
-    @Operation(summary = "Lấy danh sách tất cả rạp")
-    public ResponseEntity<ResponseObject> getAllCinema() {
-        logger.info("----------Web Cinema: Get All Cinema----------");
-        List<CinemaDTO> responseData = cinemaService.getAllCinema();
-        Locale locale = LocaleContextHolder.getLocale();
-        String message = messageSource.getMessage("success.get_all_cinema", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
-        );
-    }
-
     @PutMapping("/update")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)
     @Operation(summary = "Cập nhật rạp chiếu")
@@ -99,6 +87,18 @@ public class CinemaController {
         List<String> responseData = cinemaService.getCinemaNamesByAddress(address);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_cinema_names_by_address", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/get-all-cinema")
+    @Operation(summary = "Lấy danh sách tất cả rạp")
+    public ResponseEntity<ResponseObject> getAllCinema() {
+        logger.info("----------Web Cinema: Get All Cinema----------");
+        List<CinemaDTO> responseData = cinemaService.getAllCinema();
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_all_cinema", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );

@@ -13,5 +13,6 @@ public interface CinemaMapper {
     @Mapping(target = "active", ignore = true)
     Cinema toCinema(CinemaDTO cinemaDTO);
 
+    @Mapping(source = "active", target = "isActive")
     CinemaDTO toCinemaDTO(Cinema cinema);
 }
