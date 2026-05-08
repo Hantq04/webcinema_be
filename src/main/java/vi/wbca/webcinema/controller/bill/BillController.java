@@ -3,6 +3,10 @@ package vi.wbca.webcinema.controller.bill;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -11,7 +15,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.bill.BillDTO;
 import vi.wbca.webcinema.model.response.BillHoldResponse;
+import vi.wbca.webcinema.model.response.PrintTicketResponse;
+import vi.wbca.webcinema.model.response.TransactionHistoryResponse;
 import vi.wbca.webcinema.service.BillService;
+import vi.wbca.webcinema.service.PrintTicketService;
+import vi.wbca.webcinema.service.TransactionHistoryService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
 
@@ -24,6 +32,8 @@ import java.util.logging.Logger;
 public class BillController {
     private static final Logger logger = Logger.getLogger(BillController.class.getName());
     private final BillService billService;
+    private final TransactionHistoryService transactionHistoryService;
+    private final PrintTicketService printTicketService;
     private final MessageSource messageSource;
 
     @PostMapping("/create")
@@ -75,6 +85,35 @@ public class BillController {
         String message = messageSource.getMessage("success.delete", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, "")
+        );
+    }
+
+    @GetMapping("/list")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Lấy danh sách hóa đơn")
+    public ResponseEntity<ResponseObject> getBillList(@RequestParam(required = false) Long cinemaId,
+                                                      @RequestParam int page,
+                                                      @RequestParam int size) {
+        logger.info("----------Web Cinema: Get Bill List----------");
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
+        Page<TransactionHistoryResponse> responseData = transactionHistoryService.getTransactionHistory(cinemaId, pageable);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_bill_list", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/detail")
+    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+    @Operation(summary = "Lấy chi tiết hóa đơn")
+    public ResponseEntity<ResponseObject> getBillDetail(@RequestParam String tradingCode) {
+        logger.info("----------Web Cinema: Get Bill Detail: " + tradingCode + "----------");
+        PrintTicketResponse responseData = printTicketService.getPrintTicketData(tradingCode);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_bill_detail", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
         );
     }
 }

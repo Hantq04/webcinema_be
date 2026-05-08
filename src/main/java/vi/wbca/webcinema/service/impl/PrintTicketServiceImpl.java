@@ -45,7 +45,7 @@ public class PrintTicketServiceImpl implements PrintTicketService {
 
     @Override
     public byte[] generatePdf(String tradingCode) {
-        PrintTicketResponse responseData = getPrintTicket(tradingCode);
+        PrintTicketResponse responseData = getPrintTicketData(tradingCode);
 
         try (InputStream inputStream = new ClassPathResource("template/PrintTicketPdf.jrxml").getInputStream()) {
             JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
@@ -63,7 +63,8 @@ public class PrintTicketServiceImpl implements PrintTicketService {
         }
     }
 
-    private PrintTicketResponse getPrintTicket(String code) {
+    @Override
+    public PrintTicketResponse getPrintTicketData(String code) {
         Bill bill = billRepo.findByTradingCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
 
