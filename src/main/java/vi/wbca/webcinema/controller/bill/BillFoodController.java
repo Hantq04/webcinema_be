@@ -34,8 +34,8 @@ public class BillFoodController {
         billFoodService.insertBillFood(request, bill);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_bill_food", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, null)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            new ResponseObject(HttpStatus.CREATED, message, null)
         );
     }
 

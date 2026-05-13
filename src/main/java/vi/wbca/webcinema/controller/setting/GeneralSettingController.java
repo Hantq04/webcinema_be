@@ -35,8 +35,8 @@ public class GeneralSettingController {
         GeneralSettingDTO responseData = generalSettingService.insertSetting(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_setting", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            new ResponseObject(HttpStatus.CREATED, message, responseData)
         );
     }
 

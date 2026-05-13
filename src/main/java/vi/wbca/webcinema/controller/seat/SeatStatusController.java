@@ -34,8 +34,8 @@ public class SeatStatusController {
         SeatStatus response = seatStatusService.insertSeatStatus(seatStatus);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_seat_status", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, response)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            new ResponseObject(HttpStatus.CREATED, message, response)
         );
     }
 

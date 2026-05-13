@@ -51,8 +51,8 @@ public class UserController {
         userService.register(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.register", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, null)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ResponseObject(HttpStatus.CREATED, message, null)
         );
     }
 
@@ -63,8 +63,8 @@ public class UserController {
         userService.staffRegister(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.staff_register", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, null)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ResponseObject(HttpStatus.CREATED, message, null)
         );
     }
 

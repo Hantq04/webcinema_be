@@ -35,8 +35,8 @@ public class PromotionController {
         promotionService.insertPromotion(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_promotion", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, null)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            new ResponseObject(HttpStatus.CREATED, message, null)
         );
     }
 

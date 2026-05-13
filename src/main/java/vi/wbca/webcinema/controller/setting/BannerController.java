@@ -35,8 +35,8 @@ public class BannerController {
         bannerService.insertBanner(request);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.insert_banner", null, locale);
-        return ResponseEntity.ok(
-                new ResponseObject(HttpStatus.OK, message, null)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            new ResponseObject(HttpStatus.CREATED, message, null)
         );
     }
 
