@@ -5,12 +5,15 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import jakarta.validation.constraints.Size;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +32,21 @@ public class GlobalExceptionHandler {
     private static final Set<String> REQUIRED_FIELD_MESSAGES = Set.of("NOT_BLANK", "NOT_EMPTY");
 
     private final MessageUtils messageUtils;
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleMethodNotSupported(
+            HttpRequestMethodNotSupportedException exception,
+            HttpServletRequest request
+    ) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", HttpStatus.METHOD_NOT_ALLOWED.value());
+        body.put("code", String.valueOf(HttpStatus.METHOD_NOT_ALLOWED.value()));
+        body.put("message", exception.getMessage());
+        body.put("traceId", resolveTraceId(request));
+        body.put("data", null);
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseObject> handleException(Exception exception) {
@@ -184,5 +202,24 @@ public class GlobalExceptionHandler {
             log.info("Exception: {}", ex.getMessage());
             return null;
         }
+    }
+
+    private String resolveTraceId(HttpServletRequest request) {
+        Object traceIdAttribute = request.getAttribute("traceId");
+        if (traceIdAttribute instanceof String traceId && !traceId.isBlank()) {
+            return traceId;
+        }
+
+        String requestTraceId = request.getHeader("X-Trace-Id");
+        if (requestTraceId != null && !requestTraceId.isBlank()) {
+            return requestTraceId;
+        }
+
+        String requestId = request.getHeader("X-Request-Id");
+        if (requestId != null && !requestId.isBlank()) {
+            return requestId;
+        }
+
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }
