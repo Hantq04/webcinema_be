@@ -59,4 +59,6 @@ public class UserDTO {
     @Schema(description = "Mã xác thực của captcha")
     @NotBlank(message = "NOT_BLANK", groups = {InsertUser.class, UpdateUser.class})
     private String captchaValue;
+
+    private String role;
 }

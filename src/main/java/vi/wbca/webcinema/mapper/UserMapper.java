@@ -34,6 +34,7 @@ public interface UserMapper {
     @Mapping(source = "profile.phoneNumber", target = "phoneNumber")
     @Mapping(source = "profile.birthDate", target = "birthDate")
     @Mapping(source = "profile.gender", target = "gender")
+    @Mapping(source = "role", target = "role")
     UserDTO toUserDTO(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
