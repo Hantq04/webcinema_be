@@ -31,7 +31,9 @@ import vi.wbca.webcinema.service.MovieService;
 import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -194,6 +196,6 @@ public class MovieServiceImpl implements MovieService {
                         .filter(movieType -> movieType.getId().equals(id))
                         .findFirst()
                         .orElseThrow(() -> new AppException(ErrorCode.TYPE_NOT_FOUND)))
-                .toList();
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 }

@@ -178,24 +178,26 @@ public class RevenueServiceImpl implements RevenueService {
 
     private LocalDate getPeriodStart(LocalDateTime dateTime, RevenueGroupByEnum groupBy) {
         LocalDate date = dateTime.toLocalDate();
-        return switch (groupBy) {
-            case DAY -> date;
-            case WEEK -> date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-            case MONTH -> date.withDayOfMonth(1);
-        };
+        if (groupBy == RevenueGroupByEnum.WEEK) {
+            return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        }
+        if (groupBy == RevenueGroupByEnum.MONTH) {
+            return date.withDayOfMonth(1);
+        }
+        return date;
     }
 
     private String formatPeriodLabel(LocalDate periodStart, RevenueGroupByEnum groupBy) {
-        return switch (groupBy) {
-            case DAY -> periodStart.toString();
-            case WEEK -> {
-                WeekFields weekFields = WeekFields.ISO;
-                int week = periodStart.get(weekFields.weekOfWeekBasedYear());
-                int year = periodStart.get(weekFields.weekBasedYear());
-                yield String.format("%d-W%02d", year, week);
-            }
-            case MONTH -> YearMonth.from(periodStart).toString();
-        };
+        if (groupBy == RevenueGroupByEnum.WEEK) {
+            WeekFields weekFields = WeekFields.ISO;
+            int week = periodStart.get(weekFields.weekOfWeekBasedYear());
+            int year = periodStart.get(weekFields.weekBasedYear());
+            return String.format("%d-W%02d", year, week);
+        }
+        if (groupBy == RevenueGroupByEnum.MONTH) {
+            return YearMonth.from(periodStart).toString();
+        }
+        return periodStart.toString();
     }
 
     private List<RevenueTimePointDTO> buildTimePointList(Map<LocalDate, RevenueBucket> buckets) {

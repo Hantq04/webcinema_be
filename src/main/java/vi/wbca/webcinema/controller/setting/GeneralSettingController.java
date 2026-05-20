@@ -40,6 +40,19 @@ public class GeneralSettingController {
         );
     }
 
+    @PutMapping("/update")
+    @PreAuthorize(Constants.PERM_ADMIN_ONLY)
+    @Operation(summary = "Cập nhật cài đặt chung hiện hành")
+    public ResponseEntity<ResponseObject> updateSetting(@Valid @RequestBody GeneralSettingDTO request) {
+        logger.info("----------Web Cinema: Update General Setting----------");
+        GeneralSettingDTO responseData = generalSettingService.updateSetting(request);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.update", null, locale);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
     @DeleteMapping("/delete")
     @PreAuthorize(Constants.PERM_ADMIN_ONLY)
     @Operation(summary = "Xóa cài đặt chung theo ID")
@@ -61,6 +74,19 @@ public class GeneralSettingController {
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_all_setting", null, locale);
         List<GeneralSetting> responseData = generalSettingService.getAllSetting();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(HttpStatus.OK, message, responseData)
+        );
+    }
+
+    @GetMapping("/get-latest-setting")
+    @PreAuthorize(Constants.PERM_STAFF_ADMIN)
+    @Operation(summary = "Lấy cài đặt chung mới nhất")
+    public ResponseEntity<ResponseObject> getLatestSetting() {
+        logger.info("----------Web Cinema: Get Latest General Setting----------");
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage("success.get_setting", null, locale);
+        GeneralSettingDTO responseData = generalSettingService.getLatestSetting();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(HttpStatus.OK, message, responseData)
         );
