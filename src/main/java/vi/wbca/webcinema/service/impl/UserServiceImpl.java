@@ -128,11 +128,11 @@ public class UserServiceImpl implements UserService {
         User currentUser = getCurrentUser();
         UserProfile profile = getRequiredProfile(currentUser);
 
-        if (userProfileRepo.existsByEmailAndUserIdNot(request.getEmail(), currentUser.getId())) {
+        if (userProfileRepo.existsByEmailAndUserIdNotAndUserIsActiveTrue(request.getEmail(), currentUser.getId())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
-        if (userProfileRepo.existsByPhoneNumberAndUserIdNot(request.getPhoneNumber(), currentUser.getId())) {
+        if (userProfileRepo.existsByPhoneNumberAndUserIdNotAndUserIsActiveTrue(request.getPhoneNumber(), currentUser.getId())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 
@@ -173,7 +173,9 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
             currentUser.getAccessTokens().forEach(accessTokenService::deleteAccessToken);
-            userRepo.delete(currentUser);
+            currentUser.setActive(false);
+            currentUser.setUserStatus(userStatusRepo.findByCode(UserStatusEnum.INACTIVE.toString()));
+            userRepo.save(currentUser);
         });
     }
 
@@ -244,13 +246,13 @@ public class UserServiceImpl implements UserService {
     }
 
     public void registerAccount(UserDTO request, RoleEnum role) {
-        if (userRepo.existsByUserName(request.getUserName())) {
+        if (userRepo.existsByUserNameAndIsActiveTrue(request.getUserName())) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
-        if (userProfileRepo.existsByEmail(request.getEmail())) {
+        if (userProfileRepo.existsByEmailAndUserIsActiveTrue(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
-        if (userProfileRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+        if (userProfileRepo.existsByPhoneNumberAndUserIsActiveTrue(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
         }
 

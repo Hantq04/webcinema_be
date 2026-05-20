@@ -24,13 +24,13 @@ public class UserProfile {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     User user;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     String email;
 
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "phone_number", nullable = false, unique = true)
+    @Column(name = "phone_number", nullable = false)
     String phoneNumber;
 
     @Column(name = "address")
