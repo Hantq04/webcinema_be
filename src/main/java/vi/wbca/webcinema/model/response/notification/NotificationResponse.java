@@ -1,6 +1,7 @@
 package vi.wbca.webcinema.model.response.notification;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vi.wbca.webcinema.enums.NotificationTypeEnum;
@@ -18,7 +19,9 @@ public class NotificationResponse {
     String title;
     String content;
     NotificationTypeEnum type;
-    boolean isRead;
+
+    @JsonProperty("read")
+    boolean read;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime createTime;

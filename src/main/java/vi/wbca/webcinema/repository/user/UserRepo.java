@@ -1,5 +1,6 @@
 package vi.wbca.webcinema.repository.user;
 
+import vi.wbca.webcinema.enums.RoleEnum;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,11 +8,14 @@ import org.springframework.stereotype.Repository;
 import vi.wbca.webcinema.model.entity.setting.ConfirmEmail;
 import vi.wbca.webcinema.model.entity.user.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findByUserName(String userName);
+
+    List<User> findAllByRoleAndIsActiveTrue(RoleEnum role);
 
     Optional<User> findByConfirmEmails(ConfirmEmail confirmEmails);
 

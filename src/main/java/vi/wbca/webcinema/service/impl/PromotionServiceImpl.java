@@ -1,10 +1,14 @@
 package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.model.dto.ticket.PromotionDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
+import vi.wbca.webcinema.enums.NotificationTypeEnum;
+import vi.wbca.webcinema.event.AdminNotificationEvent;
 import vi.wbca.webcinema.mapper.PromotionMapper;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
@@ -24,8 +28,10 @@ public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepo promotionRepo;
     private final PromotionMapper promotionMapper;
     private final RankCustomerRepo rankCustomerRepo;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
+    @Transactional
     public void insertPromotion(PromotionDTO promotionDTO) {
         Promotion promotion = promotionMapper.toPromotion(promotionDTO);
         promotion.setCode(GenerateCode.generateCode());
@@ -42,13 +48,24 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setActive(true);
         promotion.setRankCustomer(rankCustomer);
         promotionRepo.save(promotion);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+            NotificationTypeEnum.SYSTEM,
+            "Promotion created",
+            "Promotion " + promotion.getName() + " has been created."
+        ));
     }
 
     @Override
+        @Transactional
     public void deletePromotion(String name) {
         Promotion promotion = promotionRepo.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         promotionRepo.delete(promotion);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+            NotificationTypeEnum.SYSTEM,
+            "Promotion deleted",
+            "Promotion " + name + " has been deleted."
+        ));
     }
 
     @Override

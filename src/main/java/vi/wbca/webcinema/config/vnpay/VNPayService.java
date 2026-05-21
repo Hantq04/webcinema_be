@@ -3,11 +3,14 @@ package vi.wbca.webcinema.config.vnpay;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.config.EmailService;
 import vi.wbca.webcinema.enums.CustomerRankEnum;
 import vi.wbca.webcinema.enums.BillStatusEnum;
+import vi.wbca.webcinema.enums.NotificationTypeEnum;
+import vi.wbca.webcinema.event.AdminNotificationEvent;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
@@ -45,6 +48,7 @@ public class VNPayService {
     private final UserProfileRepo userProfileRepo;
     private final RankCustomerRepo rankCustomerRepo;
     private final TicketHoldCleanupService ticketHoldCleanupService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public String createPayment(String code, String returnUrl) {
         Bill bill = billRepo.findByTradingCode(code)
@@ -281,6 +285,11 @@ public class VNPayService {
                 userProfileRepo.save(profile);
                 userRepo.save(user);
                 billRepo.save(bill);
+                applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+                    NotificationTypeEnum.PAYMENT,
+                    "Payment completed",
+                    "Bill " + bill.getTradingCode() + " was paid successfully with amount " + bill.getTotalMoney() + " VND."
+                ));
 
                 return 1;
             } else {

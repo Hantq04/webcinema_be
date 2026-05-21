@@ -3,13 +3,17 @@ package vi.wbca.webcinema.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.model.dto.movie.MovieDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieNowShowingDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieResponseDTO;
 import vi.wbca.webcinema.model.dto.movie.MovieStatisticDTO;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
+import vi.wbca.webcinema.enums.NotificationTypeEnum;
+import vi.wbca.webcinema.event.AdminNotificationEvent;
 import vi.wbca.webcinema.mapper.MovieMapper;
 import vi.wbca.webcinema.model.entity.cinema.Cinema;
 import vi.wbca.webcinema.model.entity.cinema.Room;
@@ -46,8 +50,10 @@ public class MovieServiceImpl implements MovieService {
     private final CinemaRepo cinemaRepo;
     private final RoomRepo roomRepo;
     private final SeatStatusRepo seatStatusRepo;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
+    @Transactional
     public void insertMovie(MovieDTO request) {
         Movie movie = movieMapper.toMovie(request);
         List<MovieType> movieTypes = resolveMovieTypes(request.getMovieTypeIds());
@@ -63,9 +69,15 @@ public class MovieServiceImpl implements MovieService {
         applyBanner(movie, request.getBannerId());
         movie.setActive(true);
         movieRepo.save(movie);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+                NotificationTypeEnum.MOVIE,
+                "Movie created",
+                "Movie " + movie.getName() + " has been created."
+        ));
     }
 
     @Override
+    @Transactional
     public void updateMovie(MovieDTO movieDTO) {
         Movie movie = movieRepo.findByNameAndIsActive(movieDTO.getName(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
@@ -86,14 +98,25 @@ public class MovieServiceImpl implements MovieService {
         movie.setRate(setRate(movieDTO));
         applyBanner(movie, movieDTO.getBannerId());
         movieRepo.save(movie);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+            NotificationTypeEnum.MOVIE,
+            "Movie updated",
+            "Movie " + movie.getName() + " has been updated."
+        ));
     }
 
     @Override
+        @Transactional
     public void deleteMovie(String name) {
         Movie movie = movieRepo.findByNameAndIsActive(name, true)
                 .orElseThrow(() -> new AppException(ErrorCode.NAME_NOT_FOUND));
         movie.setActive(false);
         movieRepo.save(movie);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+            NotificationTypeEnum.MOVIE,
+            "Movie deactivated",
+            "Movie " + movie.getName() + " has been deactivated."
+        ));
     }
 
     @Override

@@ -1,11 +1,15 @@
 package vi.wbca.webcinema.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.model.dto.schedule.ScheduleDTO;
 import vi.wbca.webcinema.enums.ShowTimeEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
+import vi.wbca.webcinema.enums.NotificationTypeEnum;
+import vi.wbca.webcinema.event.AdminNotificationEvent;
 import vi.wbca.webcinema.mapper.ScheduleMapper;
 import vi.wbca.webcinema.model.entity.setting.GeneralSetting;
 import vi.wbca.webcinema.model.entity.movie.Movie;
@@ -39,8 +43,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final MovieRepo movieRepo;
     private final RoomRepo roomRepo;
     private final GeneralSettingRepo generalSettingRepo;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
+    @Transactional
     public ScheduleDTO insertSchedule(ScheduleDTO scheduleDTO) {
         Schedule schedule = scheduleMapper.toSchedule(scheduleDTO);
         Room room = roomRepo.findByNameAndCode(scheduleDTO.getRoomName(), scheduleDTO.getRoomCode())
@@ -72,16 +78,27 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setRoom(room);
         scheduleRepo.save(schedule);
         deactivateExpiredSchedule();
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+            NotificationTypeEnum.SCHEDULE,
+            "Schedule created",
+            "Schedule " + schedule.getCode() + " for movie " + movie.getName() + " has been created."
+        ));
         return scheduleMapper.toScheduleDTO(schedule);
     }
 
     @Override
+        @Transactional
     public void updateSchedule(ScheduleDTO scheduleDTO) {
         Schedule schedule = scheduleRepo.findByCode(scheduleDTO.getCode())
                 .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         schedule.setStartAt(scheduleDTO.getStartAt());
         scheduleRepo.save(schedule);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+            NotificationTypeEnum.SCHEDULE,
+            "Schedule updated",
+            "Schedule " + schedule.getCode() + " has been updated."
+        ));
     }
 
     @Override
@@ -94,10 +111,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional
     public void deleteSchedule(String code, Long movieId) {
         Schedule schedule = scheduleRepo.findByCodeAndMovieId(code, movieId)
                 .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
         scheduleRepo.delete(schedule);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(
+                NotificationTypeEnum.SCHEDULE,
+                "Schedule deleted",
+                "Schedule " + code + " has been deleted."
+        ));
     }
 
     @Override
