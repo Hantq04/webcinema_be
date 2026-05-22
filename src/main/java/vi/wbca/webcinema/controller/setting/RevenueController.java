@@ -71,7 +71,7 @@ public class RevenueController {
             request.getRoomId(),
             request.getMovieId()
         );
-        String fileName = String.format("revenue-summary-%s-%s.xlsx", request.getFromDate(), request.getToDate());
+        String fileName = String.format("bao-cao-doanh-thu-%s-%s.xlsx", request.getFromDate(), request.getToDate());
         return ResponseEntity.status(HttpStatus.OK)
             .contentType(MediaType.parseMediaType(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))

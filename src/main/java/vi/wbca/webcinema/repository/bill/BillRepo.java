@@ -23,6 +23,8 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
 
     Optional<Bill> findByUserAndBillStatus(User user, BillStatus billStatus);
 
+    List<Bill> findAllByUserAndBillStatusOrderByPaidAtDesc(User user, BillStatus billStatus);
+
         Page<Bill> findAllByIsActiveTrue(Pageable pageable);
 
         Page<Bill> findAllByUserAndIsActiveTrue(User user, Pageable pageable);

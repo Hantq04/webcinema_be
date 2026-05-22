@@ -216,11 +216,11 @@ public class RevenueServiceImpl implements RevenueService {
 
     private void writeHeaderRow(Sheet sheet) {
         Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("Period");
-        header.createCell(1).setCellValue("TotalRevenue");
-        header.createCell(2).setCellValue("TicketRevenue");
-        header.createCell(3).setCellValue("FoodRevenue");
-        header.createCell(4).setCellValue("TicketCount");
+        header.createCell(0).setCellValue("Kỳ");
+        header.createCell(1).setCellValue("Tổng Doanh Thu");
+        header.createCell(2).setCellValue("Doanh Thu Vé");
+        header.createCell(3).setCellValue("Doanh Thu F&B");
+        header.createCell(4).setCellValue("Số Vé");
     }
 
     private void writeDataRows(Sheet sheet, List<RevenueTimePointDTO> data) {

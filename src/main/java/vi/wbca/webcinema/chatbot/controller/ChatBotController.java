@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.logging.Logger;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,10 +17,12 @@ import vi.wbca.webcinema.chatbot.model.response.ChatResponse;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat-bot")
 public class ChatBotController {
+    private static final Logger logger = Logger.getLogger(ChatBotController.class.getName());
     private final ChatBotService chatBotService;
 
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> ask(@RequestBody ChatRequest request) {
+        logger.info("----------Web Cinema: Chat Bot Ask----------");
         return ResponseEntity.ok(chatBotService.chat(request));
     }
 }
