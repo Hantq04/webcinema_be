@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResponse {
+    @Schema(description = "ID người dùng")
+    Long userId;
+
     @Schema(description = "Tên người dùng")
     String userName;
 

@@ -2,6 +2,8 @@ package vi.wbca.webcinema.chatbot.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import vi.wbca.webcinema.chatbot.ai.GroqClient;
 import vi.wbca.webcinema.chatbot.model.MovieFilter;
@@ -48,12 +50,16 @@ public class ChatBotServiceImpl implements ChatBotService {
     private final BillStatusRepo billStatusRepo;
     private final UserRepo userRepo;
     private final GroqClient groqClient;
+    private final MessageSource messageSource;
 
     @Override
     @Transactional(readOnly = true)
     public ChatResponse chat(ChatRequest request) {
+        Locale locale = LocaleContextHolder.getLocale();
+        boolean respondInEnglish = isEnglish(locale);
+
         if (request == null || request.getMessage() == null || request.getMessage().isBlank()) {
-            return new ChatResponse("Bạn hãy nhập câu hỏi về phim, suất chiếu hoặc khuyến mãi.");
+            return new ChatResponse(message(locale, "chatbot.empty_request"));
         }
 
         String message = request.getMessage().toLowerCase(Locale.ROOT);
@@ -63,7 +69,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         List<Movie> bookedMovies = wantsRecommendation ? getBookedMovies(request.getUserId()) : List.of();
 
         if (wantsPromotions && !hasActivePromotions()) {
-            return new ChatResponse("Hiện tại, chúng tôi đang không có chương trình khuyến mãi nào.");
+            return new ChatResponse(message(locale, "chatbot.promotions.none"));
         }
 
         // 1. Detect intent
@@ -74,11 +80,11 @@ public class ChatBotServiceImpl implements ChatBotService {
         List<Movie> movies = wantsRecommendation ? filterUnseenMovies(allMovies, bookedMovies) : allMovies;
 
         if (wantsMovieRelated) {
-            return new ChatResponse(buildMovieResponse(message, movies, allMovies, wantsRecommendation));
+            return new ChatResponse(buildMovieResponse(message, movies, allMovies, wantsRecommendation, locale, respondInEnglish));
         }
 
         // 3. Build context
-        String context = buildContext(movies, bookedMovies, message, wantsMovieRelated, wantsPromotions);
+        String context = buildContext(movies, bookedMovies, message, wantsMovieRelated, wantsPromotions, locale, respondInEnglish);
 
         // 4. Call AI (format only)
         String result = groqClient.ask(buildPrompt(context, message));
@@ -154,39 +160,41 @@ public class ChatBotServiceImpl implements ChatBotService {
 
     // ================= CONTEXT =================
 
-        private String buildContext(List<Movie> movies, List<Movie> bookedMovies, String question, boolean wantsMovieRelated, boolean wantsPromotions) {
+    private String buildContext(List<Movie> movies, List<Movie> bookedMovies, String question, boolean wantsMovieRelated, boolean wantsPromotions, Locale locale, boolean respondInEnglish) {
         boolean wantsShowtimes = containsAny(question, "suất chiếu", "lich chieu", "lịch chiếu", "gio chieu", "giờ chiếu", "chieu luc nao");
 
         StringBuilder context = new StringBuilder();
 
         if (wantsMovieRelated && bookedMovies != null && !bookedMovies.isEmpty()) {
-            context.append("Phim user đã đặt và thanh toán thành công gần đây:\n");
+            context.append(message(locale, "chatbot.context.booked_movies"));
             bookedMovies.stream()
                     .distinct()
                     .limit(5)
                     .forEach(movie -> context.append("- ").append(movie.getName()).append("\n"));
             String preferredGenres = buildPreferredGenres(bookedMovies);
             if (!preferredGenres.isBlank()) {
-                context.append("Thể loại user có xu hướng xem: ").append(preferredGenres).append("\n");
+                context.append(message(locale, "chatbot.context.preferred_genres"))
+                        .append(preferredGenres)
+                        .append("\n");
             }
             context.append("\n");
         }
         if (wantsMovieRelated && movies != null && !movies.isEmpty()) {
-            context.append("Danh sách phim phù hợp hiện tại:\n");
+            context.append(message(locale, "chatbot.context.available_movies"));
             movies.stream()
                     .distinct()
                     .limit(5)
                     .forEach(movie -> context.append("- ")
                             .append(movie.getName())
-                            .append(formatMovieTypes(movie))
+                            .append(formatMovieTypes(movie, locale, respondInEnglish))
                             .append("\n"));
             context.append("\n");
         }
         if (wantsShowtimes && !movies.isEmpty()) {
-            appendShowtimes(context, movies, question);
+            appendShowtimes(context, movies, question, locale, respondInEnglish);
         }
         if (wantsPromotions) {
-            appendPromotions(context);
+            appendPromotions(context, locale, respondInEnglish);
         }
         return context.toString().trim();
     }
@@ -246,7 +254,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .collect(Collectors.joining(", "));
     }
 
-    private String formatMovieTypes(Movie movie) {
+    private String formatMovieTypes(Movie movie, Locale locale, boolean respondInEnglish) {
         if (movie == null || movie.getMovieTypes() == null || movie.getMovieTypes().isEmpty()) {
             return "";
         }
@@ -257,7 +265,10 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .limit(3)
                 .collect(Collectors.joining(", "));
 
-        return genres.isBlank() ? "" : " | Thể loại: " + genres;
+        if (genres.isBlank()) {
+            return "";
+        }
+        return message(locale, "chatbot.genre_label") + genres;
     }
 
     private List<Movie> filterUnseenMovies(List<Movie> movies, List<Movie> bookedMovies) {
@@ -278,29 +289,30 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .toList();
     }
 
-    private String buildMovieResponse(String question, List<Movie> movies, List<Movie> allMovies, boolean wantsRecommendation) {
+    private String buildMovieResponse(String question, List<Movie> movies, List<Movie> allMovies, boolean wantsRecommendation, Locale locale, boolean respondInEnglish) {
         boolean wantsShowtimes = containsAny(question, "suất chiếu", "lich chieu", "lịch chiếu", "gio chieu", "giờ chiếu", "chieu luc nao");
         boolean wantsComingSoon = containsAny(question, "sắp chiếu", "sap chieu", "phim sap chieu", "phim sắp chiếu");
         String requestedGenre = resolveGenreFromMessage(question);
 
         if (wantsComingSoon) {
             if (movies == null || movies.isEmpty()) {
-                return "Hiện tại rạp chưa có thêm các phim sắp chiếu.";
+                return message(locale, "chatbot.movie.upcoming.none");
             }
             StringBuilder upcomingResponse = new StringBuilder();
             if (!requestedGenre.isBlank()) {
-                upcomingResponse.append("Các phim thể loại ").append(requestedGenre).append(" sắp chiếu hiện có:");
+                upcomingResponse.append(message(locale, "chatbot.movie.upcoming.genre_header", requestedGenre));
             } else {
-                upcomingResponse.append("Các phim sắp chiếu hiện có:");
+                upcomingResponse.append(message(locale, "chatbot.movie.upcoming.header"));
             }
             upcomingResponse.append("\n");
             for (Movie movie : movies) {
                 upcomingResponse.append("- ")
                         .append(movie.getName())
-                        .append(formatMovieTypes(movie));
+                        .append(formatMovieTypes(movie, locale, respondInEnglish));
 
                 if (movie.getPremiereDate() != null) {
-                    upcomingResponse.append(" | Khởi chiếu: ").append(movie.getPremiereDate().toLocalDate());
+                    upcomingResponse.append(message(locale, "chatbot.movie.release_date"))
+                            .append(movie.getPremiereDate().toLocalDate());
                 }
                 upcomingResponse.append("\n");
             }
@@ -309,38 +321,39 @@ public class ChatBotServiceImpl implements ChatBotService {
 
         if (movies == null || movies.isEmpty()) {
             if (!requestedGenre.isBlank()) {
-                return "Hiện tại, chưa có phim thể loại " + requestedGenre + " đang chiếu hoặc sắp chiếu.";
+                return message(locale, "chatbot.movie.no_movies_in_genre", requestedGenre);
             }
             String currentShowingTitles = buildCurrentShowingTitles(allMovies);
             if (!currentShowingTitles.isBlank()) {
-                return "Hiện tại vẫn đang có phim đang chiếu như " + currentShowingTitles + ". Bạn có thể xem thử hoặc nói rõ hơn thể loại bạn thích.";
+                return message(locale, "chatbot.movie.no_now_showing_with_titles", currentShowingTitles);
             }
             String alternativeGenres = buildCurrentGenreHint();
             if (!alternativeGenres.isBlank()) {
-                return "Hiện tại chưa có phim nào phù hợp ngay lúc này. Bạn có thể thử thể loại như " + alternativeGenres + ".";
+                return message(locale, "chatbot.movie.no_matching_movies_with_genres", alternativeGenres);
             }
-            return "Hiện tại chưa có phim nào phù hợp ngay lúc này.";
+            return message(locale, "chatbot.movie.no_matching_movies");
         }
 
         StringBuilder response = new StringBuilder();
 
         if (!requestedGenre.isBlank()) {
-            response.append("Các phim thể loại ").append(requestedGenre).append(" hiện có:");
+            response.append(message(locale, "chatbot.movie.genre_header", requestedGenre));
         } else if (wantsRecommendation) {
-            response.append("Một số phim đang chiếu phù hợp hiện tại:");
+            response.append(message(locale, "chatbot.movie.recommendation_header"));
         } else if (wantsShowtimes) {
-            response.append("Các suất chiếu hiện có:");
+            response.append(message(locale, "chatbot.movie.showtimes_header"));
         } else {
-            response.append("Các phim đang chiếu hiện tại:");
+            response.append(message(locale, "chatbot.movie.now_showing_header"));
         }
         response.append("\n");
 
         for (Movie movie : movies) {
             response.append("- ")
                     .append(movie.getName())
-                    .append(formatMovieTypes(movie));
+                    .append(formatMovieTypes(movie, locale, respondInEnglish));
             if (movie.getPremiereDate() != null) {
-                response.append(" | Khởi chiếu: ").append(movie.getPremiereDate().toLocalDate());
+                response.append(message(locale, "chatbot.movie.release_date"))
+                        .append(movie.getPremiereDate().toLocalDate());
             }
             response.append("\n");
         }
@@ -377,7 +390,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .collect(Collectors.joining(", "));
     }
 
-    private void appendShowtimes(StringBuilder context, List<Movie> movies, String question) {
+    private void appendShowtimes(StringBuilder context, List<Movie> movies, String question, Locale locale, boolean respondInEnglish) {
         List<Movie> resolvedMovies = findMatchingMovies(question, movies);
         if (resolvedMovies.isEmpty()) {
             resolvedMovies = movies;
@@ -399,7 +412,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         }
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        context.append("\nSuất chiếu:\n");
+        context.append(message(locale, "chatbot.movie.showtimes_context"));
         for (Schedule schedule : schedules) {
             context.append("- ")
                     .append(schedule.getMovie().getName())
@@ -407,7 +420,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                     .append(schedule.getRoom() != null && schedule.getRoom().getCinema() != null
                             ? schedule.getRoom().getCinema().getNameOfCinema()
                             : "")
-                    .append(" | Phòng ")
+                .append(message(locale, "chatbot.movie.room"))
                     .append(schedule.getRoom() != null ? schedule.getRoom().getName() : "")
                     .append(" | ")
                     .append(schedule.getStartAt() != null ? schedule.getStartAt().format(dateTimeFormatter) : "")
@@ -422,7 +435,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                         && (promotion.getEndTime() == null || !promotion.getEndTime().isBefore(LocalDateTime.now())));
     }
 
-    private void appendPromotions(StringBuilder context) {
+    private void appendPromotions(StringBuilder context, Locale locale, boolean respondInEnglish) {
         List<Promotion> promotions = promotionRepo.findAll().stream()
                 .filter(Promotion::isActive)
                 .filter(promotion -> promotion.getStartTime() == null || !promotion.getStartTime().isAfter(LocalDateTime.now()))
@@ -434,7 +447,7 @@ public class ChatBotServiceImpl implements ChatBotService {
             return;
         }
 
-        context.append("\nKhuyến mãi đang có:\n");
+        context.append(message(locale, "chatbot.promotions.header"));
         for (Promotion promotion : promotions) {
             context.append("- ")
                     .append(promotion.getName())
@@ -442,7 +455,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                     .append(promotion.getPercent() != null ? promotion.getPercent() + "%" : "")
                     .append(" | ")
                     .append(promotion.getDescription() != null ? promotion.getDescription() : "")
-                    .append(" | HSD: ")
+                    .append(message(locale, "chatbot.promotions.expiry"))
                     .append(promotion.getEndTime() != null ? promotion.getEndTime().toLocalDate() : LocalDate.now())
                     .append("\n");
         }
@@ -471,6 +484,14 @@ public class ChatBotServiceImpl implements ChatBotService {
             }
         }
         return false;
+    }
+
+    private boolean isEnglish(Locale locale) {
+        return locale != null && Locale.ENGLISH.getLanguage().equals(locale.getLanguage());
+    }
+
+    private String message(Locale locale, String key, Object... args) {
+        return messageSource.getMessage(key, args, locale);
     }
 
     private boolean wantsPromotions(String message) {
@@ -507,20 +528,17 @@ public class ChatBotServiceImpl implements ChatBotService {
             Use only the data below. Do not invent any information.
             Data: %s
             User question: %s
-            Instructions:
-            - Answer in Vietnamese with a warm, friendly, and natural tone.
+            - Answer in the same language as the user's question with a warm, friendly, and natural tone.
             - Do not add greetings or opening phrases.
             - Keep the response concise, clear, and easy to read.
-            - Use line breaks when it helps readability.
-            - Do not mention that you are "based on the provided data".
-            - If the question is about promotions and there is no active promotion data, reply exactly: "Hiện tại, chúng tôi đang không có chương trình khuyến mãi nào."
+            - Use line breaks when they improve readability.
+            - Do not mention that the response is based on the provided data.
+            - If the question is about promotions and there is no active promotion data, reply exactly in the user's language.
             - Do not add any extra sentence after that exact no-promotion response.
             - Only use the user's booking history when the question is about movies or asks for movie suggestions.
             - When recommending movies, suggest only movies the user has not watched yet.
             - Do not recommend any movie that is already in the user's paid viewing history.
             - Do not mention movies, booking history, or showtimes when the user only asks about promotions.
-        """.formatted(
-                context,
-                question);
+        """.formatted(context, question);
     }
 }

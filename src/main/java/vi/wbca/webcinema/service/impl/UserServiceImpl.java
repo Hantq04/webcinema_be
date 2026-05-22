@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(LoginRequest request) {
         // Validate the CAPTCHA
-        captchaService.validateCaptcha(request.getCaptchaId(), request.getCaptchaValue());
+//        captchaService.validateCaptcha(request.getCaptchaId(), request.getCaptchaValue());
 
         User user = userRepo.findByUserName(request.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
@@ -110,6 +110,7 @@ public class UserServiceImpl implements UserService {
 //            response.setRefreshToken(refreshTokenService.getRefreshToken(user));
 
             return LoginResponse.builder()
+                    .userId(user.getId())
                     .userName(user.getUsername())
                     .role(user.getRole().toString())
                     .accessToken(jwt)
