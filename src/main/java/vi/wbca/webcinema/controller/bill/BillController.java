@@ -15,10 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vi.wbca.webcinema.model.dto.bill.BillDTO;
 import vi.wbca.webcinema.model.response.BillHoldResponse;
-import vi.wbca.webcinema.model.response.PrintTicketResponse;
+import vi.wbca.webcinema.model.response.TransactionHistoryDetailResponse;
 import vi.wbca.webcinema.model.response.TransactionHistoryResponse;
 import vi.wbca.webcinema.service.BillService;
-import vi.wbca.webcinema.service.PrintTicketService;
 import vi.wbca.webcinema.service.TransactionHistoryService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -33,7 +32,6 @@ public class BillController {
     private static final Logger logger = Logger.getLogger(BillController.class.getName());
     private final BillService billService;
     private final TransactionHistoryService transactionHistoryService;
-    private final PrintTicketService printTicketService;
     private final MessageSource messageSource;
 
     @PostMapping("/create")
@@ -91,12 +89,12 @@ public class BillController {
     @GetMapping("/list")
     @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Lấy danh sách hóa đơn")
-    public ResponseEntity<ResponseObject> getBillList(@RequestParam(required = false) Long cinemaId,
+    public ResponseEntity<ResponseObject> getBillList(@RequestParam(required = false) String cinemaName,
                                                       @RequestParam int page,
                                                       @RequestParam int size) {
         logger.info("----------Web Cinema: Get Bill List----------");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
-        Page<TransactionHistoryResponse> responseData = transactionHistoryService.getTransactionHistory(cinemaId, pageable);
+        Page<TransactionHistoryResponse> responseData = transactionHistoryService.getTransactionHistory(cinemaName, pageable);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_bill_list", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -109,7 +107,7 @@ public class BillController {
     @Operation(summary = "Lấy chi tiết hóa đơn")
     public ResponseEntity<ResponseObject> getBillDetail(@RequestParam String tradingCode) {
         logger.info("----------Web Cinema: Get Bill Detail: " + tradingCode + "----------");
-        PrintTicketResponse responseData = printTicketService.getPrintTicketData(tradingCode);
+        TransactionHistoryDetailResponse responseData = transactionHistoryService.getTransactionHistoryDetail(tradingCode);
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage("success.get_bill_detail", null, locale);
         return ResponseEntity.status(HttpStatus.OK).body(

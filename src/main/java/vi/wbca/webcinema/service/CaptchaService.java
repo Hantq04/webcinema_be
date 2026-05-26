@@ -45,7 +45,7 @@ public class CaptchaService {
         if (stored == null) {
             throw new AppException(ErrorCode.CAPTCHA_REFRESH);
         }
-        if (!stored.equalsIgnoreCase(input.trim())) {
+        if (!stored.equals(input.trim())) {
             redisTemplate.delete(key);
             throw new AppException(ErrorCode.INVALID_CAPTCHA);
         }

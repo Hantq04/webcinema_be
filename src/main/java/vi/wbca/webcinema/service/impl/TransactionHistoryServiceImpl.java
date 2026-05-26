@@ -13,6 +13,7 @@ import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.cinema.Cinema;
 import vi.wbca.webcinema.model.entity.user.User;
+import vi.wbca.webcinema.model.response.TransactionHistoryDetailResponse;
 import vi.wbca.webcinema.model.response.TransactionHistoryResponse;
 import vi.wbca.webcinema.mapper.TransactionHistoryMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
@@ -30,20 +31,28 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 
     @Override
     @Transactional(readOnly = true)
-    public Page<TransactionHistoryResponse> getTransactionHistory(Long cinemaId, Pageable pageable) {
+    public Page<TransactionHistoryResponse> getTransactionHistory(String cinemaName, Pageable pageable) {
         User currentUser = getCurrentUser();
         Page<Bill> bills;
 
         if (currentUser.getRole() == RoleEnum.USER) {
-            bills = billRepo.findAllByUserAndIsActiveTrue(currentUser, pageable);
+            bills = billRepo.findAllByUser(currentUser, pageable);
         } else if (currentUser.getRole() == RoleEnum.STAFF) {
-            bills = billRepo.findAllByCinemaIdAndIsActiveTrue(resolveCinemaId(cinemaId), pageable);
+            bills = billRepo.findAllByCinemaId(resolveCinemaId(cinemaName), pageable);
         } else {
-            bills = cinemaId == null ? billRepo.findAllByIsActiveTrue(pageable)
-                    : billRepo.findAllByCinemaIdAndIsActiveTrue(resolveCinemaId(cinemaId), pageable);
+            bills = cinemaName == null || cinemaName.isBlank() ? billRepo.findAll(pageable)
+                    : billRepo.findAllByCinemaId(resolveCinemaId(cinemaName), pageable);
         }
 
         return bills.map(transactionHistoryMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TransactionHistoryDetailResponse getTransactionHistoryDetail(String tradingCode) {
+        Bill bill = billRepo.findDetailByTradingCode(tradingCode)
+                .orElseThrow(() -> new AppException(ErrorCode.CODE_NOT_FOUND));
+        return transactionHistoryMapper.toDetailResponse(bill);
     }
 
     private User getCurrentUser() {
@@ -55,11 +64,11 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
     }
 
-    private Long resolveCinemaId(Long cinemaId) {
-        if (cinemaId == null) {
+    private Long resolveCinemaId(String cinemaName) {
+        if (cinemaName == null || cinemaName.isBlank()) {
             throw new AppException(ErrorCode.ID_NOT_FOUND);
         }
-        Cinema cinema = cinemaRepo.findById(cinemaId)
+        Cinema cinema = cinemaRepo.findByNameOfCinemaIgnoreCase(cinemaName)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         return cinema.getId();
     }

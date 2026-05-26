@@ -19,7 +19,25 @@ import java.util.Optional;
 public interface BillRepo extends JpaRepository<Bill, Long> {
     Optional<Bill> findByTradingCode(String code);
 
+    @Query("""
+    SELECT DISTINCT b
+    FROM Bill b
+    LEFT JOIN FETCH b.user
+    LEFT JOIN FETCH b.billStatus
+    LEFT JOIN FETCH b.billTickets bt
+    LEFT JOIN FETCH bt.ticket t
+    LEFT JOIN FETCH t.seat seat
+    LEFT JOIN FETCH t.schedule schedule
+    LEFT JOIN FETCH schedule.movie movie
+    LEFT JOIN FETCH schedule.room room
+    LEFT JOIN FETCH room.cinema cinema
+    WHERE b.tradingCode = :tradingCode
+    """)
+    Optional<Bill> findDetailByTradingCode(@Param("tradingCode") String tradingCode);
+
     Optional<Bill> findByUser(User user);
+
+    Page<Bill> findAllByUser(User user, Pageable pageable);
 
     Optional<Bill> findByUserAndBillStatus(User user, BillStatus billStatus);
 
@@ -52,6 +70,28 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
             AND c.id = :cinemaId
         """)
         Page<Bill> findAllByCinemaIdAndIsActiveTrue(Long cinemaId, Pageable pageable);
+
+    @Query(value = """
+        SELECT DISTINCT b
+        FROM Bill b
+        JOIN b.billTickets bt
+        JOIN bt.ticket t
+        JOIN t.schedule s
+        JOIN s.room r
+        JOIN r.cinema c
+        WHERE c.id = :cinemaId
+        """,
+        countQuery = """
+        SELECT COUNT(DISTINCT b)
+        FROM Bill b
+        JOIN b.billTickets bt
+        JOIN bt.ticket t
+        JOIN t.schedule s
+        JOIN s.room r
+        JOIN r.cinema c
+        WHERE c.id = :cinemaId
+        """)
+    Page<Bill> findAllByCinemaId(Long cinemaId, Pageable pageable);
 
     boolean existsByUserAndBillStatus(User user, BillStatus billStatus);
 

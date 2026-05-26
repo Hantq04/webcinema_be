@@ -34,13 +34,13 @@ public class TransactionHistoryController {
 	@GetMapping("/history")
 	@PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
 	@Operation(summary = "Lịch sử giao dịch người dùng")
-	public ResponseEntity<ResponseObject> getTransactionHistory(@RequestParam(required = false) Long cinemaId,
+	public ResponseEntity<ResponseObject> getTransactionHistory(@RequestParam(required = false) String cinemaName,
 																@RequestParam int page,
 																@RequestParam int size
 	) {
 		logger.info("----------Web Cinema: Get Transaction History----------");
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
-		Page<TransactionHistoryResponse> responseData = historyService.getTransactionHistory(cinemaId, pageable);
+		Page<TransactionHistoryResponse> responseData = historyService.getTransactionHistory(cinemaName, pageable);
 		Locale locale = LocaleContextHolder.getLocale();
 		String message = messageSource.getMessage("success.get_transaction_history", null, locale);
 		return ResponseEntity.status(HttpStatus.OK).body(
