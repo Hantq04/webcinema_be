@@ -7,16 +7,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vi.wbca.webcinema.enums.BillStatusEnum;
 import vi.wbca.webcinema.enums.RoleEnum;
 import vi.wbca.webcinema.exception.AppException;
 import vi.wbca.webcinema.exception.ErrorCode;
 import vi.wbca.webcinema.model.entity.bill.Bill;
+import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.model.entity.cinema.Cinema;
 import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.model.response.TransactionHistoryDetailResponse;
 import vi.wbca.webcinema.model.response.TransactionHistoryResponse;
+import vi.wbca.webcinema.model.response.UserTransactionHistoryResponse;
 import vi.wbca.webcinema.mapper.TransactionHistoryMapper;
 import vi.wbca.webcinema.repository.bill.BillRepo;
+import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.service.TransactionHistoryService;
@@ -25,6 +29,7 @@ import vi.wbca.webcinema.service.TransactionHistoryService;
 @RequiredArgsConstructor
 public class TransactionHistoryServiceImpl implements TransactionHistoryService {
     private final BillRepo billRepo;
+    private final BillStatusRepo billStatusRepo;
     private final UserRepo userRepo;
     private final CinemaRepo cinemaRepo;
     private final TransactionHistoryMapper transactionHistoryMapper;
@@ -35,9 +40,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         User currentUser = getCurrentUser();
         Page<Bill> bills;
 
-        if (currentUser.getRole() == RoleEnum.USER) {
-            bills = billRepo.findAllByUser(currentUser, pageable);
-        } else if (currentUser.getRole() == RoleEnum.STAFF) {
+        if (currentUser.getRole() == RoleEnum.STAFF) {
             bills = billRepo.findAllByCinemaId(resolveCinemaId(cinemaName), pageable);
         } else {
             bills = cinemaName == null || cinemaName.isBlank() ? billRepo.findAll(pageable)
@@ -45,6 +48,16 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         }
 
         return bills.map(transactionHistoryMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserTransactionHistoryResponse> getTransactionHistory(Pageable pageable) {
+        User currentUser = getCurrentUser();
+        BillStatus successStatus = getSuccessStatus();
+        Page<Bill> bills = billRepo.findAllByUserAndBillStatus(currentUser, successStatus, pageable);
+
+        return bills.map(transactionHistoryMapper::toResponseForUserHistory);
     }
 
     @Override
@@ -71,5 +84,10 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         Cinema cinema = cinemaRepo.findByNameOfCinemaIgnoreCase(cinemaName)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         return cinema.getId();
+    }
+
+    private BillStatus getSuccessStatus() {
+        return billStatusRepo.findByName(BillStatusEnum.SUCCESS.name())
+                .orElseThrow(() -> new AppException(ErrorCode.STATUS_NOT_FOUND));
     }
 }

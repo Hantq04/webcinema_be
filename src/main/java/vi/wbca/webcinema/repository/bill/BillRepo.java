@@ -39,6 +39,8 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
 
     Page<Bill> findAllByUser(User user, Pageable pageable);
 
+    Page<Bill> findAllByUserAndBillStatus(User user, BillStatus billStatus, Pageable pageable);
+
     Optional<Bill> findByUserAndBillStatus(User user, BillStatus billStatus);
 
     List<Bill> findAllByUserAndBillStatusOrderByPaidAtDesc(User user, BillStatus billStatus);

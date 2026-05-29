@@ -1,29 +1,29 @@
 package vi.wbca.webcinema.chatbot.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vi.wbca.webcinema.chatbot.ai.GroqClient;
 import vi.wbca.webcinema.chatbot.model.MovieFilter;
 import vi.wbca.webcinema.chatbot.model.request.ChatRequest;
 import vi.wbca.webcinema.chatbot.model.response.ChatResponse;
 import vi.wbca.webcinema.chatbot.service.ChatBotService;
 import vi.wbca.webcinema.enums.BillStatusEnum;
+import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
-import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.movie.Movie;
-import vi.wbca.webcinema.model.entity.movie.Schedule;
 import vi.wbca.webcinema.model.entity.movie.MovieType;
+import vi.wbca.webcinema.model.entity.movie.Schedule;
+import vi.wbca.webcinema.model.entity.user.User;
+import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.bill.PromotionRepo;
-import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
 import vi.wbca.webcinema.repository.movie.MovieTypeRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
-import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.repository.user.UserRepo;
 
 import java.text.Normalizer;
@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatBotServiceImpl implements ChatBotService {
 
+    private static final Locale EN_LOCALE = Locale.ENGLISH;
+
     private final MovieRepo movieRepo;
     private final MovieTypeRepo movieTypeRepo;
     private final ScheduleRepo scheduleRepo;
@@ -56,7 +58,6 @@ public class ChatBotServiceImpl implements ChatBotService {
     @Transactional(readOnly = true)
     public ChatResponse chat(ChatRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
-        boolean respondInEnglish = isEnglish(locale);
 
         if (request == null || request.getMessage() == null || request.getMessage().isBlank()) {
             return new ChatResponse(message(locale, "chatbot.empty_request"));
@@ -72,129 +73,116 @@ public class ChatBotServiceImpl implements ChatBotService {
             return new ChatResponse(message(locale, "chatbot.promotions.none"));
         }
 
-        // 1. Detect intent
-        MovieFilter filter = detectIntent(message);
+        List<Movie> titleMatchedMovies = findMatchingMovies(message, locale, List.of());
+        if (!titleMatchedMovies.isEmpty()) {
+            String context = buildMovieDetailContext(titleMatchedMovies.get(0), locale);
+            return new ChatResponse(groqClient.ask(buildPrompt(context, message)));
+        }
 
-        // 2. Query DB
-        List<Movie> allMovies = getMovies(filter);
+        MovieFilter filter = detectIntent(message, locale);
+        List<Movie> allMovies = getMovies(filter, locale);
         List<Movie> movies = wantsRecommendation ? filterUnseenMovies(allMovies, bookedMovies) : allMovies;
 
         if (wantsMovieRelated) {
-            return new ChatResponse(buildMovieResponse(message, movies, allMovies, wantsRecommendation, locale, respondInEnglish));
+            return new ChatResponse(buildMovieResponse(message, movies, allMovies, wantsRecommendation, locale));
         }
 
-        // 3. Build context
-        String context = buildContext(movies, bookedMovies, message, wantsMovieRelated, wantsPromotions, locale, respondInEnglish);
-
-        // 4. Call AI (format only)
-        String result = groqClient.ask(buildPrompt(context, message));
-
-        return new ChatResponse(result);
+        String context = buildContext(movies, bookedMovies, message, wantsMovieRelated, wantsPromotions, locale);
+        return new ChatResponse(groqClient.ask(buildPrompt(context, message)));
     }
 
-    // ================= INTENT =================
-
-    private MovieFilter detectIntent(String message) {
-        MovieFilter f = new MovieFilter();
+    private MovieFilter detectIntent(String message, Locale locale) {
+        MovieFilter filter = new MovieFilter();
         boolean hasExplicitTimePreference = false;
 
-        if (message.contains("đang chiếu")) {
-            f.setNowShowing(true);
+        if (message.contains("đang chiếu") || message.contains("now showing")) {
+            filter.setNowShowing(true);
             hasExplicitTimePreference = true;
         }
-        if (message.contains("sắp chiếu")) {
-            f.setComingSoon(true);
+        if (message.contains("sắp chiếu") || message.contains("coming soon") || message.contains("upcoming")) {
+            filter.setComingSoon(true);
             hasExplicitTimePreference = true;
-        }
-        String resolvedGenre = resolveGenreFromMessage(message);
-        if (!resolvedGenre.isBlank()) {
-            f.setGenre(resolvedGenre);
         }
 
-        // Chỉ mặc định đang chiếu khi user không chỉ rõ genre hoặc mốc thời gian.
-        if (!hasExplicitTimePreference && resolvedGenre.isBlank()) {
-            f.setNowShowing(true);
+        String resolvedGenre = resolveGenreFromMessage(message, locale);
+        if (!resolvedGenre.isBlank()) {
+            filter.setGenre(resolvedGenre);
         }
-        return f;
+
+        if (!hasExplicitTimePreference && resolvedGenre.isBlank()) {
+            filter.setNowShowing(true);
+        }
+        return filter;
     }
 
-    private String resolveGenreFromMessage(String message) {
+    private String resolveGenreFromMessage(String message, Locale locale) {
         String normalizedMessage = normalizeText(message);
 
         return movieTypeRepo.findAll().stream()
                 .filter(MovieType::isActive)
-                .map(MovieType::getMovieTypeNameVi)
+                .map(movieType -> getLocalizedMovieTypeName(movieType, locale))
                 .filter(genre -> genre != null && !genre.isBlank())
                 .filter(genre -> normalizedMessage.contains(normalizeText(genre)))
                 .findFirst()
                 .orElse("");
     }
 
-    // ================= DB QUERY =================
-
-    private List<Movie> getMovies(MovieFilter f) {
+    private List<Movie> getMovies(MovieFilter filter, Locale locale) {
         LocalDateTime now = LocalDateTime.now();
         return movieRepo.findAll().stream()
-            .filter(Movie::isActive)
-            .filter(movie -> !f.isNowShowing() || (movie.getPremiereDate() != null
-                && !movie.getPremiereDate().isAfter(now)
-                && (movie.getEndDate() == null || !movie.getEndDate().isBefore(now))))
-            .filter(movie -> !f.isComingSoon() || (movie.getPremiereDate() != null && movie.getPremiereDate().isAfter(now)))
-            .filter(movie -> f.getGenre() == null || f.getGenre().isBlank() || hasGenre(movie, f.getGenre()))
-            .sorted(Comparator.comparing(Movie::getPremiereDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-            .limit(5)
-            .toList();
+                .filter(Movie::isActive)
+                .filter(movie -> !filter.isNowShowing() || (movie.getPremiereDate() != null
+                        && !movie.getPremiereDate().isAfter(now)
+                        && (movie.getEndDate() == null || !movie.getEndDate().isBefore(now))))
+                .filter(movie -> !filter.isComingSoon() || (movie.getPremiereDate() != null && movie.getPremiereDate().isAfter(now)))
+                .filter(movie -> filter.getGenre() == null || filter.getGenre().isBlank() || hasGenre(movie, filter.getGenre(), locale))
+                .sorted(Comparator.comparing(Movie::getPremiereDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .limit(5)
+                .toList();
     }
 
-        private boolean hasGenre(Movie movie, String genre) {
+    private boolean hasGenre(Movie movie, String genre, Locale locale) {
         if (movie == null || movie.getMovieTypes() == null || genre == null || genre.isBlank()) {
             return false;
         }
 
         String normalizedGenre = normalizeText(genre);
         return movie.getMovieTypes().stream()
-            .map(MovieType::getMovieTypeNameVi)
-            .filter(value -> value != null && !value.isBlank())
-            .anyMatch(value -> normalizeText(value).equals(normalizedGenre));
-        }
+                .map(movieType -> getLocalizedMovieTypeName(movieType, locale))
+                .filter(value -> value != null && !value.isBlank())
+                .anyMatch(value -> normalizeText(value).equals(normalizedGenre));
+    }
 
-    // ================= CONTEXT =================
-
-    private String buildContext(List<Movie> movies, List<Movie> bookedMovies, String question, boolean wantsMovieRelated, boolean wantsPromotions, Locale locale, boolean respondInEnglish) {
-        boolean wantsShowtimes = containsAny(question, "suất chiếu", "lich chieu", "lịch chiếu", "gio chieu", "giờ chiếu", "chieu luc nao");
-
+    private String buildContext(List<Movie> movies, List<Movie> bookedMovies, String question, boolean wantsMovieRelated, boolean wantsPromotions, Locale locale) {
+        boolean wantsShowtimes = containsAny(question, "suất chiếu", "lich chieu", "lịch chiếu", "gio chieu", "giờ chiếu", "chieu luc nao", "showtimes", "screening");
         StringBuilder context = new StringBuilder();
 
         if (wantsMovieRelated && bookedMovies != null && !bookedMovies.isEmpty()) {
             context.append(message(locale, "chatbot.context.booked_movies"));
-            bookedMovies.stream()
-                    .distinct()
-                    .limit(5)
-                    .forEach(movie -> context.append("- ").append(movie.getName()).append("\n"));
-            String preferredGenres = buildPreferredGenres(bookedMovies);
+            bookedMovies.stream().distinct().limit(5)
+                    .forEach(movie -> context.append("- ").append(getLocalizedMovieName(movie, locale)).append("\n"));
+            String preferredGenres = buildPreferredGenres(bookedMovies, locale);
             if (!preferredGenres.isBlank()) {
-                context.append(message(locale, "chatbot.context.preferred_genres"))
-                        .append(preferredGenres)
-                        .append("\n");
+                context.append(message(locale, "chatbot.context.preferred_genres")).append(preferredGenres).append("\n");
             }
             context.append("\n");
         }
+
         if (wantsMovieRelated && movies != null && !movies.isEmpty()) {
             context.append(message(locale, "chatbot.context.available_movies"));
-            movies.stream()
-                    .distinct()
-                    .limit(5)
+            movies.stream().distinct().limit(5)
                     .forEach(movie -> context.append("- ")
-                            .append(movie.getName())
-                            .append(formatMovieTypes(movie, locale, respondInEnglish))
+                            .append(getLocalizedMovieName(movie, locale))
+                            .append(formatMovieTypes(movie, locale))
                             .append("\n"));
             context.append("\n");
         }
+
         if (wantsShowtimes && !movies.isEmpty()) {
-            appendShowtimes(context, movies, question, locale, respondInEnglish);
+            appendShowtimes(context, movies, question, locale);
         }
         if (wantsPromotions) {
-            appendPromotions(context, locale, respondInEnglish);
+            appendPromotions(context, locale);
         }
         return context.toString().trim();
     }
@@ -215,6 +203,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         if (bills.isEmpty()) {
             return List.of();
         }
+
         LinkedHashSet<Movie> movies = new LinkedHashSet<>();
         for (Bill bill : bills) {
             if (bill.getBillTickets() == null) {
@@ -232,7 +221,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         return movies.stream().toList();
     }
 
-    private String buildPreferredGenres(List<Movie> bookedMovies) {
+    private String buildPreferredGenres(List<Movie> bookedMovies, Locale locale) {
         Map<String, Long> genreCounts = new HashMap<>();
 
         for (Movie movie : bookedMovies) {
@@ -240,7 +229,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                 continue;
             }
             for (MovieType movieType : movie.getMovieTypes()) {
-                String genre = movieType.getMovieTypeNameVi();
+                String genre = getLocalizedMovieTypeName(movieType, locale);
                 if (genre != null && !genre.isBlank()) {
                     genreCounts.put(genre, genreCounts.getOrDefault(genre, 0L) + 1);
                 }
@@ -254,12 +243,13 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .collect(Collectors.joining(", "));
     }
 
-    private String formatMovieTypes(Movie movie, Locale locale, boolean respondInEnglish) {
+    private String formatMovieTypes(Movie movie, Locale locale) {
         if (movie == null || movie.getMovieTypes() == null || movie.getMovieTypes().isEmpty()) {
             return "";
         }
+
         String genres = movie.getMovieTypes().stream()
-                .map(MovieType::getMovieTypeNameVi)
+                .map(movieType -> getLocalizedMovieTypeName(movieType, locale))
                 .filter(genre -> genre != null && !genre.isBlank())
                 .distinct()
                 .limit(3)
@@ -289,12 +279,13 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .toList();
     }
 
-    private String buildMovieResponse(String question, List<Movie> movies, List<Movie> allMovies, boolean wantsRecommendation, Locale locale, boolean respondInEnglish) {
-        boolean wantsShowtimes = containsAny(question, "suất chiếu", "lich chieu", "lịch chiếu", "gio chieu", "giờ chiếu", "chieu luc nao");
-        boolean wantsComingSoon = containsAny(question, "sắp chiếu", "sap chieu", "phim sap chieu", "phim sắp chiếu");
-        String requestedGenre = resolveGenreFromMessage(question);
+    private String buildMovieResponse(String question, List<Movie> movies, List<Movie> allMovies, boolean wantsRecommendation, Locale locale) {
+        boolean wantsShowtimes = containsAny(question, "suất chiếu", "lich chieu", "lịch chiếu", "gio chieu", "giờ chiếu", "chieu luc nao", "showtimes", "screening");
+        boolean wantsComingSoon = containsAny(question, "sắp chiếu", "sap chieu", "phim sap chieu", "phim sắp chiếu", "coming soon", "upcoming");
+        String requestedGenre = resolveGenreFromMessage(question, locale);
+        boolean upcomingOnly = isUpcomingOnly(movies);
 
-        if (wantsComingSoon) {
+        if (wantsComingSoon || (upcomingOnly && !wantsShowtimes)) {
             if (movies == null || movies.isEmpty()) {
                 return message(locale, "chatbot.movie.upcoming.none");
             }
@@ -307,8 +298,8 @@ public class ChatBotServiceImpl implements ChatBotService {
             upcomingResponse.append("\n");
             for (Movie movie : movies) {
                 upcomingResponse.append("- ")
-                        .append(movie.getName())
-                        .append(formatMovieTypes(movie, locale, respondInEnglish));
+                        .append(getLocalizedMovieName(movie, locale))
+                        .append(formatMovieTypes(movie, locale));
 
                 if (movie.getPremiereDate() != null) {
                     upcomingResponse.append(message(locale, "chatbot.movie.release_date"))
@@ -323,11 +314,11 @@ public class ChatBotServiceImpl implements ChatBotService {
             if (!requestedGenre.isBlank()) {
                 return message(locale, "chatbot.movie.no_movies_in_genre", requestedGenre);
             }
-            String currentShowingTitles = buildCurrentShowingTitles(allMovies);
+            String currentShowingTitles = buildCurrentShowingTitles(allMovies, locale);
             if (!currentShowingTitles.isBlank()) {
                 return message(locale, "chatbot.movie.no_now_showing_with_titles", currentShowingTitles);
             }
-            String alternativeGenres = buildCurrentGenreHint();
+            String alternativeGenres = buildCurrentGenreHint(locale);
             if (!alternativeGenres.isBlank()) {
                 return message(locale, "chatbot.movie.no_matching_movies_with_genres", alternativeGenres);
             }
@@ -335,13 +326,14 @@ public class ChatBotServiceImpl implements ChatBotService {
         }
 
         StringBuilder response = new StringBuilder();
-
         if (!requestedGenre.isBlank()) {
             response.append(message(locale, "chatbot.movie.genre_header", requestedGenre));
         } else if (wantsRecommendation) {
             response.append(message(locale, "chatbot.movie.recommendation_header"));
         } else if (wantsShowtimes) {
             response.append(message(locale, "chatbot.movie.showtimes_header"));
+        } else if (upcomingOnly) {
+            response.append(message(locale, "chatbot.movie.upcoming.header"));
         } else {
             response.append(message(locale, "chatbot.movie.now_showing_header"));
         }
@@ -349,8 +341,8 @@ public class ChatBotServiceImpl implements ChatBotService {
 
         for (Movie movie : movies) {
             response.append("- ")
-                    .append(movie.getName())
-                    .append(formatMovieTypes(movie, locale, respondInEnglish));
+                    .append(getLocalizedMovieName(movie, locale))
+                    .append(formatMovieTypes(movie, locale));
             if (movie.getPremiereDate() != null) {
                 response.append(message(locale, "chatbot.movie.release_date"))
                         .append(movie.getPremiereDate().toLocalDate());
@@ -360,21 +352,21 @@ public class ChatBotServiceImpl implements ChatBotService {
         return response.toString().trim();
     }
 
-    private String buildCurrentGenreHint() {
+    private String buildCurrentGenreHint(Locale locale) {
         return movieRepo.findAll().stream()
                 .filter(Movie::isActive)
                 .filter(movie -> movie.getPremiereDate() != null && !movie.getPremiereDate().isAfter(LocalDateTime.now()))
                 .filter(movie -> movie.getEndDate() == null || !movie.getEndDate().isBefore(LocalDateTime.now()))
                 .sorted(Comparator.comparing(Movie::getPremiereDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .flatMap(movie -> movie.getMovieTypes() == null ? java.util.stream.Stream.empty() : movie.getMovieTypes().stream())
-                .map(MovieType::getMovieTypeNameVi)
+                .map(movieType -> getLocalizedMovieTypeName(movieType, locale))
                 .filter(genre -> genre != null && !genre.isBlank())
                 .distinct()
                 .limit(3)
                 .collect(Collectors.joining(", "));
     }
 
-    private String buildCurrentShowingTitles(List<Movie> movies) {
+    private String buildCurrentShowingTitles(List<Movie> movies, Locale locale) {
         if (movies == null || movies.isEmpty()) {
             return "";
         }
@@ -383,20 +375,20 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .filter(Movie::isActive)
                 .filter(movie -> movie.getPremiereDate() != null && !movie.getPremiereDate().isAfter(LocalDateTime.now()))
                 .filter(movie -> movie.getEndDate() == null || !movie.getEndDate().isBefore(LocalDateTime.now()))
-                .map(Movie::getName)
+                .map(movie -> getLocalizedMovieName(movie, locale))
                 .filter(name -> name != null && !name.isBlank())
                 .distinct()
                 .limit(3)
                 .collect(Collectors.joining(", "));
     }
 
-    private void appendShowtimes(StringBuilder context, List<Movie> movies, String question, Locale locale, boolean respondInEnglish) {
-        List<Movie> resolvedMovies = findMatchingMovies(question, movies);
+    private void appendShowtimes(StringBuilder context, List<Movie> movies, String question, Locale locale) {
+        List<Movie> resolvedMovies = findMatchingMovies(question, locale, movies);
         if (resolvedMovies.isEmpty()) {
             resolvedMovies = movies;
         }
-        final List<Movie> targetMovies = resolvedMovies;
 
+        final List<Movie> targetMovies = resolvedMovies;
         List<Schedule> schedules = scheduleRepo.findActiveSchedulesOverlapping(
                         LocalDateTime.now(),
                         LocalDateTime.now().plusDays(14))
@@ -415,12 +407,12 @@ public class ChatBotServiceImpl implements ChatBotService {
         context.append(message(locale, "chatbot.movie.showtimes_context"));
         for (Schedule schedule : schedules) {
             context.append("- ")
-                    .append(schedule.getMovie().getName())
+                    .append(getLocalizedMovieName(schedule.getMovie(), locale))
                     .append(" | ")
                     .append(schedule.getRoom() != null && schedule.getRoom().getCinema() != null
                             ? schedule.getRoom().getCinema().getNameOfCinema()
                             : "")
-                .append(message(locale, "chatbot.movie.room"))
+                    .append(message(locale, "chatbot.movie.room"))
                     .append(schedule.getRoom() != null ? schedule.getRoom().getName() : "")
                     .append(" | ")
                     .append(schedule.getStartAt() != null ? schedule.getStartAt().format(dateTimeFormatter) : "")
@@ -435,7 +427,7 @@ public class ChatBotServiceImpl implements ChatBotService {
                         && (promotion.getEndTime() == null || !promotion.getEndTime().isBefore(LocalDateTime.now())));
     }
 
-    private void appendPromotions(StringBuilder context, Locale locale, boolean respondInEnglish) {
+    private void appendPromotions(StringBuilder context, Locale locale) {
         List<Promotion> promotions = promotionRepo.findAll().stream()
                 .filter(Promotion::isActive)
                 .filter(promotion -> promotion.getStartTime() == null || !promotion.getStartTime().isAfter(LocalDateTime.now()))
@@ -461,19 +453,25 @@ public class ChatBotServiceImpl implements ChatBotService {
         }
     }
 
-    private List<Movie> findMatchingMovies(String question, List<Movie> fallbackMovies) {
+    private List<Movie> findMatchingMovies(String question, Locale locale, List<Movie> fallbackMovies) {
         String normalizedQuestion = normalizeText(question);
         List<Movie> activeMovies = movieRepo.findAll().stream()
-                .filter(Movie::isActive).toList();
+                .filter(Movie::isActive)
+                .toList();
 
         List<Movie> matchedMovies = activeMovies.stream()
-                .filter(movie -> normalizedQuestion.contains(normalizeText(movie.getName()))).toList();
+                .filter(movie -> movie != null && !normalizedQuestion.isBlank())
+                .filter(movie -> matchesLocalizedText(normalizedQuestion, normalizeText(getLocalizedMovieName(movie, locale))))
+                .toList();
 
         if (!matchedMovies.isEmpty()) {
             return matchedMovies;
         }
+
         return fallbackMovies.stream()
-                .filter(movie -> normalizedQuestion.contains(normalizeText(movie.getName()))).toList();
+                .filter(movie -> movie != null && !normalizedQuestion.isBlank())
+                .filter(movie -> matchesLocalizedText(normalizedQuestion, normalizeText(getLocalizedMovieName(movie, locale))))
+                .toList();
     }
 
     private boolean containsAny(String text, String... keywords) {
@@ -486,41 +484,77 @@ public class ChatBotServiceImpl implements ChatBotService {
         return false;
     }
 
-    private boolean isEnglish(Locale locale) {
-        return locale != null && Locale.ENGLISH.getLanguage().equals(locale.getLanguage());
-    }
-
     private String message(Locale locale, String key, Object... args) {
         return messageSource.getMessage(key, args, locale);
     }
 
     private boolean wantsPromotions(String message) {
-        return containsAny(message, "khuyến mãi", "khuyen mai", "ưu đãi",
-                            "uu dai", "giảm giá", "giam gia", "sale", "promo");
+        return containsAny(message, "khuyến mãi", "khuyen mai", "ưu đãi", "uu dai", "giảm giá", "giam gia", "sale", "promo", "discount", "promotion");
     }
 
     private boolean wantsMovieRelated(String message) {
         return containsAny(message, "phim gì", "co phim gi", "có phim gì", "goi y phim", "gợi ý phim", "de xuat phim",
                 "đề xuất phim", "phim de xem", "phim để xem", "xem phim", "phim nao", "phim nào", "the loai", "thể loại",
-                "phim", "movie", "đang chiếu", "sắp chiếu", "suất chiếu", "lịch chiếu");
+                "phim", "movie", "đang chiếu", "sắp chiếu", "suất chiếu", "lịch chiếu", "what movie", "movie list", "recommend");
     }
 
     private boolean wantsRecommendation(String message) {
         return containsAny(message, "phù hợp với tôi", "phu hop voi toi", "gợi ý cho tôi", "goi y cho toi",
                 "đề xuất cho tôi", "de xuat cho toi", "nên xem", "nen xem", "cho tôi phim", "chon phim", "phim hợp với tôi",
-                "phim phu hop voi toi");
+                "phim phu hop voi toi", "recommend me", "suggest me", "for me");
+    }
+
+    private boolean isUpcomingOnly(List<Movie> movies) {
+        return movies != null && !movies.isEmpty() && movies.stream().allMatch(movie -> movie != null
+                && movie.getPremiereDate() != null && movie.getPremiereDate().isAfter(LocalDateTime.now()));
+    }
+
+    private boolean isEnglish(Locale locale) {
+        return locale != null && EN_LOCALE.getLanguage().equalsIgnoreCase(locale.getLanguage());
+    }
+
+    private String getLocalizedMovieName(Movie movie, Locale locale) {
+        if (movie == null) {
+            return "";
+        }
+        if (isEnglish(locale) && movie.getNameEn() != null && !movie.getNameEn().isBlank()) {
+            return movie.getNameEn();
+        }
+        return movie.getName() != null ? movie.getName() : "";
+    }
+
+    private String getLocalizedDescription(Movie movie, Locale locale) {
+        if (movie == null) {
+            return "";
+        }
+        if (isEnglish(locale) && movie.getDescriptionEn() != null && !movie.getDescriptionEn().isBlank()) {
+            return movie.getDescriptionEn().trim();
+        }
+        return movie.getDescription() != null ? movie.getDescription().trim() : "";
+    }
+
+    private String getLocalizedMovieTypeName(MovieType movieType, Locale locale) {
+        if (movieType == null) {
+            return "";
+        }
+        if (isEnglish(locale) && movieType.getMovieTypeNameEn() != null && !movieType.getMovieTypeNameEn().isBlank()) {
+            return movieType.getMovieTypeNameEn();
+        }
+        return movieType.getMovieTypeNameVi() != null ? movieType.getMovieTypeNameVi() : "";
+    }
+
+    private boolean matchesLocalizedText(String normalizedQuestion, String normalizedCandidate) {
+        return normalizedCandidate != null && !normalizedCandidate.isBlank()
+                && (normalizedQuestion.contains(normalizedCandidate) || normalizedCandidate.contains(normalizedQuestion));
     }
 
     private String normalizeText(String input) {
         if (input == null) {
             return "";
         }
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "");
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
         return normalized.toLowerCase(Locale.ROOT);
     }
-
-    // ================= PROMPT =================
 
     private String buildPrompt(String context, String question) {
         return """
@@ -539,6 +573,40 @@ public class ChatBotServiceImpl implements ChatBotService {
             - When recommending movies, suggest only movies the user has not watched yet.
             - Do not recommend any movie that is already in the user's paid viewing history.
             - Do not mention movies, booking history, or showtimes when the user only asks about promotions.
+            - For movie advice or movie detail answers, focus on the movie's plot, genre, and suitability for the user.
+            - Do not mention production credits such as director, cast, screenplay, producer, or studio unless the user explicitly asks for them.
+            - Do not turn a movie into a list of facts; write it as a short advisory answer.
         """.formatted(context, question);
+    }
+
+    private String buildMovieDetailContext(Movie movie, Locale locale) {
+        if (movie == null || getLocalizedMovieName(movie, locale).isBlank()) {
+            return "";
+        }
+
+        String genres = movie.getMovieTypes() == null ? "" : movie.getMovieTypes().stream()
+                .map(movieType -> getLocalizedMovieTypeName(movieType, locale))
+                .filter(genre -> genre != null && !genre.isBlank())
+                .distinct()
+                .limit(3)
+                .collect(Collectors.joining(", "));
+        String description = getLocalizedDescription(movie, locale);
+
+        return """
+            Movie data:
+            - Title: %s
+            - Genres: %s
+            - Original description: %s
+
+            Answer requirements:
+            - Rewrite only the information provided above into a short movie-advice response.
+            - Use the original description as the only source for plot or context details.
+            - Do not infer sequel, reboot, franchise, universe, or part-number relationships from the title or from external knowledge.
+            - If the original description explicitly says reboot, you may mention reboot; otherwise omit any series or part relationship.
+            - Never mention director, cast, screenplay, producer, or studio even if that information appears in the description.
+            - Do not mention the release date.
+            - Do not invent any details that are not in the data.
+            - If the description is missing, give a very short introduction based only on the title and genres.
+        """.formatted(getLocalizedMovieName(movie, locale), genres, description);
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vi.wbca.webcinema.model.response.TransactionHistoryResponse;
+import vi.wbca.webcinema.model.response.UserTransactionHistoryResponse;
 import vi.wbca.webcinema.service.TransactionHistoryService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -34,13 +35,12 @@ public class TransactionHistoryController {
 	@GetMapping("/history")
 	@PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
 	@Operation(summary = "Lịch sử giao dịch người dùng")
-	public ResponseEntity<ResponseObject> getTransactionHistory(@RequestParam(required = false) String cinemaName,
-																@RequestParam int page,
+	public ResponseEntity<ResponseObject> getTransactionHistory(@RequestParam int page,
 																@RequestParam int size
 	) {
 		logger.info("----------Web Cinema: Get Transaction History----------");
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
-		Page<TransactionHistoryResponse> responseData = historyService.getTransactionHistory(cinemaName, pageable);
+		Page<UserTransactionHistoryResponse> responseData = historyService.getTransactionHistory(pageable);
 		Locale locale = LocaleContextHolder.getLocale();
 		String message = messageSource.getMessage("success.get_transaction_history", null, locale);
 		return ResponseEntity.status(HttpStatus.OK).body(

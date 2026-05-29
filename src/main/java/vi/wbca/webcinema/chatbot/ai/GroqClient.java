@@ -32,9 +32,9 @@ public class GroqClient {
         Map<String, Object> body = Map.of(
             "model", model,
             "messages", List.of(
-            Map.of("role", "system", "content", "You are a helpful movie assistant for a cinema website."),
+            Map.of("role", "system", "content", "You are a careful movie assistant for a cinema website. Use only the facts provided in the user prompt. Do not invent sequel, reboot, universe, franchise, part-number, cast, or release-date details unless they are explicitly present in the prompt. Do not infer relationships from a movie title alone."),
             Map.of("role", "user", "content", prompt)),
-            "temperature", 0.2
+            "temperature", 0.0
         );
 
         return webClient.post()
