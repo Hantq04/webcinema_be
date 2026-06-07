@@ -118,7 +118,7 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
     AND (
         (:genre IS NULL OR mt.movieTypeNameVi = :genre)
     )
-    ORDER BY m.premiereDate DESC
+    ORDER BY m.premiereDate ASC
     """)
     List<Movie> filterMovies(
             @Param("now") LocalDateTime now,

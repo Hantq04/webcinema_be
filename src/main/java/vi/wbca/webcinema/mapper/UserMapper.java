@@ -17,7 +17,6 @@ public interface UserMapper {
     @Mapping(target = "bills", ignore = true)
     @Mapping(target = "confirmEmails", ignore = true)
     @Mapping(target = "accessTokens", ignore = true)
-    @Mapping(target = "refreshTokens", ignore = true)
     @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "rankCustomer", ignore = true)
     @Mapping(target = "userStatus", ignore = true)

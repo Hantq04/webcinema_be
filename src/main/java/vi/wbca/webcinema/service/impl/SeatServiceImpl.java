@@ -24,7 +24,6 @@ import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.cinema.RoomRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
-import vi.wbca.webcinema.repository.movie.TicketRepo;
 import vi.wbca.webcinema.repository.seat.SeatRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.repository.seat.SeatTypeRepo;
@@ -49,7 +48,6 @@ public class SeatServiceImpl implements SeatService {
     private final SeatTypeRepo seatTypeRepo;
     private final BillRepo billRepo;
     private final ScheduleRepo scheduleRepo;
-    private final TicketRepo ticketRepo;
     private final SeatMapper seatMapper;
     private final TicketPricingService ticketPricingService;
 
@@ -90,8 +88,6 @@ public class SeatServiceImpl implements SeatService {
     @Override
     @Transactional
     public void refreshSeat(String roomCode) {
-        ensureRoomHasNoActiveTickets(roomCode);
-
         SeatStatus occupiedSeatStatus = getSeatStatus(SeatStatusEnum.OCCUPIED);
         SeatStatus availableSeatStatus = getSeatStatus(SeatStatusEnum.AVAILABLE);
 
@@ -125,13 +121,6 @@ public class SeatServiceImpl implements SeatService {
 
         SeatStatus availableSeatStatus = getSeatStatus(SeatStatusEnum.AVAILABLE);
         seatRepo.updateSeatStatusByIds(request.getSeatIds(), availableSeatStatus);
-    }
-
-    private void ensureRoomHasNoActiveTickets(String roomCode) {
-        Long activeTickets = ticketRepo.countActiveTicketsByRoomCode(roomCode);
-        if (activeTickets != null && activeTickets > 0) {
-            throw new AppException(ErrorCode.SEAT_REFRESH_NOT_ALLOWED);
-        }
     }
 
     private void refreshSeatByBill(Bill bill,
@@ -181,20 +170,33 @@ public class SeatServiceImpl implements SeatService {
 
         SeatTypeEnum type = SeatTypeEnum.getByName(types.iterator().next());
         if (type == SeatTypeEnum.SWEET_BOX) {
-            Seat s1 = seats.get(0);
-            Seat s2 = seats.get(1);
-
-            if (seats.size() != 2) {
+            if (seats.size() % 2 != 0) {
                 throw new AppException(ErrorCode.SWEET_BOX_MUST_BE_PAIR);
             }
-            if (!s1.getLine().equals(s2.getLine())) {
-                throw new AppException(ErrorCode.SEAT_NOT_SAME_ROW);
-            }
-            if (Math.abs(s1.getNumber() - s2.getNumber()) != 1) {
-                throw new AppException(ErrorCode.SEAT_NOT_ADJACENT);
-            }
-            if (!s1.getPairIndex().equals(s2.getPairIndex())) {
+
+            Map<Integer, List<Seat>> seatsByPairIndex = seats.stream()
+                    .collect(Collectors.groupingBy(Seat::getPairIndex));
+
+            if (seatsByPairIndex.values().stream().anyMatch(pair -> pair.size() != 2)) {
                 throw new AppException(ErrorCode.INVALID_SWEET_BOX_PAIR);
+            }
+
+            for (List<Seat> pair : seatsByPairIndex.values()) {
+                Seat s1 = pair.get(0);
+                Seat s2 = pair.get(1);
+
+                if (s1.getPairIndex() == null || s2.getPairIndex() == null) {
+                    throw new AppException(ErrorCode.INVALID_SWEET_BOX_PAIR);
+                }
+                if (!s1.getLine().equals(s2.getLine())) {
+                    throw new AppException(ErrorCode.SEAT_NOT_SAME_ROW);
+                }
+                if (Math.abs(s1.getNumber() - s2.getNumber()) != 1) {
+                    throw new AppException(ErrorCode.SEAT_NOT_ADJACENT);
+                }
+                if (!s1.getPairIndex().equals(s2.getPairIndex())) {
+                    throw new AppException(ErrorCode.INVALID_SWEET_BOX_PAIR);
+                }
             }
         }
     }

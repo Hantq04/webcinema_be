@@ -37,7 +37,7 @@ public interface TransactionHistoryMapper {
         Movie movie = schedule != null ? schedule.getMovie() : null;
 
         return UserTransactionHistoryResponse.builder()
-            .ticketCode(ticket != null ? ticket.getCode() : bill.getTradingCode())
+            .billCode(bill.getTradingCode())
             .status(bill.getBillStatus() != null ? bill.getBillStatus().getName() : null)
             .image(movie != null ? movie.getImage() : null)
             .movieName(movie != null ? movie.getName() : null)

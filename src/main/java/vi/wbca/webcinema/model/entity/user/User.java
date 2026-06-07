@@ -10,7 +10,7 @@ import vi.wbca.webcinema.enums.RoleEnum;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.setting.ConfirmEmail;
 import vi.wbca.webcinema.model.entity.token.AccessToken;
-import vi.wbca.webcinema.model.entity.token.RefreshToken;
+//import vi.wbca.webcinema.model.entity.token.RefreshToken;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,8 +46,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     List<AccessToken> accessTokens;
 
-    @OneToMany(mappedBy = "user")
-    List<RefreshToken> refreshTokens;
+//    @OneToMany(mappedBy = "user")
+//    List<RefreshToken> refreshTokens;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     UserProfile profile;

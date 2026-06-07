@@ -22,7 +22,7 @@ import vi.wbca.webcinema.mapper.UserMapper;
 import vi.wbca.webcinema.model.entity.token.AccessToken;
 import vi.wbca.webcinema.model.entity.user.RankCustomer;
 import vi.wbca.webcinema.model.entity.user.ChangeTypeEnum;
-import vi.wbca.webcinema.model.entity.user.Role;
+//import vi.wbca.webcinema.model.entity.user.Role;
 import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.model.entity.user.UserChangeHistory;
 import vi.wbca.webcinema.model.entity.user.UserProfile;
@@ -33,13 +33,12 @@ import vi.wbca.webcinema.model.response.LoginResponse;
 import vi.wbca.webcinema.model.response.UserProfileResponse;
 import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
-import vi.wbca.webcinema.repository.user.RoleRepo;
+//import vi.wbca.webcinema.repository.user.RoleRepo;
 import vi.wbca.webcinema.repository.user.UserChangeHistoryRepo;
 import vi.wbca.webcinema.repository.user.UserProfileRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 import vi.wbca.webcinema.repository.user.UserStatusRepo;
 import vi.wbca.webcinema.service.*;
-import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.ImageUtils;
 import vi.wbca.webcinema.util.jwt.JwtTokenProvider;
 
@@ -54,7 +53,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     UserRepo userRepo;
     UserMapper userMapper;
-    RoleRepo roleRepo;
+//    RoleRepo roleRepo;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
     JwtTokenProvider jwtTokenProvider;
@@ -63,7 +62,7 @@ public class UserServiceImpl implements UserService {
     RankCustomerRepo rankCustomerRepo;
     AccessTokenService accessTokenService;
     CaptchaService captchaService;
-    RefreshTokenService refreshTokenService;
+//    RefreshTokenService refreshTokenService;
     UserProfileRepo userProfileRepo;
     UserChangeHistoryRepo userChangeHistoryRepo;
 
@@ -228,23 +227,23 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
     }
 
-    public void addRole(String role, User user) {
-        switch (role) {
-            case Constants.ADMIN -> roleRepo.save(Role.builder()
-                    .roleName(Constants.ROLE_ADMIN_NAME)
-                    .code(Constants.ADMIN)
-                    .user(user).build());
-            case Constants.STAFF -> roleRepo.save(Role.builder()
-                    .roleName(Constants.ROLE_STAFF_NAME)
-                    .code(Constants.STAFF)
-                    .user(user).build());
-            case Constants.USER -> roleRepo.save(Role.builder()
-                    .roleName(Constants.ROLE_USER_NAME)
-                    .code(Constants.USER)
-                    .user(user).build());
-            default -> throw new AppException(ErrorCode.INVALID_ROLE);
-        }
-    }
+//    public void addRole(String role, User user) {
+//        switch (role) {
+//            case Constants.ADMIN -> roleRepo.save(Role.builder()
+//                    .roleName(Constants.ROLE_ADMIN_NAME)
+//                    .code(Constants.ADMIN)
+//                    .user(user).build());
+//            case Constants.STAFF -> roleRepo.save(Role.builder()
+//                    .roleName(Constants.ROLE_STAFF_NAME)
+//                    .code(Constants.STAFF)
+//                    .user(user).build());
+//            case Constants.USER -> roleRepo.save(Role.builder()
+//                    .roleName(Constants.ROLE_USER_NAME)
+//                    .code(Constants.USER)
+//                    .user(user).build());
+//            default -> throw new AppException(ErrorCode.INVALID_ROLE);
+//        }
+//    }
 
     public void registerAccount(UserDTO request, RoleEnum role) {
         if (userRepo.existsByUserNameAndIsActiveTrue(request.getUserName())) {

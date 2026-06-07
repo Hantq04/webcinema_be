@@ -14,6 +14,7 @@ import vi.wbca.webcinema.util.ImageUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDTO> getAllEventActive() {
         return eventRepo.findByIsActiveTrue().stream()
+                .sorted(Comparator.comparing(Event::getId).reversed())
                 .map(eventMapper::toEventDTO)
                 .toList();
     }

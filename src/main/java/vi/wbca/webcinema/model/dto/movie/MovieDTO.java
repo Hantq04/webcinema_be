@@ -42,7 +42,7 @@ public class MovieDTO {
     String director;
 
     @NotBlank(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})
-    @Size(min = 3, max = 200, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
+    @Size(min = 3, max = 500, message = "SIZE_RANGE", groups = {InsertMovie.class, UpdateMovie.class})
     String actor;
 
     @NotNull(message = "NOT_BLANK", groups = {InsertMovie.class, UpdateMovie.class})

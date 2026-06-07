@@ -33,7 +33,7 @@ public class PrintTicketController {
     private final MessageSource messageSource;
 
     @GetMapping
-    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
+//    @PreAuthorize(Constants.PERM_USER_STAFF_ADMIN)
     @Operation(summary = "Lấy link PDF vé tại quầy")
     public ResponseEntity<ResponseObject> getPrintTicket(@Valid @RequestParam String tradingCode, HttpServletRequest request) {
         logger.info("----------Web Cinema: Get Print Ticket Data----------");

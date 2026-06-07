@@ -23,6 +23,7 @@ import vi.wbca.webcinema.repository.bill.UserPromotionRepo;
 import vi.wbca.webcinema.repository.user.RankCustomerRepo;
 import vi.wbca.webcinema.repository.user.UserProfileRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
+import vi.wbca.webcinema.service.PrintTicketService;
 import vi.wbca.webcinema.service.TicketHoldCleanupService;
 import vi.wbca.webcinema.util.EmailUtils;
 import vi.wbca.webcinema.util.Constants;
@@ -43,6 +44,7 @@ import java.util.*;
 public class VNPayService {
     private final BillRepo billRepo;
     private final EmailService emailService;
+    private final PrintTicketService printTicketService;
     private final UserPromotionRepo userPromotionRepo;
     private final UserRepo userRepo;
     private final UserProfileRepo userProfileRepo;
@@ -240,14 +242,6 @@ public class VNPayService {
 
                 message.append("Total Price: ").append(formattedTotalPrice).append(" VND");
 
-                String userEmail = userProfileRepo.findByUser(bill.getUser())
-                    .map(profile -> profile.getEmail())
-                    .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
-
-                // Send the response via email
-                String printTicketUrl = buildPrintTicketUrl(request, tradingCode);
-                sendResponse(message, userEmail, printTicketUrl);
-
                 bill.setBillStatus(ticketHoldCleanupService.getStatus(BillStatusEnum.SUCCESS));
                 try {
                     bill.setPaidAt(new SimpleDateFormat("yyyyMMddHHmmss").parse(paymentTime)
@@ -284,7 +278,17 @@ public class VNPayService {
                 }
                 userProfileRepo.save(profile);
                 userRepo.save(user);
-                billRepo.save(bill);
+                billRepo.saveAndFlush(bill);
+
+                String userEmail = userProfileRepo.findByUser(bill.getUser())
+                    .map(profileItem -> profileItem.getEmail())
+                    .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_FOUND));
+
+                try {
+                    sendResponse(message, userEmail, tradingCode, request);
+                } catch (MessagingException | UnsupportedEncodingException e) {
+                    // Payment succeeded, so email issues must not block the VNPay redirect.
+                }
                 applicationEventPublisher.publishEvent(new AdminNotificationEvent(
                     NotificationTypeEnum.PAYMENT,
                     "Payment completed",
@@ -338,30 +342,16 @@ public class VNPayService {
         return listHtml.toString();
     }
 
-    private void sendResponse(StringBuilder detail, String userEmail, String printTicketUrl) throws MessagingException, UnsupportedEncodingException {
+        private void sendResponse(StringBuilder detail, String userEmail, String tradingCode, HttpServletRequest request)
+            throws MessagingException, UnsupportedEncodingException {
         String subject = "VNPay Payment Response";
-        String body = EmailUtils.getConfirmPaymentMessage(formatDetailAsList(detail.toString()), printTicketUrl);
+        String printTicketHref = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+            + request.getContextPath() + "/api/v1/print-ticket/pdf?tradingCode=" + URLEncoder.encode(tradingCode, StandardCharsets.UTF_8);
+        String body = EmailUtils.getConfirmPaymentMessage(
+                formatDetailAsList(detail.toString()),
+                printTicketHref,
+                "print-ticket-" + tradingCode + ".pdf"
+        );
         emailService.sendMail(userEmail, subject, body);
-    }
-
-    private String buildPrintTicketUrl(HttpServletRequest request, String tradingCode) {
-        StringBuilder baseUrl = new StringBuilder();
-        baseUrl.append(request.getScheme())
-                .append("://")
-                .append(request.getServerName());
-
-        int port = request.getServerPort();
-        boolean defaultHttpPort = "http".equalsIgnoreCase(request.getScheme()) && port == 80;
-        boolean defaultHttpsPort = "https".equalsIgnoreCase(request.getScheme()) && port == 443;
-
-        if (!defaultHttpPort && !defaultHttpsPort) {
-            baseUrl.append(":").append(port);
-        }
-
-        baseUrl.append(request.getContextPath())
-                .append("/api/v1/print-ticket/pdf?tradingCode=")
-                .append(tradingCode);
-
-        return baseUrl.toString();
     }
 }

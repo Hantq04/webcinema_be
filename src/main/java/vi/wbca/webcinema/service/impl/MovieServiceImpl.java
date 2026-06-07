@@ -32,7 +32,6 @@ import vi.wbca.webcinema.repository.movie.RateRepo;
 import vi.wbca.webcinema.repository.setting.BannerRepo;
 import vi.wbca.webcinema.repository.seat.SeatStatusRepo;
 import vi.wbca.webcinema.service.MovieService;
-import vi.wbca.webcinema.util.generate.GenerateCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class MovieServiceImpl implements MovieService {
         List<MovieType> movieTypes = resolveMovieTypes(request.getMovieTypeIds());
 
         LocalDateTime premiereDate = request.getPremiereDate();
-        movie.setCode(GenerateCode.generateCode());
+        movie.setCode(request.getCode());
         movie.setNameEn(request.getNameEn());
         movie.setDescriptionEn(request.getDescriptionEn());
         movie.setMovieTypes(movieTypes);

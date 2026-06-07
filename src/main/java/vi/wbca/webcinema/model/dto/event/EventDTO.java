@@ -14,7 +14,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventDTO {
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long id;
 
     String name;

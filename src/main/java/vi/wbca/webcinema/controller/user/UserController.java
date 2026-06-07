@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import vi.wbca.webcinema.model.dto.token.TokenDTO;
 import vi.wbca.webcinema.model.dto.user.UserDTO;
 import vi.wbca.webcinema.model.request.LoginRequest;
 import vi.wbca.webcinema.model.request.ChangePasswordRequest;
@@ -24,7 +23,6 @@ import vi.wbca.webcinema.model.response.LoginResponse;
 import vi.wbca.webcinema.model.response.UserProfileResponse;
 import vi.wbca.webcinema.model.response.UserResponse;
 import vi.wbca.webcinema.service.AccountService;
-import vi.wbca.webcinema.service.RefreshTokenService;
 import vi.wbca.webcinema.service.UserService;
 import vi.wbca.webcinema.util.Constants;
 import vi.wbca.webcinema.util.response.ResponseObject;
@@ -41,7 +39,7 @@ public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
     private final UserService userService;
     private final AccountService accountService;
-    private final RefreshTokenService refreshTokenService;
+//    private final RefreshTokenService refreshTokenService;
     private final MessageSource messageSource;
 
     @PostMapping("/register")
@@ -173,19 +171,19 @@ public class UserController {
         );
     }
 
-    @PostMapping("/refresh-token")
-    @Operation(summary = "Làm mới token xác thực")
-    public ResponseEntity<ResponseObject> refreshToken(@Valid @RequestParam String refreshToken) {
-        logger.info("----------Web Cinema: Refresh Token----------");
-        TokenDTO responseData = refreshTokenService.refreshToken(refreshToken);
-        Locale locale = LocaleContextHolder.getLocale();
-        String message = responseData.isNewToken() 
-                ? messageSource.getMessage("success.refresh_token", null, locale)
-                : messageSource.getMessage("success.token_still_valid", null, locale);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(HttpStatus.OK, message, responseData)
-        );
-    }
+//    @PostMapping("/refresh-token")
+//    @Operation(summary = "Làm mới token xác thực")
+//    public ResponseEntity<ResponseObject> refreshToken(@Valid @RequestParam String refreshToken) {
+//        logger.info("----------Web Cinema: Refresh Token----------");
+//        TokenDTO responseData = refreshTokenService.refreshToken(refreshToken);
+//        Locale locale = LocaleContextHolder.getLocale();
+//        String message = responseData.isNewToken()
+//                ? messageSource.getMessage("success.refresh_token", null, locale)
+//                : messageSource.getMessage("success.token_still_valid", null, locale);
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponseObject(HttpStatus.OK, message, responseData)
+//        );
+//    }
 
     @GetMapping("/get-all")
     @PreAuthorize(Constants.PERM_STAFF_ADMIN)

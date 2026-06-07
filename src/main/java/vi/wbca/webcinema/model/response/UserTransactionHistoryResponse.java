@@ -18,8 +18,8 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserTransactionHistoryResponse {
-    @Schema(description = "Mã vé")
-    private String ticketCode;
+    @Schema(description = "Mã hóa đơn")
+    private String billCode;
 
     @Schema(description = "Trạng thái")
     private String status;
