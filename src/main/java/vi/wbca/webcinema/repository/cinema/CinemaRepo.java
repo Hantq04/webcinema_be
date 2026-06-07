@@ -18,4 +18,6 @@ public interface CinemaRepo extends JpaRepository<Cinema, Long> {
     List<Cinema> findAllByIsActiveTrueOrderByIdAsc();
 
     List<Cinema> findAllByAddressIgnoreCaseAndIsActiveTrueOrderByNameOfCinemaAsc(String address);
+
+    List<Cinema> findAllByAddressContainingIgnoreCaseAndIsActiveTrueOrderByNameOfCinemaAsc(String keyword);
 }

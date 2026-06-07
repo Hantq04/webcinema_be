@@ -11,31 +11,41 @@ import vi.wbca.webcinema.chatbot.model.request.ChatRequest;
 import vi.wbca.webcinema.chatbot.model.response.ChatResponse;
 import vi.wbca.webcinema.chatbot.service.ChatBotService;
 import vi.wbca.webcinema.enums.BillStatusEnum;
+import vi.wbca.webcinema.enums.RoomTypeEnum;
+import vi.wbca.webcinema.enums.SeatTypeEnum;
 import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
+import vi.wbca.webcinema.model.entity.cinema.Cinema;
 import vi.wbca.webcinema.model.entity.movie.Movie;
 import vi.wbca.webcinema.model.entity.movie.MovieType;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
+import vi.wbca.webcinema.model.entity.setting.GeneralSetting;
 import vi.wbca.webcinema.model.entity.user.User;
 import vi.wbca.webcinema.repository.bill.BillRepo;
 import vi.wbca.webcinema.repository.bill.BillStatusRepo;
 import vi.wbca.webcinema.repository.bill.PromotionRepo;
+import vi.wbca.webcinema.repository.cinema.CinemaRepo;
 import vi.wbca.webcinema.repository.movie.MovieRepo;
 import vi.wbca.webcinema.repository.movie.MovieTypeRepo;
 import vi.wbca.webcinema.repository.movie.ScheduleRepo;
+import vi.wbca.webcinema.repository.setting.GeneralSettingRepo;
 import vi.wbca.webcinema.repository.user.UserRepo;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +61,8 @@ public class ChatBotServiceImpl implements ChatBotService {
     private final BillRepo billRepo;
     private final BillStatusRepo billStatusRepo;
     private final UserRepo userRepo;
+    private final CinemaRepo cinemaRepo;
+    private final GeneralSettingRepo generalSettingRepo;
     private final GroqClient groqClient;
     private final MessageSource messageSource;
 
@@ -73,10 +85,38 @@ public class ChatBotServiceImpl implements ChatBotService {
             return new ChatResponse(message(locale, "chatbot.promotions.none"));
         }
 
+        // Handle ticket price queries
+        if (wantsTicketPrice(message)) {
+            return new ChatResponse(buildTicketPriceResponse(locale));
+        }
+
+        // Handle cinema address/info queries
+        if (wantsCinemaInfo(message)) {
+            // Use original message to preserve proper casing of location names (e.g. "Hà Nội" not "hà nội")
+            String location = extractLocationFromMessage(request.getMessage());
+            return new ChatResponse(buildCinemaInfoResponse(location, locale));
+        }
+
+        // Handle date-specific showtime queries first (e.g. "07/06 có phim gì")
+        // Only trigger if message also contains movie/showtime related keywords to avoid false positives
+        boolean wantsDateShowtimes = containsAny(message,
+                "phim gì", "có phim", "co phim", "phim nào", "phim nao",
+                "suất chiếu", "suat chieu", "lịch chiếu", "lich chieu",
+                "đang chiếu", "dang chieu", "chiếu", "chieu",
+                "what movie", "showing", "showtimes");
+        LocalDate queriedDate = wantsDateShowtimes ? extractDateFromMessage(message) : null;
+        if (queriedDate != null) {
+            return new ChatResponse(buildDateShowtimesResponse(queriedDate, locale));
+        }
+
         List<Movie> titleMatchedMovies = findMatchingMovies(message, locale, List.of());
         if (!titleMatchedMovies.isEmpty()) {
             String context = buildMovieDetailContext(titleMatchedMovies.get(0), locale);
-            return new ChatResponse(groqClient.ask(buildPrompt(context, message)));
+            try {
+                return new ChatResponse(groqClient.ask(buildPrompt(context, message)));
+            } catch (Exception e) {
+                return new ChatResponse(message(locale, "chatbot.ai_unavailable"));
+            }
         }
 
         MovieFilter filter = detectIntent(message, locale);
@@ -88,7 +128,11 @@ public class ChatBotServiceImpl implements ChatBotService {
         }
 
         String context = buildContext(movies, bookedMovies, message, wantsMovieRelated, wantsPromotions, locale);
-        return new ChatResponse(groqClient.ask(buildPrompt(context, message)));
+        try {
+            return new ChatResponse(groqClient.ask(buildPrompt(context, message)));
+        } catch (Exception e) {
+            return new ChatResponse(message(locale, "chatbot.ai_unavailable"));
+        }
     }
 
     private MovieFilter detectIntent(String message, Locale locale) {
@@ -484,6 +528,108 @@ public class ChatBotServiceImpl implements ChatBotService {
         return false;
     }
 
+    /**
+     * Extract a specific date from the user message.
+     * Supports formats: dd/MM, dd/MM/yyyy, dd-MM, dd-MM-yyyy.
+     * When the year is omitted, the current year is assumed.
+     */
+    private LocalDate extractDateFromMessage(String message) {
+        // Pattern: dd/MM/yyyy or dd-MM-yyyy (full date)
+        Pattern fullDatePattern = Pattern.compile("(\\d{1,2})[/\\-](\\d{1,2})[/\\-](\\d{4})");
+        Matcher fullMatcher = fullDatePattern.matcher(message);
+        if (fullMatcher.find()) {
+            try {
+                int day = Integer.parseInt(fullMatcher.group(1));
+                int month = Integer.parseInt(fullMatcher.group(2));
+                int year = Integer.parseInt(fullMatcher.group(3));
+                return LocalDate.of(year, month, day);
+            } catch (Exception ignored) {
+            }
+        }
+
+        // Pattern: dd/MM or dd-MM (short date, assume current year)
+        Pattern shortDatePattern = Pattern.compile("(\\d{1,2})[/\\-](\\d{1,2})(?![/\\-\\d])");
+        Matcher shortMatcher = shortDatePattern.matcher(message);
+        if (shortMatcher.find()) {
+            try {
+                int day = Integer.parseInt(shortMatcher.group(1));
+                int month = Integer.parseInt(shortMatcher.group(2));
+                int year = LocalDate.now().getYear();
+                // If the resulting date is more than 6 months in the past, assume next year
+                LocalDate candidate = LocalDate.of(year, month, day);
+                if (candidate.isBefore(LocalDate.now().minusMonths(6))) {
+                    candidate = LocalDate.of(year + 1, month, day);
+                }
+                return candidate;
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Build a response listing all movies and their showtimes for a specific date.
+     */
+    private String buildDateShowtimesResponse(LocalDate date, Locale locale) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+
+        List<Schedule> schedules = scheduleRepo.findActiveSchedulesOverlapping(startOfDay, endOfDay)
+                .stream()
+                .filter(s -> s.getMovie() != null)
+                .sorted(Comparator.comparing(Schedule::getStartAt))
+                .toList();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String dateLabel = date.format(dateFormatter);
+
+        if (schedules.isEmpty()) {
+            return message(locale, "chatbot.movie.date_no_showtimes", dateLabel);
+        }
+
+        // Group showtimes by movie
+        Map<Long, Movie> movieMap = new java.util.LinkedHashMap<>();
+        Map<Long, List<Schedule>> schedulesByMovie = new java.util.LinkedHashMap<>();
+        for (Schedule s : schedules) {
+            Movie movie = s.getMovie();
+            movieMap.put(movie.getId(), movie);
+            schedulesByMovie.computeIfAbsent(movie.getId(), k -> new ArrayList<>()).add(s);
+        }
+
+        StringBuilder response = new StringBuilder();
+        response.append(message(locale, "chatbot.movie.date_showtimes_header", dateLabel)).append("\n");
+
+        for (Map.Entry<Long, Movie> entry : movieMap.entrySet()) {
+            Movie movie = entry.getValue();
+            List<Schedule> movieSchedules = schedulesByMovie.get(entry.getKey());
+            String movieName = getLocalizedMovieName(movie, locale);
+            String genres = formatMovieTypes(movie, locale);
+
+            response.append(movieName).append(genres).append("\n");
+            response.append(message(locale, "chatbot.movie.date_label")).append(dateLabel).append("\n");
+            response.append(message(locale, "chatbot.movie.showtimes_label"));
+
+            String times = movieSchedules.stream()
+                    .map(s -> {
+                        String time = s.getStartAt() != null ? s.getStartAt().format(timeFormatter) : "";
+                        String room = s.getRoom() != null ? s.getRoom().getName() : "";
+                        String cinema = (s.getRoom() != null && s.getRoom().getCinema() != null)
+                                ? s.getRoom().getCinema().getNameOfCinema() : "";
+                        if (!cinema.isBlank() && !room.isBlank()) {
+                            return time + " (" + cinema + " - " + room + ")";
+                        } else if (!room.isBlank()) {
+                            return time + " (" + room + ")";
+                        }
+                        return time;
+                    })
+                    .collect(Collectors.joining(", "));
+            response.append(times).append("\n");
+        }
+
+        return response.toString().trim();
+    }
+
     private String message(Locale locale, String key, Object... args) {
         return messageSource.getMessage(key, args, locale);
     }
@@ -608,5 +754,141 @@ public class ChatBotServiceImpl implements ChatBotService {
             - Do not invent any details that are not in the data.
             - If the description is missing, give a very short introduction based only on the title and genres.
         """.formatted(getLocalizedMovieName(movie, locale), genres, description);
+    }
+
+    // ─── Ticket price ──────────────────────────────────────────────────────────
+
+    private boolean wantsTicketPrice(String message) {
+        return containsAny(message,
+                "giá vé", "gia ve", "vé giá bao nhiêu", "ve gia bao nhieu",
+                "giá xem phim", "gia xem phim", "bao nhiêu tiền", "bao nhieu tien",
+                "chi phí", "chi phi", "phí vé", "phi ve",
+                "ticket price", "how much", "price", "cost");
+    }
+
+    private boolean wantsCinemaInfo(String message) {
+        return containsAny(message,
+                "địa chỉ", "dia chi", "rạp ở đâu", "rap o dau", "rạp phim ở đâu",
+                "vị trí rạp", "vi tri rap", "rạp cinema", "rạp có ở đâu",
+                "rạp nào", "rap nao", "danh sách rạp", "danh sach rap",
+                "cinema address", "where is the cinema", "cinema location", "location");
+    }
+
+    /**
+     * Build a clear ticket price table from enum definitions and GeneralSetting.
+     */
+    private String buildTicketPriceResponse(Locale locale) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(message(locale, "chatbot.price.header")).append("\n\n");
+
+        // Base prices by seat type
+        sb.append(message(locale, "chatbot.price.seat_type_header")).append("\n");
+        for (SeatTypeEnum type : SeatTypeEnum.values()) {
+            sb.append("  - ").append(type.getName())
+              .append(": ").append(String.format("%,d", (long) type.getPrice()))
+              .append(" VND\n");
+        }
+
+        // Room multipliers
+        sb.append("\n").append(message(locale, "chatbot.price.room_type_header")).append("\n");
+        for (RoomTypeEnum room : RoomTypeEnum.values()) {
+            long exampleBase = (long) SeatTypeEnum.STANDARD.getPrice();
+            long examplePrice = Math.round(exampleBase * room.getPriceMultiplier());
+            sb.append("  - ").append(room.name())
+              .append(" (x").append(room.getPriceMultiplier()).append(")")
+              .append(message(locale, "chatbot.price.room_example"))
+              .append(String.format("%,d", examplePrice)).append(" VND\n");
+        }
+
+        // Weekend surcharge
+        generalSettingRepo.findTopByOrderByIdDesc().ifPresent(setting -> {
+            if (setting.getPercentWeekend() != null && setting.getPercentWeekend() > 0) {
+                sb.append("\n").append(message(locale, "chatbot.price.weekend_surcharge",
+                        setting.getPercentWeekend())).append("\n");
+            }
+        });
+
+        // Time-of-day discounts
+        sb.append("\n").append(message(locale, "chatbot.price.time_discount_header")).append("\n");
+        sb.append(message(locale, "chatbot.price.time_discounts"));
+
+        return sb.toString().trim();
+    }
+
+    /**
+     * Build a response listing all active cinemas with name and address.
+     * If a location keyword is provided, filters cinemas whose address contains that keyword.
+     */
+    private String buildCinemaInfoResponse(String location, Locale locale) {
+        List<Cinema> cinemas;
+
+        if (location != null && !location.isBlank()) {
+            cinemas = cinemaRepo.findAllByAddressContainingIgnoreCaseAndIsActiveTrueOrderByNameOfCinemaAsc(location);
+            if (cinemas.isEmpty()) {
+                // Fallback: show all cinemas with a note
+                cinemas = cinemaRepo.findAllByIsActiveTrueOrderByIdAsc();
+                if (cinemas.isEmpty()) {
+                    return message(locale, "chatbot.cinema.none");
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.append(message(locale, "chatbot.cinema.none_in_area", location)).append("\n\n");
+                sb.append(message(locale, "chatbot.cinema.header")).append("\n");
+                appendCinemaList(sb, cinemas, locale);
+                return sb.toString().trim();
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(message(locale, "chatbot.cinema.location_header", location)).append("\n\n");
+            appendCinemaList(sb, cinemas, locale);
+            return sb.toString().trim();
+        }
+
+        cinemas = cinemaRepo.findAllByIsActiveTrueOrderByIdAsc();
+        if (cinemas.isEmpty()) {
+            return message(locale, "chatbot.cinema.none");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(message(locale, "chatbot.cinema.header")).append("\n");
+        appendCinemaList(sb, cinemas, locale);
+        return sb.toString().trim();
+    }
+
+    private void appendCinemaList(StringBuilder sb, List<Cinema> cinemas, Locale locale) {
+        for (int i = 0; i < cinemas.size(); i++) {
+            Cinema cinema = cinemas.get(i);
+            sb.append(i + 1).append(". ").append(cinema.getNameOfCinema()).append("\n");
+            // Show description as the detailed address (address field stores area/city only)
+            if (cinema.getDescription() != null && !cinema.getDescription().isBlank()) {
+                sb.append("   ").append(message(locale, "chatbot.cinema.address_label"))
+                  .append(" ").append(cinema.getDescription()).append("\n");
+            }
+        }
+    }
+
+    /**
+     * Extract a location/area keyword from the user message.
+     * Looks for common Vietnamese city/district patterns.
+     */
+    private String extractLocationFromMessage(String message) {
+        // Patterns: "tại X", "ở X", "khu vực X", "tại khu X"
+        String normalized = message.toLowerCase(Locale.ROOT);
+        String[] locationPrefixes = {"tại khu vực ", "khu vực ", "tại ", "ở ", "in ", "at ", "near "};
+        for (String prefix : locationPrefixes) {
+            int idx = normalized.indexOf(prefix);
+            if (idx >= 0) {
+                String candidate = message.substring(idx + prefix.length()).trim();
+                // Cut off at punctuation or end of meaningful word(s)
+                candidate = candidate.replaceAll("[?!.,;]+$", "").trim();
+                // Limit to first 3 words to avoid capturing too much
+                String[] words = candidate.split("\\s+");
+                int take = Math.min(words.length, 3);
+                String location = String.join(" ", java.util.Arrays.copyOf(words, take)).trim();
+                if (!location.isBlank()) {
+                    return location;
+                }
+            }
+        }
+        return null;
     }
 }
