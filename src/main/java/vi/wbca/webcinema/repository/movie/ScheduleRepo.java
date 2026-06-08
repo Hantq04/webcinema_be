@@ -63,4 +63,21 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Long> {
     WHERE s.movie.id = :movieId
     """)
     List<Schedule> findByMovieId(@Param("movieId") Long movieId);
+
+    @Query("""
+    SELECT DISTINCT s
+    FROM Schedule s
+    JOIN FETCH s.room r
+    JOIN FETCH r.cinema c
+    JOIN FETCH s.movie m
+    WHERE c.id = :cinemaId
+        AND s.isActive = true
+        AND s.startAt >= :start
+        AND s.startAt <= :end
+    ORDER BY s.startAt ASC
+    """)
+    List<Schedule> findActiveSchedulesByCinema(@Param("cinemaId") Long cinemaId,
+                                               @Param("start") LocalDateTime start,
+                                               @Param("end") LocalDateTime end);
 }
+

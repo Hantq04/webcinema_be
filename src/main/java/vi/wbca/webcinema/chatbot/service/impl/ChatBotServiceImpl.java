@@ -17,6 +17,7 @@ import vi.wbca.webcinema.model.entity.bill.Bill;
 import vi.wbca.webcinema.model.entity.bill.BillStatus;
 import vi.wbca.webcinema.model.entity.bill.Promotion;
 import vi.wbca.webcinema.model.entity.cinema.Cinema;
+import vi.wbca.webcinema.model.entity.cinema.Room;
 import vi.wbca.webcinema.model.entity.movie.Movie;
 import vi.wbca.webcinema.model.entity.movie.MovieType;
 import vi.wbca.webcinema.model.entity.movie.Schedule;
@@ -88,6 +89,18 @@ public class ChatBotServiceImpl implements ChatBotService {
         // Handle ticket price queries
         if (wantsTicketPrice(message)) {
             return new ChatResponse(buildTicketPriceResponse(locale));
+        }
+
+        // Handle cinema showtimes queries
+        if (wantsCinemaShowtimes(message)) {
+            List<Cinema> activeCinemas = cinemaRepo.findAllByIsActiveTrueOrderByIdAsc();
+            Cinema targetCinema = findMatchingCinema(message, activeCinemas);
+            String extractedName = extractCinemaNameFromMessage(request.getMessage());
+
+            if (targetCinema != null || extractedName != null) {
+                LocalDate queriedDate = extractDateFromMessage(message);
+                return new ChatResponse(buildCinemaShowtimesResponse(targetCinema, extractedName, queriedDate, activeCinemas, locale));
+            }
         }
 
         // Handle cinema address/info queries
@@ -573,10 +586,12 @@ public class ChatBotServiceImpl implements ChatBotService {
     private String buildDateShowtimesResponse(LocalDate date, Locale locale) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        LocalDateTime startQuery = date.equals(LocalDate.now()) ? LocalDateTime.now() : startOfDay;
 
         List<Schedule> schedules = scheduleRepo.findActiveSchedulesOverlapping(startOfDay, endOfDay)
                 .stream()
                 .filter(s -> s.getMovie() != null)
+                .filter(s -> s.getStartAt() != null && !s.getStartAt().isBefore(startQuery))
                 .sorted(Comparator.comparing(Schedule::getStartAt))
                 .toList();
 
@@ -890,5 +905,214 @@ public class ChatBotServiceImpl implements ChatBotService {
             }
         }
         return null;
+    }
+
+    private boolean wantsCinemaShowtimes(String message) {
+        return containsAny(message,
+                "lịch chiếu", "lich chieu", "suất chiếu", "suat chieu",
+                "giờ chiếu", "gio chieu", "showtime", "schedule");
+    }
+
+    private Cinema findMatchingCinema(String message, List<Cinema> activeCinemas) {
+        String normalizedMsg = normalizeText(message);
+
+        // 1. Try exact match of full name (longest first to avoid partial conflicts)
+        List<Cinema> sortedCinemas = activeCinemas.stream()
+                .sorted((c1, c2) -> Integer.compare(c2.getNameOfCinema().length(), c1.getNameOfCinema().length()))
+                .toList();
+
+        for (Cinema cinema : sortedCinemas) {
+            String normName = normalizeText(cinema.getNameOfCinema());
+            if (!normName.isEmpty() && normalizedMsg.contains(normName)) {
+                return cinema;
+            }
+        }
+
+        // 2. Try partial match of name (e.g., matching "Thanh Xuân" for "CineGo Thanh Xuân")
+        for (Cinema cinema : sortedCinemas) {
+            String normName = normalizeText(cinema.getNameOfCinema())
+                    .replace("cinego", "")
+                    .replace("rap", "")
+                    .trim();
+            if (normName.length() >= 3 && normalizedMsg.contains(normName)) {
+                return cinema;
+            }
+        }
+
+        return null;
+    }
+
+    private String extractCinemaNameFromMessage(String message) {
+        String normalized = message.toLowerCase(Locale.ROOT);
+        String[] prefixes = {
+            "lịch chiếu tại rạp ", "lich chieu tai rap ", "lịch chiếu ở rạp ", "lich chieu o rap ",
+            "suất chiếu tại rạp ", "suat chieu tai rap ", "suất chiếu ở rạp ", "suat chieu o rap ",
+            "giờ chiếu tại rạp ", "gio chieu tai rap ", "giờ chiếu ở rạp ", "gio chieu o rap ",
+            "lịch chiếu tại ", "lich chieu tai ", "lịch chiếu ở ", "lich chieu o ",
+            "suất chiếu tại ", "suat chieu tai ", "suất chiếu ở ", "suat chieu o ",
+            "giờ chiếu tại ", "gio chieu tai ", "giờ chiếu ở ", "gio chieu o ",
+            "lịch chiếu rạp ", "lich chieu rap ", "suất chiếu rạp ", "suat chieu rap ",
+            "showtimes at ", "schedule at ", "showtime at ", "schedule for "
+        };
+
+        for (String prefix : prefixes) {
+            int idx = normalized.indexOf(prefix);
+            if (idx >= 0) {
+                String candidate = message.substring(idx + prefix.length()).trim();
+                candidate = candidate.replaceAll("[?!.,;]+$", "").trim();
+                String[] words = candidate.split("\\s+");
+                int take = Math.min(words.length, 3);
+                List<String> validWords = new ArrayList<>();
+                for (int i = 0; i < take; i++) {
+                    String w = words[i].toLowerCase(Locale.ROOT);
+                    if (w.equals("ngày") || w.equals("ngay") || w.equals("hôm") || w.equals("hom") || w.equals("date") || w.equals("on") || w.equals("at")) {
+                        break;
+                    }
+                    validWords.add(words[i]);
+                }
+                if (!validWords.isEmpty()) {
+                    return String.join(" ", validWords).trim();
+                }
+            }
+        }
+        return null;
+    }
+
+    private String buildCinemaShowtimesResponse(Cinema targetCinema, String extractedName, LocalDate queriedDate, List<Cinema> activeCinemas, Locale locale) {
+        if (targetCinema == null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(message(locale, "chatbot.cinema.showtimes_not_found", extractedName)).append("\n\n");
+            appendCinemaList(sb, activeCinemas, locale);
+            return sb.toString().trim();
+        }
+
+        LocalDateTime start;
+        LocalDateTime end;
+        boolean isSpecificDate = queriedDate != null;
+
+        if (isSpecificDate) {
+            start = queriedDate.equals(LocalDate.now()) ? LocalDateTime.now() : queriedDate.atStartOfDay();
+            end = queriedDate.atTime(23, 59, 59);
+        } else {
+            start = LocalDateTime.now();
+            end = LocalDateTime.now().plusDays(2).toLocalDate().atTime(23, 59, 59);
+        }
+
+        List<Schedule> schedules = scheduleRepo.findActiveSchedulesByCinema(targetCinema.getId(), start, end);
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        if (schedules.isEmpty()) {
+            if (isSpecificDate) {
+                return message(locale, "chatbot.cinema.showtimes_date_none", targetCinema.getNameOfCinema(), queriedDate.format(dateFormatter));
+            } else {
+                return message(locale, "chatbot.cinema.showtimes_none", targetCinema.getNameOfCinema());
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (isSpecificDate) {
+            sb.append(message(locale, "chatbot.cinema.showtimes_date_header", targetCinema.getNameOfCinema(), queriedDate.format(dateFormatter)));
+        } else {
+            sb.append(message(locale, "chatbot.cinema.showtimes_header", targetCinema.getNameOfCinema()));
+        }
+        sb.append("\n");
+
+        if (!isSpecificDate) {
+            Map<LocalDate, List<Schedule>> schedulesByDate = schedules.stream()
+                    .collect(Collectors.groupingBy(
+                            s -> s.getStartAt().toLocalDate(),
+                            java.util.LinkedHashMap::new,
+                            Collectors.toList()
+                    ));
+
+            schedulesByDate.forEach((date, dateSchedules) -> {
+                sb.append(message(locale, "chatbot.movie.date_label")).append(date.format(dateFormatter)).append(":\n");
+
+                Map<Long, Movie> movieMap = new java.util.LinkedHashMap<>();
+                Map<Long, List<Schedule>> movieSchedules = new java.util.LinkedHashMap<>();
+                for (Schedule s : dateSchedules) {
+                    Movie movie = s.getMovie();
+                    if (movie != null) {
+                        movieMap.put(movie.getId(), movie);
+                        movieSchedules.computeIfAbsent(movie.getId(), k -> new ArrayList<>()).add(s);
+                    }
+                }
+
+                int movieIndex = 1;
+                for (Map.Entry<Long, Movie> movieEntry : movieMap.entrySet()) {
+                    Movie movie = movieEntry.getValue();
+                    List<Schedule> msList = movieSchedules.get(movieEntry.getKey());
+                    String movieName = getLocalizedMovieName(movie, locale);
+                    String genres = formatMovieTypes(movie, locale);
+
+                    sb.append("  ").append(movieIndex++).append(". ").append(movieName).append(genres).append("\n");
+
+                    Map<Long, Room> roomMap = new java.util.LinkedHashMap<>();
+                    Map<Long, List<Schedule>> roomSchedules = new java.util.LinkedHashMap<>();
+                    for (Schedule s : msList) {
+                        Room room = s.getRoom();
+                        if (room != null) {
+                            roomMap.put(room.getId(), room);
+                            roomSchedules.computeIfAbsent(room.getId(), k -> new ArrayList<>()).add(s);
+                        }
+                    }
+
+                    roomMap.forEach((roomId, rList) -> {
+                        Room room = rList;
+                        List<Schedule> rsList = roomSchedules.get(roomId);
+                        String roomType = room.getType() != null ? room.getType().name() : "STANDARD";
+                        String times = rsList.stream()
+                                .map(s -> s.getStartAt().format(timeFormatter))
+                                .collect(Collectors.joining(", "));
+                        sb.append("     - ").append(room.getName()).append(" (").append(roomType).append("): ").append(times).append("\n");
+                    });
+                }
+                sb.append("\n");
+            });
+        } else {
+            Map<Long, Movie> movieMap = new java.util.LinkedHashMap<>();
+            Map<Long, List<Schedule>> movieSchedules = new java.util.LinkedHashMap<>();
+            for (Schedule s : schedules) {
+                Movie movie = s.getMovie();
+                if (movie != null) {
+                    movieMap.put(movie.getId(), movie);
+                    movieSchedules.computeIfAbsent(movie.getId(), k -> new ArrayList<>()).add(s);
+                }
+            }
+
+            int movieIndex = 1;
+            for (Map.Entry<Long, Movie> movieEntry : movieMap.entrySet()) {
+                Movie movie = movieEntry.getValue();
+                List<Schedule> msList = movieSchedules.get(movieEntry.getKey());
+                String movieName = getLocalizedMovieName(movie, locale);
+                String genres = formatMovieTypes(movie, locale);
+
+                sb.append(movieIndex++).append(". ").append(movieName).append(genres).append("\n");
+
+                Map<Long, Room> roomMap = new java.util.LinkedHashMap<>();
+                Map<Long, List<Schedule>> roomSchedules = new java.util.LinkedHashMap<>();
+                for (Schedule s : msList) {
+                    Room room = s.getRoom();
+                    if (room != null) {
+                        roomMap.put(room.getId(), room);
+                        roomSchedules.computeIfAbsent(room.getId(), k -> new ArrayList<>()).add(s);
+                    }
+                }
+
+                roomMap.forEach((roomId, rList) -> {
+                    Room room = rList;
+                    List<Schedule> rsList = roomSchedules.get(roomId);
+                    String roomType = room.getType() != null ? room.getType().name() : "STANDARD";
+                    String times = rsList.stream()
+                            .map(s -> s.getStartAt().format(timeFormatter))
+                            .collect(Collectors.joining(", "));
+                    sb.append("   - ").append(room.getName()).append(" (").append(roomType).append("): ").append(times).append("\n");
+                });
+            }
+        }
+
+        return sb.toString().trim();
     }
 }
